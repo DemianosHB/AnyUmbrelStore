@@ -1,7 +1,7 @@
-version: 3.0.4.1
+version: 3.0.5
 services:
   paperlessai:
-    image: clusterzx/paperless-ai:3.0.4
+    image: clusterzx/paperless-ai:3.0.5
     container_name: paperless-ai
     network_mode: bridge
     restart: on-failure
