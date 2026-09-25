@@ -13,6 +13,10 @@ developer: Dictionarry-Hub
 website: https://dictionarry.dev
 repo: https://github.com/Dictionarry-Hub/profilarr
 support: https://github.com/Dictionarry-Hub/profilarr/issues
+releaseNotes: ""
+dependencies: []
+submitter: "anyumbrelstore"
+submission: "https://github.com/DemianosHB/AnyUmbrelStore/"
 port: 6868
 gallery: []
 path: ""
