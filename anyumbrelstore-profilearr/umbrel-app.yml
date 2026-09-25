@@ -1,1 +1,20 @@
-#
+manifestVersion: 1
+id: anyumbrelstore-profilarr
+category: media
+name: Profilarr
+version: "2.2.0"
+tagline: Qualitätsprofile für Radarr und Sonarr verwalten
+description: >-
+  Profilarr hilft dir, Qualitätsprofile und Custom Formats für Radarr
+  und Sonarr zu erstellen, zu testen und mit deinen Instanzen zu
+  synchronisieren. Der zusätzliche Parser ermöglicht Tests von
+  Custom Formats und Qualitätsprofilen.
+developer: Dictionarry-Hub
+website: https://dictionarry.dev
+repo: https://github.com/Dictionarry-Hub/profilarr
+support: https://github.com/Dictionarry-Hub/profilarr/issues
+port: 6868
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
