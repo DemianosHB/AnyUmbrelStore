@@ -9,6 +9,7 @@ description: "Ein leichter VPN-Client-Container mit Unterstützung für NordVPN,
 developer: qmcgaw
 website: https://github.com/passteque/gluetun
 repo: https://github.com/passteque/gluetun
+support: https://github.com/passteque/gluetun/issues
 releaseNotes: ""
 dependencies: []
 submitter: "anyumbrelstore"
