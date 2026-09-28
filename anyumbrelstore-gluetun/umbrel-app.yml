@@ -1,0 +1,12 @@
+manifestVersion: 1
+id: gluetun
+name: Gluetun VPN
+tagline: VPN Client Container
+icon: https://raw.githubusercontent.com/qosmic/gluetun/master/title.png
+category: Networking
+version: "v3.38.0"
+description: "Ein leichter VPN-Client-Container mit Unterstützung für NordVPN, Wireguard und OpenVPN."
+developer: qmcgaw
+website: https://github.com/qosmic/gluetun
+submitter: DemianosHB
+defaultWithPort: 8888
