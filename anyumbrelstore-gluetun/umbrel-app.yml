@@ -1,5 +1,6 @@
 manifestVersion: 1
-id: gluetun
+id: anyumbrelstore-gluetun
+category: networking
 name: Gluetun VPN
 tagline: VPN Client Container
 icon: https://raw.githubusercontent.com/qosmic/gluetun/master/title.png
@@ -8,5 +9,15 @@ version: "v3.41.3"
 description: "Ein leichter VPN-Client-Container mit Unterstützung für NordVPN, Wireguard und OpenVPN."
 developer: qmcgaw
 website: https://github.com/qosmic/gluetun
+repo: https://github.com/qosmic/gluetun
 submitter: DemianosHB
 defaultWithPort: 8888
+releaseNotes: ""
+dependencies: []
+submitter: "anyumbrelstore"
+submission: "https://github.com/DemianosHB/AnyUmbrelStore/"
+port: 8888
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
