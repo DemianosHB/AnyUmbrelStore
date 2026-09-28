@@ -2,13 +2,13 @@ manifestVersion: 1
 id: anyumbrelstore-gluetun
 name: Gluetun VPN
 tagline: VPN Client Container
-icon: https://raw.githubusercontent.com/qosmic/gluetun/master/title.png
+icon: https://raw.githubusercontent.com/passteque/gluetun/master/title.svg
 category: networking
 version: "v3.41.3"
 description: "Ein leichter VPN-Client-Container mit Unterstützung für NordVPN, Wireguard und OpenVPN."
 developer: qmcgaw
-website: https://github.com/qosmic/gluetun
-repo: https://github.com/qosmic/gluetun
+website: https://github.com/passteque/gluetun
+repo: https://github.com/passteque/gluetun
 releaseNotes: ""
 dependencies: []
 submitter: "anyumbrelstore"
