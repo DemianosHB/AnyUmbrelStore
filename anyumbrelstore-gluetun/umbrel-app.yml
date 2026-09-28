@@ -1,6 +1,5 @@
 manifestVersion: 1
 id: anyumbrelstore-gluetun
-category: networking
 name: Gluetun VPN
 tagline: VPN Client Container
 icon: https://raw.githubusercontent.com/qosmic/gluetun/master/title.png
