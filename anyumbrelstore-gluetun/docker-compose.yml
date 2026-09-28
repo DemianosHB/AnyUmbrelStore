@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  app:
+    image: qmcgaw/gluetun:v3.38.0
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER}
+      - VPN_TYPE=${VPN_TYPE}
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - SERVER_COUNTRIES=${SERVER_COUNTRIES}
+    ports:
+      - 8888:8888/tcp # HTTP Proxy
+      - 1080:1080/tcp # SOCKS5 Proxy
+    restart: always
