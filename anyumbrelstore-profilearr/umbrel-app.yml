@@ -2,6 +2,7 @@ manifestVersion: 1
 id: anyumbrelstore-profilearr
 category: media
 name: Profilarr
+# renovate: datasource=docker depName=ghcr.io/dictionarry-hub/profilarr
 version: "2.2.0"
 tagline: Qualitätsprofile für Radarr und Sonarr verwalten
 description: >-
