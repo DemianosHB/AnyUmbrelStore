@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "docker-compose": {
+    "fileMatch": ["(^|/)docker-compose\\.ya?ml$"]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)umbrel-app\\.yml$"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: packageName=(?<packageName>[^\\s]+?))?\\nversion:\\s*\"?(?<currentValue>[^\"\\s]+)\"?"
+      ]
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Bündelt Änderungen an umbrel-app.yml und docker-compose.yml derselben App in einen gemeinsamen Pull Request",
+      "matchFileNames": ["**/umbrel-app.yml", "**/docker-compose.yml"],
+      "groupName": "{{parentDir}} app updates"
+    }
+  ]
+}
