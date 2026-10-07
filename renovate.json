@@ -15,7 +15,8 @@
         "/(^|/)umbrel-app\\.yml$/"
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: currentValue=(?<currentValue>[^\\s]+?))?\\nversion:\\s*\"?(?<currentDigest>sha256:[a-f0-9]+|[^\"\\s]+)\"?"
+        "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+packageName=(?<packageName>[^\\s]+))?(?:\\s+versioning=(?<versioning>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*version:\\s*[\"']?(?<currentValue>(?:v?[0-9]|latest)[^\"'\\s]*)[\"']?",
+        "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+currentValue=(?<currentValue>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*version:\\s*[\"']?(?<currentDigest>sha256:[a-f0-9]+)[\"']?"
       ]
     }
   ],
@@ -29,11 +30,23 @@
       "groupName": "{{parentDir}} app updates"
     },
     {
-      "description": "Aktiviert Digest-Pinning für gluetun",
+      "description": "Aktiviert Digest-Pinning ausschließlich für Gluetun",
       "matchPackageNames": [
-        "qmcgaw/gluetun"
+        "qmcgaw/gluetun",
+        "ghcr.io/qmcgaw/gluetun"
       ],
       "pinDigests": true
+    },
+    {
+      "description": "Verhindert ungewolltes Digest-Pinning für alle anderen Docker-Images",
+      "matchDatasources": [
+        "docker"
+      ],
+      "excludePackageNames": [
+        "qmcgaw/gluetun",
+        "ghcr.io/qmcgaw/gluetun"
+      ],
+      "pinDigests": false
     }
   ]
 }
