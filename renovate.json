@@ -42,11 +42,11 @@
       "matchDatasources": [
         "docker"
       ],
-      "excludePackageNames": [
-        "qmcgaw/gluetun",
-        "ghcr.io/qmcgaw/gluetun"
-      ],
-      "pinDigests": false
+      "pinDigests": false,
+      "matchPackageNames": [
+        "!qmcgaw/gluetun",
+        "!ghcr.io/qmcgaw/gluetun"
+      ]
     }
   ]
 }
