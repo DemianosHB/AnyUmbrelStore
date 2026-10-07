@@ -15,16 +15,19 @@
         "/(^|/)umbrel-app\\.yml$/"
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: packageName=(?<packageName>[^\\s]+?))?\\nversion:\\s*\"?(?<currentValue>[^\"\\s]+)\"?"
+        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: currentValue=(?<currentValue>[^\\s]+?))?\\nversion:\\s*\"?(?<currentDigest>sha256:[a-f0-9]+|[^\"\\s]+)\"?"
       ]
     }
   ],
   "packageRules": [
     {
       "description": "Bündelt Änderungen an umbrel-app.yml und docker-compose.yml derselben App in einen gemeinsamen Pull Request",
-      "matchFileNames": ["**/umbrel-app.yml", "**/docker-compose.yml"],
+      "matchFileNames": [
+        "**/umbrel-app.yml",
+        "**/docker-compose.yml"
+      ],
       "groupName": "{{parentDir}} app updates"
-    }
+    },
     {
       "description": "Aktiviert Digest-Pinning für gluetun",
       "matchPackageNames": [
