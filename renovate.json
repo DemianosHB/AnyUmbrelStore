@@ -4,12 +4,16 @@
     "config:recommended"
   ],
   "docker-compose": {
-    "fileMatch": ["(^|/)docker-compose\\.ya?ml$"]
+    "managerFilePatterns": [
+      "/(^|/)docker-compose\\.ya?ml$/"
+    ]
   },
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["(^|/)umbrel-app\\.yml$"],
+      "managerFilePatterns": [
+        "/(^|/)umbrel-app\\.yml$/"
+      ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: packageName=(?<packageName>[^\\s]+?))?\\nversion:\\s*\"?(?<currentValue>[^\"\\s]+)\"?"
       ]
