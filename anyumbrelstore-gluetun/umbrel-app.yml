@@ -4,7 +4,8 @@ name: Gluetun VPN
 tagline: VPN Client Container
 icon: https://raw.githubusercontent.com/passteque/gluetun/master/title.svg
 category: networking
-version: "20260928"
+# renovate: datasource=docker depName=qmcgaw/gluetun currentValue=latest
+version: "sha256:2733bb22b27e3efa7a9f2cef9057ec12791b8b225793fcd3dbfd0508404dfc25"
 description: "Ein leichter VPN-Client-Container mit Unterstützung für NordVPN, Wireguard und OpenVPN."
 developer: qmcgaw
 website: https://github.com/passteque/gluetun
