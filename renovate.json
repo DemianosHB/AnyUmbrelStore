@@ -15,7 +15,7 @@
         "/(^|/)umbrel-app\\.yml$/"
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+packageName=(?<packageName>[^\\s]+))?(?:\\s+versioning=(?<versioning>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*version:\\s*[\"']?(?<currentValue>(?:v?[0-9]|latest)[^\"'\\s]*)[\"']?",
+        "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+packageName=(?<packageName>[^\\s]+))?(?:\\s+extractVersion=(?<extractVersion>[^\\s]+))?(?:\\s+versioning=(?<versioning>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*version:\\s*[\"']?(?<currentValue>(?:v?[0-9]|latest)[^\"'\\s]*)[\"']?",
         "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+currentValue=(?<currentValue>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*version:\\s*[\"']?(?<currentDigest>sha256:[a-f0-9]+)[\"']?"
       ]
     }
