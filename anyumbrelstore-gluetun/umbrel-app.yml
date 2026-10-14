@@ -4,8 +4,8 @@ storage:
   dataRoot: data
 category: networking
 name: Gluetun VPN
-# renovate: datasource=docker depName=ghcr.io/qdm12/gluetun versioning=loose
-version: "3.41.3_patch1"
+# renovate: datasource=docker depName=ghcr.io/qdm12/gluetun currentValue=v3.41.3
+version: "3.41.3+patch1"
 tagline: VPN-Client-Container mit eingebautem Web-Interface
 description: >-
   Leichter VPN-Client-Container mit Unterstützung für viele Anbieter,
