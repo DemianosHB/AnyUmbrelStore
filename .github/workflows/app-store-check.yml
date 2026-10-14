@@ -31,5 +31,6 @@ jobs:
       - name: Run package checks
         run: |
           python scripts/check-apps.py \
+            --repo "${{ github.repository }}" \
             --official /tmp/umbrel-apps \
             --base-sha "${{ github.event.pull_request.base.sha }}"

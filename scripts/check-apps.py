@@ -12,7 +12,8 @@ Implements the packaging rules from getumbrel/umbrel-apps
 * app_proxy wiring (APP_HOST container name pattern, APP_PORT)
 * image tags: moving tags (latest/main) must be digest-pinned
 * storage.dataRoot must be exactly "data"
-* in-repo icon files referenced via raw.githubusercontent must exist
+* in-repo icon files referenced via raw.githubusercontent URLs of this very
+  repository must exist (foreign repo icons are left alone)
 * security gates as warnings: privileged, docker.sock, host networking,
   cap_add, device mounts (allowed with justification, e.g. VPN clients)
 * persistence: warn if no volume uses APP_DATA_DIR
@@ -30,10 +31,13 @@ import yaml
 
 SEMVER = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
 SHA256 = re.compile(r"^sha256:[a-f0-9]{64}$")
+MANIFEST_VERSION = re.compile(r"^\d+(\.\d+)?$")  # Umbrel schema versions: 1, 1.1, 1.2, 2.0
 MOVING_TAGS = {"latest", "main"}
 
 errors: list[str] = []
 warnings: list[str] = []
+
+REPO = ""  # "owner/name" of this store repository, set in main() from --repo
 
 
 def err(path: str, msg: str) -> None:
@@ -157,8 +161,8 @@ def check_app(store_root: str, app_id: str, official_ports: set[int],
 
     # ---- manifestVersion ----
     mv = str(manifest.get("manifestVersion", ""))
-    if not SEMVER.match(mv):
-        err(manifest_rel, f"manifestVersion {mv!r} is not a valid semver (e.g. 1 or 1.3)")
+    if not MANIFEST_VERSION.match(mv):
+        err(manifest_rel, f"manifestVersion {mv!r} is not a valid schema version (e.g. 1, 1.1 or 2.0)")
 
     # ---- version ----
     version = str(manifest.get("version", ""))
@@ -193,11 +197,14 @@ def check_app(store_root: str, app_id: str, official_ports: set[int],
     # ---- icon referenced in-repo must exist ----
     icon = manifest.get("icon")
     if isinstance(icon, str) and "raw.githubusercontent.com" in icon:
-        m = re.search(r"/master/(.+)$", icon)
+        # raw.githubusercontent.com/<owner>/<repo>/<ref>/<path>
+        m = re.search(r"raw\.githubusercontent\.com/([^/]+)/([^/]+)/[^/]+/(.+)$", icon)
         if m:
-            local = os.path.join(store_root, m.group(1))
-            if not os.path.isfile(local):
-                err(manifest_rel, f"icon references missing in-repo file: {m.group(1)}")
+            owner_repo = f"{m.group(1)}/{m.group(2)}".lower()
+            if owner_repo == REPO.lower():
+                local = os.path.join(store_root, m.group(3))
+                if not os.path.isfile(local):
+                    err(manifest_rel, f"icon references missing in-repo file: {m.group(3)}")
 
     # ---- compose ----
     compose_path = os.path.join(app_dir, "docker-compose.yml")
@@ -283,7 +290,11 @@ def main() -> int:
     parser.add_argument("--root", default=".", help="app store repository root")
     parser.add_argument("--official", default=None, help="path to a clone of getumbrel/umbrel-apps")
     parser.add_argument("--base-sha", default=None, help="PR base sha to determine changed apps")
+    parser.add_argument("--repo", default=None, help="owner/name of this store repo, e.g. DemianosHB/AnyUmbrelStore")
     args = parser.parse_args()
+
+    global REPO
+    REPO = args.repo or ""
 
     root = os.path.abspath(args.root)
     apps = app_dirs(root)
@@ -295,10 +306,9 @@ def main() -> int:
 
     store_manifest_ports: dict[str, int] = {}
     store_host_ports: dict[str, set[int]] = {}
+    # The store is small: always check every app, not just the ones changed in
+    # the PR. Port-conflict maps below still need all apps anyway.
     for app in apps:
-        if args.base_sha and app not in changed:
-            # Still checked for port conflicts below via maps; parse manifest only.
-            pass
         check_app(root, app, official_ports, store_manifest_ports, store_host_ports)
 
     print(f"Checked {len(apps)} app package(s) against {len(official_ports)} official store ports.\n")
