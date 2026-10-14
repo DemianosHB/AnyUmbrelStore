@@ -1,5 +1,7 @@
-manifestVersion: 1
+manifestVersion: "1"
 id: anyumbrelstore-profilearr
+storage:
+  dataRoot: data
 category: media
 name: Profilarr
 # renovate: datasource=docker depName=ghcr.io/dictionarry-hub/profilarr
@@ -12,14 +14,14 @@ description: >-
   Custom Formats und Qualitätsprofilen.
 developer: Dictionarry-Hub
 website: https://dictionarry.dev
+dependencies: []
 repo: https://github.com/Dictionarry-Hub/profilarr
 support: https://github.com/Dictionarry-Hub/profilarr/issues
 releaseNotes: ""
-dependencies: []
-submitter: "anyumbrelstore"
-submission: "https://github.com/DemianosHB/AnyUmbrelStore/"
 port: 6868
 gallery: []
 path: ""
 defaultUsername: ""
 defaultPassword: ""
+submitter: "anyumbrelstore"
+submission: "https://github.com/DemianosHB/AnyUmbrelStore/"
