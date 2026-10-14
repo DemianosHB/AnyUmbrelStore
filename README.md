@@ -17,7 +17,7 @@ Ein [Community App Store](https://github.com/getumbrel/umbrel-community-app-stor
 
 | App | ID | Version | Kategorie | Port |
 |---|---|---|---|---|
-| [Gluetun VPN](https://github.com/passteque/gluetun) | `anyumbrelstore-gluetun` | 3.41.3+patch1 | Networking | 8010 |
+| [Gluetun VPN](https://github.com/passteque/gluetun) | `anyumbrelstore-gluetun` | 3.41.3+patch2 | Networking | 8010 |
 | [Profilarr](https://github.com/Dictionarry-Hub/profilarr) | `anyumbrelstore-profilearr` | 2.2.0+patch1 | Media | 6868 |
 
 ### Gluetun VPN

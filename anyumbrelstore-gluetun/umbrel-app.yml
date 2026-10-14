@@ -5,7 +5,7 @@ storage:
 category: networking
 name: Gluetun VPN
 # renovate: datasource=docker depName=ghcr.io/qdm12/gluetun currentValue=v3.41.3
-version: "3.41.3+patch1"
+version: "3.41.3+patch2"
 tagline: VPN-Client-Container mit eingebautem Web-Interface
 description: >-
   Leichter VPN-Client-Container mit Unterstützung für viele Anbieter,
@@ -23,18 +23,18 @@ description: >-
 
 
   Für andere Apps erreichbar unter: HTTP-Proxy auf Port 8009,
-  SOCKS5-Proxy auf Port 1080, Shadowsocks auf Port 8388.
+  Shadowsocks auf Port 8388.
 developer: qdm12
 website: https://github.com/passteque/gluetun
 dependencies: []
 repo: https://github.com/passteque/gluetun
 support: https://github.com/passteque/gluetun/issues
 releaseNotes: >-
-  Added a built-in web dashboard (gluetun-webui) for live VPN status,
-  public IP and start/stop controls. The control server now requires
-  an API key (shown in the Umbrel app credentials) instead of being
-  unauthenticated. The internal HTTP, SOCKS5 and Shadowsocks proxies
-  are now enabled by default.
+  Removed the SOCKS5 proxy settings and port 1080: the built-in SOCKS5
+  server no longer exists in upstream gluetun (removed well before
+  v3.35, the wiki page is stale), so SOCKS5_ENABLED was an unused
+  variable and port 1080 listened on nothing. The internal HTTP proxy
+  and Shadowsocks remain enabled.
 port: 8010
 gallery: []
 path: ""
