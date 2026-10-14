@@ -5,7 +5,7 @@ services:
       APP_PORT: 8000
 
   app:
-    image: ghcr.io/qdm12/gluetun:v3.41.1
+    image: ghcr.io/qdm12/gluetun:v3.41.3
     cap_add:
       - NET_ADMIN
     devices:
