@@ -1,8 +1,8 @@
 services:
   app_proxy:
     environment:
-      APP_HOST: anyumbrelstore-gluetun_app_1
-      APP_PORT: 8000
+      APP_HOST: anyumbrelstore-gluetun_webui_1
+      APP_PORT: 3000
 
   app:
     image: ghcr.io/qdm12/gluetun:v3.41.3
@@ -16,6 +16,10 @@ services:
       - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
       - SERVER_COUNTRIES=${SERVER_COUNTRIES}
       - HTTP_CONTROL_SERVER_PORT=8000
+      - 'HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE={"auth":"apikey","apikey":"${APP_PASSWORD}"}'
+      - HTTPPROXY=on
+      - SOCKS5_ENABLED=on
+      - SHADOWSOCKS=on
     ports:
       - 8009:8888/tcp # HTTP Proxy
       - 1080:1080/tcp # SOCKS5 Proxy
@@ -24,3 +28,15 @@ services:
     volumes:
       - ${APP_DATA_DIR}/data:/gluetun
     restart: always
+
+  webui:
+    # Upstream published keine SemVer-Tags (nur main-<sha>): Trackung ueber
+    # den beweglichen main-Tag mit Digest-Pin, Renovate aktualisiert den Digest.
+    image: scuzza/gluetun-webui:main@sha256:a7c2b4c77f26bb690debe6879cd7149d69710578b13e0dcdc08f6b9b6c7a7a14
+    restart: on-failure
+    environment:
+      - GLUETUN_1_NAME=Gluetun
+      - GLUETUN_1_URL=http://app:8000
+      - GLUETUN_1_API_KEY=${APP_PASSWORD}
+    depends_on:
+      - app
