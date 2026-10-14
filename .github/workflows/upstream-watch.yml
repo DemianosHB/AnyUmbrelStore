@@ -23,7 +23,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.15"
 
       # Kein eigener API-Key nötig: secrets.GITHUB_TOKEN wird pro Lauf
       # automatisch bereitgestellt und über den permissions-Block auf
