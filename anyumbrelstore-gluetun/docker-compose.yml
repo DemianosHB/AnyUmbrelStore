@@ -17,6 +17,9 @@ services:
       - SERVER_COUNTRIES=${SERVER_COUNTRIES}
       - HTTP_CONTROL_SERVER_PORT=8000
       - 'HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE={"auth":"apikey","apikey":"${APP_PASSWORD}"}'
+      - HTTPPROXY=on
+      - SOCKS5_ENABLED=on
+      - SHADOWSOCKS=on
     ports:
       - 8009:8888/tcp # HTTP Proxy
       - 1080:1080/tcp # SOCKS5 Proxy
