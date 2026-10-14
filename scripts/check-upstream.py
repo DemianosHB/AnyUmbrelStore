@@ -54,7 +54,7 @@ WATCHES = [
     },
     {
         "app": "anyumbrelstore-gluetun (webui sidecar)",
-        "repo": "scuzza/gluetun-webui",
+        "repo": "Sir-Scuzza/gluetun-webui",
         "kind": "repo-exists",  # no semver releases; Renovate tracks the digest
     },
 ]
