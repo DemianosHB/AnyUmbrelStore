@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: networking
 name: Gluetun VPN
-# renovate: datasource=docker depName=qmcgaw/gluetun currentValue=v3.41.1
+# renovate: datasource=docker depName=ghcr.io/qdm12/gluetun currentValue=v3.41.1
 version: "3.41.1"
 tagline: VPN-Client-Container mit eingebautem Web-Interface
 description: >-
@@ -17,10 +17,10 @@ description: >-
   (z. B. VPN_SERVICE_PROVIDER, VPN_TYPE, WIREGUARD_PRIVATE_KEY).
   Die Weboberfläche zeigt Verbindungsstatus und Server-Info.
 developer: qdm12
-website: https://github.com/qdm12/gluetun
+website: https://github.com/passteque/gluetun
 dependencies: []
-repo: https://github.com/qdm12/gluetun
-support: https://github.com/qdm12/gluetun/issues
+repo: https://github.com/passteque/gluetun
+support: https://github.com/passteque/gluetun/issues
 releaseNotes: ""
 port: 8888
 gallery: []
