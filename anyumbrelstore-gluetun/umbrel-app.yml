@@ -17,20 +17,29 @@ description: >-
   (z. B. VPN_SERVICE_PROVIDER, VPN_TYPE, WIREGUARD_PRIVATE_KEY).
 
 
-  Die Weboberfläche zeigt Verbindungsstatus und Server-Info. Für
-  andere Apps erreichbar unter: HTTP-Proxy auf Port 8009,
+  Die Weboberfläche zeigt Verbindungsstatus, öffentliche IP und
+  Server-Infos und erlaubt Start/Stopp aus dem Browser. Der zugehörige
+  API-Key ist in Umbrel unter den App-Zugangsdaten sichtbar.
+
+
+  Für andere Apps erreichbar unter: HTTP-Proxy auf Port 8009,
   SOCKS5-Proxy auf Port 1080, Shadowsocks auf Port 8388.
 developer: qdm12
 website: https://github.com/passteque/gluetun
 dependencies: []
 repo: https://github.com/passteque/gluetun
 support: https://github.com/passteque/gluetun/issues
-releaseNotes: ""
+releaseNotes: >-
+  Added a built-in web dashboard (gluetun-webui) for live VPN status,
+  public IP and start/stop controls. The control server now requires
+  an API key (shown in the Umbrel app credentials) instead of being
+  unauthenticated.
 port: 8010
 gallery: []
 path: ""
 defaultUsername: ""
 defaultPassword: ""
+deterministicPassword: true
 submitter: "anyumbrelstore"
 submission: "https://github.com/DemianosHB/AnyUmbrelStore/"
 icon: https://raw.githubusercontent.com/passteque/gluetun/master/title.svg
