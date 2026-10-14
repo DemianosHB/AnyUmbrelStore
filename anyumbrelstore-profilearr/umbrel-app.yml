@@ -4,8 +4,8 @@ storage:
   dataRoot: data
 category: media
 name: Profilarr
-# renovate: datasource=docker depName=ghcr.io/dictionarry-hub/profilarr
-version: "2.2.0"
+# renovate: datasource=docker depName=ghcr.io/dictionarry-hub/profilarr versioning=loose
+version: "2.2.0_patch1"
 tagline: Qualitätsprofile für Radarr und Sonarr verwalten
 description: >-
   Profilarr hilft dir, Qualitätsprofile und Custom Formats für Radarr
@@ -17,7 +17,10 @@ website: https://dictionarry.dev
 dependencies: []
 repo: https://github.com/Dictionarry-Hub/profilarr
 support: https://github.com/Dictionarry-Hub/profilarr/issues
-releaseNotes: ""
+releaseNotes: >-
+  Added an app icon, storage.dataRoot for umbrelOS 2.0 external
+  drives, and aligned the manifest with the umbrel packaging
+  conventions. Version suffix _patch1 marks this packaging update.
 port: 6868
 gallery: []
 path: ""
