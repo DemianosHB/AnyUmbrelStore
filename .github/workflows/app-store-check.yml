@@ -1,0 +1,35 @@
+name: App Store Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  check-packages:
+    name: Validate app packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Clone official Umbrel App Store (port reference)
+        run: git clone --depth 1 https://github.com/getumbrel/umbrel-apps.git /tmp/umbrel-apps
+
+      - name: List changed files in this PR
+        if: github.event_name == 'pull_request'
+        run: git diff --name-only ${{ github.event.pull_request.base.sha }}..HEAD || true
+
+      - name: Run package checks
+        run: |
+          python scripts/check-apps.py \
+            --official /tmp/umbrel-apps \
+            --base-sha "${{ github.event.pull_request.base.sha }}"
