@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: media
 name: Profilarr
-# renovate: datasource=docker depName=ghcr.io/dictionarry-hub/profilarr extractVersion=^(?<version>\d+\.\d+\.\d+)
+# renovate: datasource=docker depName=ghcr.io/dictionarry-hub/profilarr versioning=semver
 version: "2.2.0+patch1"
 tagline: Qualitätsprofile für Radarr und Sonarr verwalten
 description: >-
