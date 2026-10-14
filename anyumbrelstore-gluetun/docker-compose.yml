@@ -30,8 +30,9 @@ services:
     restart: always
 
   webui:
-    # renovate: datasource=docker depName=scuzza/gluetun-webui currentValue=main-268a3f3
-    image: scuzza/gluetun-webui:main-268a3f3
+    # Upstream published keine SemVer-Tags (nur main-<sha>): Trackung ueber
+    # den beweglichen main-Tag mit Digest-Pin, Renovate aktualisiert den Digest.
+    image: scuzza/gluetun-webui:main@sha256:a7c2b4c77f26bb690debe6879cd7149d69710578b13e0dcdc08f6b9b6c7a7a14
     restart: on-failure
     environment:
       - GLUETUN_1_NAME=Gluetun

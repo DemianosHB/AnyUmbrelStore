@@ -5,7 +5,7 @@ storage:
 category: networking
 name: Gluetun VPN
 # renovate: datasource=docker depName=ghcr.io/qdm12/gluetun currentValue=v3.41.3
-version: "3.41.3"
+version: "3.41.4"
 tagline: VPN-Client-Container mit eingebautem Web-Interface
 description: >-
   Leichter VPN-Client-Container mit Unterstützung für viele Anbieter,
@@ -33,7 +33,8 @@ releaseNotes: >-
   Added a built-in web dashboard (gluetun-webui) for live VPN status,
   public IP and start/stop controls. The control server now requires
   an API key (shown in the Umbrel app credentials) instead of being
-  unauthenticated.
+  unauthenticated. The internal HTTP, SOCKS5 and Shadowsocks proxies
+  are now enabled by default.
 port: 8010
 gallery: []
 path: ""

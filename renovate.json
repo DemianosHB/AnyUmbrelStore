@@ -38,6 +38,13 @@
       "pinDigests": true
     },
     {
+      "description": "Aktiviert Digest-Pinning und Digest-Updates für gluetun-webui (Upstream ohne SemVer-Tags)",
+      "matchPackageNames": [
+        "scuzza/gluetun-webui"
+      ],
+      "pinDigests": true
+    },
+    {
       "description": "Verhindert ungewolltes Digest-Pinning für alle anderen Docker-Images",
       "matchDatasources": [
         "docker"
@@ -45,7 +52,8 @@
       "pinDigests": false,
       "matchPackageNames": [
         "!qmcgaw/gluetun",
-        "!ghcr.io/qmcgaw/gluetun"
+        "!ghcr.io/qmcgaw/gluetun",
+        "!scuzza/gluetun-webui"
       ]
     }
   ]
