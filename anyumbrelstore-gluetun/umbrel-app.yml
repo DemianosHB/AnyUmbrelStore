@@ -4,8 +4,8 @@ storage:
   dataRoot: data
 category: networking
 name: Gluetun VPN
-# renovate: datasource=docker depName=ghcr.io/qdm12/gluetun currentValue=v3.41.3
-version: "3.41.3+patch2"
+# renovate: datasource=docker depName=ghcr.io/qdm12/gluetun currentValue=latest
+version: "sha256:2733bb22b27e3efa7a9f2cef9057ec12791b8b225793fcd3dbfd0508404dfc25"
 tagline: VPN-Client-Container mit eingebautem Web-Interface
 description: >-
   Leichter VPN-Client-Container mit Unterstützung für viele Anbieter,
@@ -23,18 +23,22 @@ description: >-
 
 
   Für andere Apps erreichbar unter: HTTP-Proxy auf Port 8009,
-  Shadowsocks auf Port 8388.
+  SOCKS5-Proxy auf Port 1080, Shadowsocks auf Port 8388.
+
+
+  Hinweis: Dieses Paket folgt dem Entwicklungs-Kanal (latest) von
+  Gluetun, weil der eingebaute SOCKS5-Proxy bisher nur dort und noch
+  in keinem Stable-Release enthalten ist.
 developer: qdm12
 website: https://github.com/passteque/gluetun
 dependencies: []
 repo: https://github.com/passteque/gluetun
 support: https://github.com/passteque/gluetun/issues
 releaseNotes: >-
-  Removed the SOCKS5 proxy settings and port 1080: the built-in SOCKS5
-  server no longer exists in upstream gluetun (removed well before
-  v3.35, the wiki page is stale), so SOCKS5_ENABLED was an unused
-  variable and port 1080 listened on nothing. The internal HTTP proxy
-  and Shadowsocks remain enabled.
+  Switched to the development (latest) image, digest-pinned, to bring
+  back the built-in SOCKS5 proxy which only exists on the master
+  branch and in no stable release yet. SOCKS5 listens on port 1080
+  (TCP and UDP). HTTP proxy and Shadowsocks remain enabled.
 port: 8010
 gallery: []
 path: ""

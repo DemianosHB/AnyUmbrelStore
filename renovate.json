@@ -30,16 +30,10 @@
       "groupName": "{{parentDir}} app updates"
     },
     {
-      "description": "Aktiviert Digest-Pinning ausschließlich für Gluetun",
+      "description": "Aktiviert Digest-Pinning und Digest-Updates für Gluetun (latest) und gluetun-webui (main) – beide ohne verwertbare Version-Tags",
       "matchPackageNames": [
         "qmcgaw/gluetun",
-        "ghcr.io/qmcgaw/gluetun"
-      ],
-      "pinDigests": true
-    },
-    {
-      "description": "Aktiviert Digest-Pinning und Digest-Updates für gluetun-webui (Upstream ohne SemVer-Tags)",
-      "matchPackageNames": [
+        "ghcr.io/qdm12/gluetun",
         "scuzza/gluetun-webui"
       ],
       "pinDigests": true
@@ -52,7 +46,7 @@
       "pinDigests": false,
       "matchPackageNames": [
         "!qmcgaw/gluetun",
-        "!ghcr.io/qmcgaw/gluetun",
+        "!ghcr.io/qdm12/gluetun",
         "!scuzza/gluetun-webui"
       ]
     }

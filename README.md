@@ -17,7 +17,7 @@ Ein [Community App Store](https://github.com/getumbrel/umbrel-community-app-stor
 
 | App | ID | Version | Kategorie | Port |
 |---|---|---|---|---|
-| [Gluetun VPN](https://github.com/passteque/gluetun) | `anyumbrelstore-gluetun` | 3.41.3+patch2 | Networking | 8010 |
+| [Gluetun VPN](https://github.com/passteque/gluetun) | `anyumbrelstore-gluetun` | latest (Dev) | Networking | 8010 |
 | [Profilarr](https://github.com/Dictionarry-Hub/profilarr) | `anyumbrelstore-profilearr` | 2.2.0+patch1 | Media | 6868 |
 
 ### Gluetun VPN
@@ -29,6 +29,8 @@ Leichter VPN-Client-Container (WireGuard & OpenVPN, viele Anbieter). Die Webober
 - Shadowsocks: Port **8388**
 
 Beim Installieren müssen VPN-Anbieter, VPN-Typ und WireGuard-Schlüssel angegeben werden (`VPN_SERVICE_PROVIDER`, `VPN_TYPE`, `WIREGUARD_PRIVATE_KEY`, `SERVER_COUNTRIES`).
+
+Gluetun folgt dem **Entwicklungs-Kanal** (`latest`, digest-gepinnt), da der eingebaute SOCKS5-Proxy bisher nur dort und in keinem Stable-Release enthalten ist. Renovate aktualisiert den Digest automatisch.
 
 ### Profilarr
 
