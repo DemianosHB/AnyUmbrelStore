@@ -1,17 +1,57 @@
-## Umbrel Community App Store Template
+# AnyUmbrelStore
 
-This repository is a template to create an Umbrel Community App Store. These additional app stores allow developers to distribute applications without submitting to the [Official Umbrel App Store](https://github.com/getumbrel/umbrel-apps).
+Ein [Community App Store](https://github.com/getumbrel/umbrel-community-app-store) für [umbrelOS](https://umbrel.com) mit kuratierten Self-Hosted-Apps, die (noch) nicht im offiziellen Store verfügbar sind.
 
-## How to use:
+## Store hinzufügen
 
-1. Start by clicking the "Use this template" button located above.
-2. Assign an ID and name to your app store within the `umbrel-app-store.yml` file. This file specifies two important attributes:
-    - `id` - Acts as a unique prefix for every app within your Community App Store. You must start your application's ID with your app store's ID. For instance, in this template, the app store ID is `sparkles`, and there's an app named `hello world`. Consequently, the app's ID should be: `sparkles-hello-world`.
-    - `name` - This is the name of the Community App Store displayed in the umbrelOS UI.
-3. Change the name of the `sparkles-hello-world` folder to match your app's ID. The app ID is for you to decide. For example, if your app store ID is `whistles`, and your app is named My Video Downloader, you could set its app ID to `whistles-my-video-downloader`, and rename the folder accordingly.
-4. Next, enter your app's listing details in the `whistles-my-video-downloader/umbrel-app.yml`. These are displayed in the umbrelOS UI.
-5. Include the necessary Docker services in `whistles-my-video-downloader/docker-compose.yml`.
-6. That's it! Your Community App Store, featuring your unique app, is now set up and ready to go. To use your Community App Store, you can add its GitHub url the umbrelOS user interface as shown in the following demo:
+1. Öffne auf deinem Umbrel die **App Store** Seite.
+2. Wähle unten **External app store hinzufügen** und gib diese URL ein:
 
+   ```
+   https://github.com/DemianosHB/AnyUmbrelStore
+   ```
 
-https://user-images.githubusercontent.com/10330103/197889452-e5cd7e96-3233-4a09-b475-94b754adc7a3.mp4
+3. Die Apps dieses Stores erscheinen anschließend im App Store.
+
+## Verfügbare Apps
+
+| App | ID | Version | Kategorie | Port |
+|---|---|---|---|---|
+| [Gluetun VPN](https://github.com/passteque/gluetun) | `anyumbrelstore-gluetun` | 3.41.1 | Networking | 8010 |
+| [Profilarr](https://github.com/Dictionarry-Hub/profilarr) | `anyumbrelstore-profilearr` | 2.2.0 | Media | 6868 |
+
+### Gluetun VPN
+
+Leichter VPN-Client-Container (WireGuard & OpenVPN, viele Anbieter). Die Weboberfläche zeigt Verbindungsstatus und Server-Infos. Für andere Apps, die durch den Tunnel routen sollen, veröffentlicht er zusätzlich:
+
+- HTTP-Proxy: Port **8009**
+- SOCKS5-Proxy: Port **1080**
+- Shadowsocks: Port **8388**
+
+Beim Installieren müssen VPN-Anbieter, VPN-Typ und WireGuard-Schlüssel angegeben werden (`VPN_SERVICE_PROVIDER`, `VPN_TYPE`, `WIREGUARD_PRIVATE_KEY`, `SERVER_COUNTRIES`).
+
+### Profilarr
+
+Qualitätsprofile und Custom Formats für Radarr und Sonarr erstellen, testen und synchronisieren – inklusive integriertem Parser zum Testen von Profilen.
+
+## Struktur
+
+Jede App liegt in einem eigenen Ordner, benannt nach ihrer App-ID (Präfix `anyumbrelstore-`):
+
+```text
+<app-id>/
+  umbrel-app.yml      # Manifest (Metadata, Port, Version)
+  docker-compose.yml  # Docker-Services
+  icon.svg            # App-Icon (optional, Community-Stores)
+```
+
+Die Store-Definition steht in [`umbrel-app-store.yml`](umbrel-app-store.yml).
+
+## Pflege
+
+- Container-Images werden automatisch von [Renovate](https://renovatebot.com) aktuell gehalten (`renovate.json`).
+- Die Pakete folgen den Verpackungs-Konventionen des offiziellen [umbrel-apps](https://github.com/getumbrel/umbrel-apps)-Repos; Host-Ports sind so gewählt, dass sie sich nicht mit dem offiziellen Store überschneiden.
+
+## Hinweis
+
+Community App Stores werden nicht von umbrelOS vorgeprüft. Prüfe Apps wie immer vor der Installation – die Verantwortung liegt beim Nutzer. Dieser Store steht in keiner Verbindung zu Umbrel oder den jeweiligen Upstream-Projekten.
