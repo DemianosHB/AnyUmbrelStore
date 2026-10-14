@@ -1,22 +1,36 @@
-manifestVersion: 1
+manifestVersion: "1"
 id: anyumbrelstore-gluetun
-name: Gluetun VPN
-tagline: VPN Client Container
-icon: https://raw.githubusercontent.com/passteque/gluetun/master/title.svg
+storage:
+  dataRoot: data
 category: networking
-# renovate: datasource=docker depName=qmcgaw/gluetun currentValue=latest
-version: "sha256:2733bb22b27e3efa7a9f2cef9057ec12791b8b225793fcd3dbfd0508404dfc25"
-description: "Ein leichter VPN-Client-Container mit Unterstützung für NordVPN, Wireguard und OpenVPN."
-developer: qmcgaw
+name: Gluetun VPN
+# renovate: datasource=docker depName=ghcr.io/qdm12/gluetun currentValue=v3.41.1
+version: "3.41.1"
+tagline: VPN-Client-Container mit eingebautem Web-Interface
+description: >-
+  Leichter VPN-Client-Container mit Unterstützung für viele Anbieter,
+  WireGuard und OpenVPN.
+
+
+  Wichtig beim ersten Einrichten: VPN-Anbieter, VPN-Typ und
+  WireGuard-Schlüssel müssen beim Installieren angegeben werden
+  (z. B. VPN_SERVICE_PROVIDER, VPN_TYPE, WIREGUARD_PRIVATE_KEY).
+
+
+  Die Weboberfläche zeigt Verbindungsstatus und Server-Info. Für
+  andere Apps erreichbar unter: HTTP-Proxy auf Port 8009,
+  SOCKS5-Proxy auf Port 1080, Shadowsocks auf Port 8388.
+developer: qdm12
 website: https://github.com/passteque/gluetun
+dependencies: []
 repo: https://github.com/passteque/gluetun
 support: https://github.com/passteque/gluetun/issues
 releaseNotes: ""
-dependencies: []
-submitter: "anyumbrelstore"
-submission: "https://github.com/DemianosHB/AnyUmbrelStore/"
-port: 8888
+port: 8010
 gallery: []
 path: ""
 defaultUsername: ""
 defaultPassword: ""
+submitter: "anyumbrelstore"
+submission: "https://github.com/DemianosHB/AnyUmbrelStore/"
+icon: https://raw.githubusercontent.com/passteque/gluetun/master/title.svg
