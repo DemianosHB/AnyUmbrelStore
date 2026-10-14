@@ -1,0 +1,72 @@
+name: Upstream Changelog Watch
+
+on:
+  schedule:
+    # montags 06:00 UTC (08:00 Berlin im Sommer, 07:00 im Winter)
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/check-upstream.py"
+      - ".github/workflows/upstream-watch.yml"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  upstream-watch:
+    name: Check upstream releases and changelogs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Kein eigener API-Key nötig: secrets.GITHUB_TOKEN wird pro Lauf
+      # automatisch bereitgestellt und über den permissions-Block auf
+      # Lesen + Issue-Anlegen begrenzt.
+      - name: Run upstream checks
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/check-upstream.py --report-file /tmp/upstream-report.md
+
+      # Bei schedule/workflow_dispatch: Report als Issue veröffentlichen
+      # (vorhandenes Watch-Issue aktualisieren statt verdoppeln; bei
+      # Entwarnung wieder schließen). Bei Pull-Requests nur Ausgabe im Log.
+      - name: Publish report as issue
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          REPORT: /tmp/upstream-report.md
+        run: |
+          set -eu
+          API="https://api.github.com/repos/$REPO/issues"
+          AUTH="Authorization: Bearer $GITHUB_TOKEN"
+          ACCEPT="Accept: application/vnd.github+json"
+          MARKER="[upstream-watch]"
+          EXISTING=$(curl -sf -H "$AUTH" -H "$ACCEPT" "$API?state=open&per_page=100" \
+            | jq -r --arg m "$MARKER" '.[] | select(.title | startswith($m)) | .number' \
+            | head -1 || true)
+          if [ -s "$REPORT" ]; then
+            BODY=$(jq -Rs . < "$REPORT")
+            TITLE="$MARKER Upstream-Report: Handlungsbedarf prüfen"
+            if [ -n "$EXISTING" ]; then
+              curl -sf -X PATCH -H "$AUTH" -H "$ACCEPT" \
+                -d "{\"title\": \"$TITLE\", \"body\": $BODY}" "$API/$EXISTING" > /dev/null
+              echo "Issue #$EXISTING aktualisiert."
+            else
+              curl -sf -X POST -H "$AUTH" -H "$ACCEPT" \
+                -d "{\"title\": \"$TITLE\", \"body\": $BODY}" "$API" > /dev/null
+              echo "Neues Watch-Issue erstellt."
+            fi
+          elif [ -n "$EXISTING" ]; then
+            curl -sf -X PATCH -H "$AUTH" -H "$ACCEPT" \
+              -d '{"state": "closed", "state_reason": "completed"}' "$API/$EXISTING" > /dev/null
+            echo "Issue #$EXISTING geschlossen (alles ruhig)."
+          else
+            echo "Keine Befunde und kein offenes Watch-Issue - nichts zu tun."
+          fi
