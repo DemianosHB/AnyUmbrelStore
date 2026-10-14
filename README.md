@@ -52,6 +52,7 @@ Die Store-Definition steht in [`umbrel-app-store.yml`](umbrel-app-store.yml).
 ## Pflege
 
 - Container-Images werden automatisch von [Renovate](https://renovatebot.com) aktuell gehalten (`renovate.json`).
+- Jeder Pull-Request wird von der [App-Store-Check](.github/workflows/app-store-check.yml)-Action automatisch geprüft: Manifest-Schema, Port-Konflikte mit dem offiziellen Store, Digest-Pinning und Sicherheits-Gates.
 - Die Pakete folgen den Verpackungs-Konventionen des offiziellen [umbrel-apps](https://github.com/getumbrel/umbrel-apps)-Repos; Host-Ports sind so gewählt, dass sie sich nicht mit dem offiziellen Store überschneiden.
 
 ## Hinweis
