@@ -1,0 +1,43 @@
+name: Branch Cleanup
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    name: Delete branches of merged pull requests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Löscht Branches, deren PR gemergt wurde (deckt auch Squash-Merges ab,
+      # da via gh pr list --state merged geprüft wird). Offene PRs wie
+      # Renovate-Branches und master bleiben unberührt. Fork-Branches
+      # existieren nicht im Remote und werden übersprungen.
+      - name: Delete merged branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eu
+          merged=$(gh pr list --state merged --limit 100 \
+            --json headRefName --jq '.[].headRefName' | sort -u)
+          if [ -z "$merged" ]; then
+            echo "Keine gemergten PR-Branches - nichts zu tun."
+            exit 0
+          fi
+          for branch in $merged; do
+            if git ls-remote --heads origin | grep -q "refs/heads/$branch$"; then
+              echo "Lösche gemergten Branch: $branch"
+              git push origin --delete "$branch"
+            else
+              echo "Nicht im Repo vorhanden (z.B. Fork): $branch - übersprungen"
+            fi
+          done
+          echo "Aufräumen abgeschlossen."
