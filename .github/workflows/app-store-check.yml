@@ -40,47 +40,16 @@ jobs:
             --official /tmp/umbrel-apps \
             --base-sha "${{ github.event.pull_request.base.sha }}" | tee /tmp/check-output.txt
 
-      # Ergebnis des Checks als Kommentar am PR ablegen; ein bestehender
-      # Bot-Kommentar wird aktualisiert statt bei jedem Push neu angelegt.
+      # Ergebnis des Checks als aufbereiteter Kommentar am PR (Ergebnistabelle
+      # pro App, Begründungen für erwartete Warnungen, einklappbares Log).
+      # Ein bestehender Bot-Kommentar wird aktualisiert statt neu angelegt;
+      # die Aufbereitung liegt in scripts/pr-report.js.
       - name: Report results on the PR
         if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v9
         env:
           OUTCOME: ${{ steps.checks.outcome }}
+          REPORT_FILE: /tmp/check-output.txt
+          REPORT_KIND: app-store-check
         with:
-          script: |
-            const fs = require('fs');
-            let out = '';
-            try { out = fs.readFileSync('/tmp/check-output.txt', 'utf8').trim(); } catch (e) {}
-            const outcome = process.env.OUTCOME || 'unknown';
-            const marker = '<!-- app-store-check-report -->';
-            const title = outcome === 'success'
-              ? '✅ App Store Check: bestanden'
-              : '❌ App Store Check: fehlgeschlagen';
-            const code = out
-              ? out.split('\n').map((l) => '    ' + l).join('\n')
-              : '    (keine Ausgabe)';
-            const body = marker + '\n\n## ' + title + '\n\n' + code + '\n';
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-            const existing = comments.find((c) => (c.body || '').includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body: body,
-              });
-              core.info('Kommentar aktualisiert: ' + existing.html_url);
-            } else {
-              const { data: created } = await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: body,
-              });
-              core.info('Kommentar erstellt: ' + created.html_url);
-            }
+          script: return require('./scripts/pr-report.js')({ github, context, core })

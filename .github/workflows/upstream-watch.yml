@@ -8,6 +8,7 @@ on:
   pull_request:
     paths:
       - "scripts/check-upstream.py"
+      - "scripts/pr-report.js"
       - ".github/workflows/upstream-watch.yml"
 
 permissions:
@@ -37,49 +38,17 @@ jobs:
           python scripts/check-upstream.py \
             --report-file /tmp/upstream-report.md | tee /tmp/upstream-output.txt
 
-      # Ergebnis auch als Kommentar am PR (PR-Testläufe erzeugen kein Issue)
+      # Ergebnis auch als Kommentar am PR (PR-Testläufe erzeugen kein Issue);
+      # Aufbereitung wie beim App Store Check in scripts/pr-report.js.
       - name: Report results on the PR
         if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v9
         env:
           OUTCOME: ${{ steps.checks.outcome }}
+          REPORT_FILE: /tmp/upstream-output.txt
+          REPORT_KIND: upstream-watch
         with:
-          script: |
-            const fs = require('fs');
-            let out = '';
-            try { out = fs.readFileSync('/tmp/upstream-output.txt', 'utf8').trim(); } catch (e) {}
-            const outcome = process.env.OUTCOME || 'unknown';
-            const marker = '<!-- upstream-watch-report -->';
-            const title = outcome === 'success'
-              ? '🔭 Upstream Changelog Watch (PR-Testlauf)'
-              : '❌ Upstream Changelog Watch: fehlgeschlagen';
-            const code = out
-              ? out.split('\n').map((l) => '    ' + l).join('\n')
-              : '    (keine Ausgabe)';
-            const body = marker + '\n\n## ' + title + '\n\n' + code + '\n';
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-            const existing = comments.find((c) => (c.body || '').includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body: body,
-              });
-              core.info('Kommentar aktualisiert: ' + existing.html_url);
-            } else {
-              const { data: created } = await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: body,
-              });
-              core.info('Kommentar erstellt: ' + created.html_url);
-            }
+          script: return require('./scripts/pr-report.js')({ github, context, core })
 
       # Bei schedule/workflow_dispatch: Report als Issue veröffentlichen
       # (vorhandenes Watch-Issue aktualisieren statt verdoppeln; bei
