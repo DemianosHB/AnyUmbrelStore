@@ -44,7 +44,7 @@ jobs:
       # Bot-Kommentar wird aktualisiert statt bei jedem Push neu angelegt.
       - name: Report results on the PR
         if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           OUTCOME: ${{ steps.checks.outcome }}
         with:
