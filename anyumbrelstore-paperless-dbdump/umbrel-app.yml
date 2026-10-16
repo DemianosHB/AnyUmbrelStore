@@ -1,1 +1,38 @@
-bump
+manifestVersion: "1"
+id: anyumbrelstore-paperless-dbdump
+storage:
+  dataRoot: data
+category: files
+name: Paperless DB-Dump
+version: "1.0.1"
+tagline: Taeglicher PostgreSQL-Dump der Paperless-Datenbank als Backup-Grundlage
+description: >-
+  Erstellt taeglich um 01:30 Uhr (Europe/Berlin) einen komprimierten
+  pg_dump der Paperless-ngx-PostgreSQL-Datenbank in einen vom Nutzer
+  ausgewaehlten Ordner (Folder-Access), damit Duplicati und andere
+  Backup-Tools die Metadaten (Tags, Korrespondenten, Dokumenttypen,
+  OCR-Texte) saubern mitsichern koennen. Behaelt 7 Tagesversionen.
+  Ohne Web-Interface: Status und Fehler siehst du im Container-Status
+  bzw. per SSH in den Docker-Logs.
+developer: DemianosHB
+website: https://github.com/DemianosHB/AnyUmbrelStore
+dependencies: []
+repo: https://github.com/DemianosHB/AnyUmbrelStore
+support: https://github.com/DemianosHB/AnyUmbrelStore/issues
+releaseNotes: 1.0.1 - Container joint automatisch dem von umbrelOS bereitgestellten gemeinsamen Netzwerk (umbrel_main_network), keine externe Netzwerk-Deklaration mehr noetig. Zugangsdaten (User/DB/Passwort "paperless") entsprechen der offiziellen Umbrel-Store-Paperless-App.
+port: 0
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+submitter: anyumbrelstore
+submission: https://github.com/DemianosHB/AnyUmbrelStore/
+icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-paperless-dbdump/icon.svg
+folderAccess:
+  - id: dump-output
+    name: Dump-Zielordner
+    note: Ordner, in den die SQL-Dumps geschrieben werden. Empfehlung: der Paperless-App-Datenordner (z. B. .../app-data/paperless/data/db-export), den Duplicati ohnehin sichert.
+    mounts:
+      - service: dbdump
+        targetPath: /out
+        readOnly: false
