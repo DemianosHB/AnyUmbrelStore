@@ -12,14 +12,14 @@ description: >-
   ausgewaehlten Ordner (Folder-Access), damit Duplicati und andere
   Backup-Tools die Metadaten (Tags, Korrespondenten, Dokumenttypen,
   OCR-Texte) saubern mitsichern koennen. Behaelt 7 Tagesversionen.
-  Ohne Web-Interface: Status und Fehler siehst du im Container-Status
+  Ohne Web-Interface, Status und Fehler siehst du im Container-Status
   bzw. per SSH in den Docker-Logs.
 developer: DemianosHB
 website: https://github.com/DemianosHB/AnyUmbrelStore
 dependencies: []
 repo: https://github.com/DemianosHB/AnyUmbrelStore
 support: https://github.com/DemianosHB/AnyUmbrelStore/issues
-releaseNotes: 1.0.1 - Container joint automatisch dem von umbrelOS bereitgestellten gemeinsamen Netzwerk (umbrel_main_network), keine externe Netzwerk-Deklaration mehr noetig. Zugangsdaten (User/DB/Passwort "paperless") entsprechen der offiziellen Umbrel-Store-Paperless-App.
+releaseNotes: 1.0.1 - Container joint automatisch dem von umbrelOS bereitgestellten gemeinsamen Netzwerk, keine externe Netzwerk-Deklaration mehr noetig. Zugangsdaten (User, DB und Passwort "paperless") entsprechen der offiziellen Umbrel-Store-Paperless-App.
 port: 0
 gallery: []
 path: ""
@@ -31,7 +31,7 @@ icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbr
 folderAccess:
   - id: dump-output
     name: Dump-Zielordner
-    note: Ordner, in den die SQL-Dumps geschrieben werden. Empfehlung: der Paperless-App-Datenordner (z. B. .../app-data/paperless/data/db-export), den Duplicati ohnehin sichert.
+    note: Ordner, in den die SQL-Dumps geschrieben werden, z. B. der Paperless-App-Datenordner .../app-data/paperless/data/db-export (liegt im Duplicati-Zugriffsbereich).
     mounts:
       - service: dbdump
         targetPath: /out
