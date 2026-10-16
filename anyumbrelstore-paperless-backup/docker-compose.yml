@@ -4,7 +4,7 @@ services:
   # 1) DB-Dump: Paperless-PostgreSQL taeglich 01:30 (Europe/Berlin)
   #    in die App-Daten (db-export, 7 Tagesversionen, atomar).
   dbdump:
-    image: docker.io/library/postgres:16
+    image: docker.io/library/postgres:18
     restart: unless-stopped
     environment:
       TZ: Europe/Berlin
