@@ -3,31 +3,32 @@ id: anyumbrelstore-paperless-backup
 storage:
   dataRoot: data
 category: files
-name: Paperless Borg Backup
+name: Paperless Backup
 version: "1.0.0"
-tagline: Borgmatic-Sicherung der Paperless-Daten inkl. DB-Dump auf die Hetzner Storage Box
+tagline: Duplicati-Backup der Paperless-Daten inkl. DB-Dump auf die Hetzner Storage Box
 description: >-
-  Headless-App mit zwei Containern: dbdump sichert die
+  Eine App, zwei Container: dbdump sichert die
   Paperless-PostgreSQL-Datenbank taeglich um 01:30 (Europe/Berlin) per
-  pg_dump|gzip in die App-Daten (db-export, 7 Tagesversionen); borgmatic
-  sichert taeglich um 02:30 die Dokumente (media/) und die DB-Dumps per
-  Borg in ein Repo auf einer Hetzner Storage Box (SSH Port 23). Kein Fork
-  und keine Modifikation der offiziellen Paperless-App: deren
-  App-Datenordner wird nur lesend gemountet. Konfiguration und Secrets
-  (config.yaml, SSH-Key, Borg-Passphrase) liegen ausschliesslich in den
-  App-Daten auf dem Umbrel, nie in diesem Repo. Restore per docker exec
-  (borgmatic list/extract), siehe README der App.
+  pg_dump|gzip in die App-Daten (db-export, 7 Tagesversionen); Duplicati
+  (offizielles Container-Image) sichert taeglich die Dokumente (media/)
+  und die DB-Dumps per SFTP mit Passwort-Auth (Port 22, keine SSH-Keys)
+  auf die Storage Box. Der Backup-Job wird ueber die gewohnte
+  Duplicati-Weboberflaeche eingerichtet und wiederhergestellt. Kein Fork
+  und keine Modifikation der offiziellen Paperless-App: media wird nur
+  lesend gemountet. Ersetzt die eigenstaendige App
+  anyumbrelstore-paperless-dbdump.
 developer: DemianosHB
 website: https://github.com/DemianosHB/AnyUmbrelStore
 dependencies: []
 repo: https://github.com/DemianosHB/AnyUmbrelStore
 support: https://github.com/DemianosHB/AnyUmbrelStore/issues
-releaseNotes: "1.0.0 - initiale Version. Kombiniert DB-Dump (postgres:16, taeglich 01:30, 7 Tagesversionen) und Borgmatic-Backup (2.1.10, digest-gepinnt, Cron 02:30 Berlin) in einer App; Quellen /mnt/source/media und /config/db-export, nur lesend gemountet. Ersetzt die eigenstaendige App anyumbrelstore-paperless-dbdump."
-port: 0
+releaseNotes: "1.0.0 - initiale Version. Kombiniert DB-Dump (postgres:16, taeglich 01:30, 7 Tagesversionen) und Duplicati-Backup (offizielles Image, digest-gepinnt) in einer App. Quellen /mnt/source/media und /mnt/source/db-export, nur lesend gemountet."
+port: 39120
 gallery: []
 path: ""
 defaultUsername: ""
 defaultPassword: ""
+deterministicPassword: true
 submitter: anyumbrelstore
 submission: https://github.com/DemianosHB/AnyUmbrelStore/
 icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-paperless-backup/icon.svg

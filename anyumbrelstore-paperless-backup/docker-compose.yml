@@ -1,6 +1,12 @@
 version: "3.7"
 
 services:
+  app_proxy:
+    environment:
+      APP_HOST: anyumbrelstore-paperless-backup_duplicati_1
+      APP_PORT: 8200
+      PROXY_AUTH_ADD: "false"
+
   # 1) DB-Dump: Paperless-PostgreSQL taeglich 01:30 (Europe/Berlin)
   #    in die App-Daten (db-export, 7 Tagesversionen, atomar).
   dbdump:
@@ -31,25 +37,22 @@ services:
           sleep $$((target - now))
         done
 
-  # 2) Borgmatic: media + db-export taeglich 02:30 in das Borg-Repo
-  backup:
-    # Borgmatic-Collective-Image: Borg + Borgmatic + crond (S6).
-    # SemVer-Tag mit Digest-Pin; Renovate aktualisiert Version + Digest.
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.10@sha256:25a97d84a2371c385c0031a02b64f7167de85631a85b84ef46dc01a80010d19e
-    restart: unless-stopped
-    stop_grace_period: 30m
-    environment:
-      TZ: Europe/Berlin
-      CRON: "30 2 * * *"
-      CRON_COMMAND: "borgmatic-start --stats -v 1 2>&1"
-      BORG_PASSPHRASE_FILE: /config/borg-passphrase
+  # 2) Duplicati: offizielles Container-Image (identischer Digest wie in der
+  #    offiziellen Umbrel-App). Sichert media + db-export per SFTP
+  #    (Port 22, Passwort-Auth, keine SSH-Keys) auf die Storage Box.
+  duplicati:
+    image: duplicati/duplicati:2.4.0.1@sha256:e32e280cc30e98ac5cea8d2b339cd19810b1b39e638fb9d39253786630104de0
+    user: "1000:1000"
+    restart: on-failure
+    stop_grace_period: 1m
     volumes:
-      # Sicherungsgueter, nur lesend (Restore bewusst ueber /config/restore)
-      - ${UMBREL_ROOT}/app-data/paperless/data:/mnt/source:ro
-      # Persistente Konfiguration + Secrets: in den App-Daten, nie im Repo
-      - ${APP_DATA_DIR}/data:/config
-      - ${APP_DATA_DIR}/data/borgmatic.d:/etc/borgmatic.d
-      - ${APP_DATA_DIR}/data/ssh:/root/.ssh
-      - ${APP_DATA_DIR}/data/borg-config:/root/.config/borg
-      - ${APP_DATA_DIR}/data/borg-cache:/root/.cache/borg
-      - ${APP_DATA_DIR}/data/borgmatic-state:/root/.local/state/borgmatic
+      - ${APP_DATA_DIR}/data:/data
+      # Sicherungsgueter, nur lesend (Restore bewusst nach /data/restore)
+      - ${UMBREL_ROOT}/app-data/paperless/data/media:/mnt/source/media:ro
+      - ${APP_DATA_DIR}/data/db-export:/mnt/source/db-export:ro
+    environment:
+      DUPLICATI__WEBSERVICE_PORT: "8200"
+      DUPLICATI__WEBSERVICE_INTERFACE: "any"
+      DUPLICATI__WEBSERVICE_PASSWORD: "${APP_PASSWORD}"
+      DUPLICATI__WEBSERVICE_ALLOWED_HOSTNAMES: "*"
+      TZ: Europe/Berlin
