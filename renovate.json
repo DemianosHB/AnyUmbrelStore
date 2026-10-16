@@ -5,18 +5,18 @@
   ],
   "docker-compose": {
     "managerFilePatterns": [
-      "/(^|/)docker-compose\\.ya?ml$/"
+      "/(^|/)docker-compose\.ya?ml$/"
     ]
   },
   "customManagers": [
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/(^|/)umbrel-app\\.yml$/"
+        "/(^|/)umbrel-app\.yml$/"
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+packageName=(?<packageName>[^\\s]+))?(?:\\s+extractVersion=(?<extractVersion>[^\\s]+))?(?:\\s+versioning=(?<versioning>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*version:\\s*[\"']?(?<currentValue>(?:v?[0-9]|latest)[^\"'\\s]*)[\"']?",
-        "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+currentValue=(?<currentValue>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*version:\\s*[\"']?(?<currentDigest>sha256:[a-f0-9]+)[\"']?"
+        "# renovate: datasource=(?<datasource>[^\s]+)\s+depName=(?<depName>[^\s]+)(?:\s+packageName=(?<packageName>[^\s]+))?(?:\s+extractVersion=(?<extractVersion>[^\s]+))?(?:\s+versioning=(?<versioning>[^\s]+))?[^\r\n]*\r?\n\s*version:\s*[\"']?(?<currentValue>(?:v?[0-9]|latest)[^\"'\s]*)[\"']?",
+        "# renovate: datasource=(?<datasource>[^\s]+)\s+depName=(?<depName>[^\s]+)(?:\s+currentValue=(?<currentValue>[^\s]+))?[^\r\n]*\r?\n\s*version:\s*[\"']?(?<currentDigest>sha256:[a-f0-9]+)[\"']?"
       ]
     }
   ],
@@ -30,11 +30,12 @@
       "groupName": "{{parentDir}} app updates"
     },
     {
-      "description": "Aktiviert Digest-Pinning und Digest-Updates für Gluetun (latest) und gluetun-webui (main) – beide ohne verwertbare Version-Tags",
+      "description": "Aktiviert Digest-Pinning und Digest-Updates für Gluetun (latest), gluetun-webui (main) und Duplicati (bewusst digest-gepinnt, identischer Stand wie die offizielle Umbrel-App)",
       "matchPackageNames": [
         "qmcgaw/gluetun",
         "ghcr.io/qdm12/gluetun",
-        "scuzza/gluetun-webui"
+        "scuzza/gluetun-webui",
+        "duplicati/duplicati"
       ],
       "pinDigests": true
     },
@@ -47,7 +48,8 @@
       "matchPackageNames": [
         "!qmcgaw/gluetun",
         "!ghcr.io/qdm12/gluetun",
-        "!scuzza/gluetun-webui"
+        "!scuzza/gluetun-webui",
+        "!duplicati/duplicati"
       ]
     }
   ]

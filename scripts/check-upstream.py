@@ -12,6 +12,15 @@ upstreams behind this store's app packages and reports
 * whether the upstream source repositories still exist (a vanished
   repo means an unmaintained, unauditable image)
 
+Watch kinds:
+* "stable"      - manifest version equals the upstream version (Profilarr)
+* "image-tag"   - manifest version is the store's own packaging version
+                  (Paperless Backup): upstream releases are compared against
+                  the Docker image tag pinned in the app's compose file
+* "dev-channel" - package tracks :latest (Gluetun); compare against the
+                  last known stable baseline instead of the manifest
+* "repo-exists" - only check that the upstream repo is still public
+
 Output: human-readable report on stdout, optional Markdown report file.
 Exit code is always 0 unless the GitHub API rate limit is hit (then 2).
 """
@@ -57,6 +66,20 @@ WATCHES = [
         "repo": "Sir-Scuzza/gluetun-webui",
         "kind": "repo-exists",  # no semver releases; Renovate tracks the digest
     },
+    {
+        # Paperless Backup packages its own version in umbrel-app.yml (1.x.x),
+        # not the Duplicati upstream version. "image-tag" therefore reads the
+        # pinned Docker tag from docker-compose.yml and compares it with the
+        # upstream stable releases (beta/canary releases are skipped, matching
+        # the stable channel of the official Docker image). Renovate bumps the
+        # image tag itself; this watch adds the changelog radar for breaking
+        # changes such as the 2.4.0.0 data-folder permission lockdown.
+        "app": "anyumbrelstore-paperless-backup",
+        "repo": "duplicati/duplicati",
+        "kind": "image-tag",
+        "manifest": "anyumbrelstore-paperless-backup/docker-compose.yml",
+        "image": "duplicati/duplicati",
+    },
 ]
 
 ISSUE_MARKER = "[upstream-watch]"
@@ -84,8 +107,11 @@ def gh_request(url: str, token: str | None):
 
 
 def parse_version(text: str):
-    m = re.match(r"^v?(\d+)\.(\d+)\.(\d+)", str(text).strip())
-    return tuple(int(x) for x in m.groups()) if m else None
+    # Optional fourth component: Duplicati tags like v2.4.0.1_stable_2026-10-07
+    # must compare as (2, 4, 0, 1), not as (2, 4, 0), otherwise patch
+    # releases of the fourth component would go unnoticed.
+    m = re.match(r"^v?(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?", str(text).strip())
+    return tuple(int(x) for x in m.groups() if x is not None) if m else None
 
 
 def strip_packaging_suffix(version: str) -> str:
@@ -99,6 +125,24 @@ def pinned_version_from_manifest(root: str, rel_path: str) -> str | None:
         with open(path, encoding="utf-8") as f:
             for line in f:
                 m = re.match(r'^version:\s*"?([^"\s]+)"?\s*$', line)
+                if m:
+                    return m.group(1)
+    except OSError:
+        pass
+    return None
+
+
+def pinned_tag_from_compose(root: str, rel_path: str, image: str) -> str | None:
+    """Read the pinned Docker tag of an image from a compose file.
+
+    'image: duplicati/duplicati:2.4.0.1@sha256:...' -> '2.4.0.1'
+    """
+    path = os.path.join(root, rel_path)
+    pattern = re.compile(rf"image:\s*{re.escape(image)}:([^\s@]+)")
+    try:
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                m = pattern.search(line)
                 if m:
                     return m.group(1)
     except OSError:
@@ -150,6 +194,16 @@ def check_release_watch(watch: dict, root: str, token: str | None,
         if pinned is None:
             alerts.append(f"{app}: Gepinnte Version aus {watch['manifest']} "
                           f"nicht lesbar ({pinned_raw!r}).")
+            return
+        baseline = pinned
+    elif watch["kind"] == "image-tag":
+        # Apps whose manifest version is their own packaging version: compare
+        # upstream releases against the Docker tag pinned in the compose file.
+        pinned_raw = pinned_tag_from_compose(root, watch["manifest"], watch["image"])
+        pinned = parse_version(pinned_raw or "")
+        if pinned is None:
+            alerts.append(f"{app}: Gepinnter Docker-Tag für {watch['image']} "
+                          f"aus {watch['manifest']} nicht lesbar ({pinned_raw!r}).")
             return
         baseline = pinned
     else:  # dev-channel: compare against the last stable we know of
