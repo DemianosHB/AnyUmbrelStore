@@ -19,6 +19,7 @@ Ein [Community App Store](https://github.com/getumbrel/umbrel-community-app-stor
 |---|---|---|---|---|
 | [Gluetun VPN](https://github.com/passteque/gluetun) | `anyumbrelstore-gluetun` | latest (Dev) | Networking | 8010 |
 | [Profilarr](https://github.com/Dictionarry-Hub/profilarr) | `anyumbrelstore-profilearr` | 2.2.0+patch1 | Media | 6868 |
+| [Paperless Backup](https://github.com/DemianosHB/AnyUmbrelStore/tree/master/anyumbrelstore-paperless-backup) | `anyumbrelstore-paperless-backup` | 1.1.2 | Files | 39120 |
 
 ### Gluetun VPN
 
@@ -35,6 +36,15 @@ Gluetun folgt dem **Entwicklungs-Kanal** (`latest`, digest-gepinnt), da der eing
 ### Profilarr
 
 Qualitätsprofile und Custom Formats für Radarr und Sonarr erstellen, testen und synchronisieren – inklusive integriertem Parser zum Testen von Profilen.
+
+### Paperless Backup
+
+Offsite-Backup für die offizielle Paperless-ngx-App – **eine App, zwei Container**:
+
+- **dbdump** (`postgres:18`): erstellt täglich um 01:30 (Europe/Berlin) einen `pg_dump | gzip`-Dump der Paperless-PostgreSQL-Datenbank in die App-Daten (`db-export`, 7 Tagesversionen, atomar geschrieben). Der pg_dump-Client darf neuer sein als der Datenbank-Server, niemals älter – Renovate kann den Tag daher gefahrlos weiter anheben.
+- **duplicati** (offizielles `duplicati/duplicati`-Image, digest-gepinnt wie die offizielle Umbrel-App): sichert täglich die Dokumente (`/mnt/source/media`) und die DB-Dumps (`/mnt/source/db-export`) per SFTP (Port 22, Passwort-Authentifizierung – bewusst ohne SSH-Keys), z. B. auf eine Hetzner Storage Box. Backup-Job, Zeitplan (passend nach dem DB-Dump, z. B. 02:30), AES-256-Verschlüsselung und Retention werden in der gewohnten Duplicati-Weboberfläche eingerichtet.
+
+Die offizielle Paperless-App wird weder geforkt noch modifiziert – `media` wird nur lesend in die Backup-App gemountet. Der Duplicati-Container läuft als root (Image-Default), da Docker fehlende Bind-Mount-Ordner und der dbdump-Container die App-Daten root-owned anlegen; die Backup-Quellen bleiben ausschließlich lesend gemountet. Restore: Dokumente über die Duplicati-Web-UI, DB-Dump per `gunzip -c paperless-YYYY-MM-DD.sql.gz | docker exec -i paperless_db_1 psql -U paperless paperless`, danach den Suchindex in Paperless neu aufbauen.
 
 ## Struktur
 
