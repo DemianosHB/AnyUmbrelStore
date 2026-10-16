@@ -9,8 +9,12 @@ services:
 
   # 1) DB-Dump: Paperless-PostgreSQL taeglich 01:30 (Europe/Berlin)
   #    in die App-Daten (db-export, 7 Tagesversionen, atomar).
+  #    Postgres-Client-Image: pg_dump 18 kann Dump-Client fuer aeltere
+  #    Server (hier PostgreSQL 16 der Paperless-App) sein - umgekehrt
+  #    waere es unzulaessig; Tag daher auf 18 angehoben (Renovate-PRs
+  #    #21/#24 erledigt damit auch).
   dbdump:
-    image: docker.io/library/postgres:16
+    image: docker.io/library/postgres:18
     restart: unless-stopped
     environment:
       TZ: Europe/Berlin
