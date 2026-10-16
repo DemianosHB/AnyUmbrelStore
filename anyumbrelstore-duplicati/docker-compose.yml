@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: anyumbrelstore-duplicati_duplicati_1
+      APP_PORT: 8200
+      PROXY_AUTH_ADD: 'false'
+
+  duplicati:
+    image: docker.io/duplicati/duplicati:2.4.0.1@sha256:e32e280cc30e98ac5cea8d2b339cd19810b1b39e638fb9d39253786630104de0
+    restart: on-failure
+    stop_grace_period: 1m
+    user: '1000:1000'
+    environment:
+      DUPLICATI__WEBSERVICE_PORT: '8200'
+      DUPLICATI__WEBSERVICE_INTERFACE: any
+      DUPLICATI__WEBSERVICE_PASSWORD: ${APP_PASSWORD}
+      DUPLICATI__WEBSERVICE_ALLOWED_HOSTNAMES: '*'
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+      - ${UMBREL_ROOT}/home:/umbrel
+      - ${UMBREL_ROOT}/app-data/paperless/data:/paperless-data
