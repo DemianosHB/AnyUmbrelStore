@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   dbdump:
-    image: docker.io/library/postgres:18
+    image: docker.io/library/postgres:16
     restart: unless-stopped
     environment:
       TZ: Europe/Berlin
@@ -11,6 +11,8 @@ services:
       PGUSER: paperless
       PGPASSWORD: paperless
       PGDATABASE: paperless
+    volumes:
+      - ${UMBREL_ROOT}/app-data/paperless/data/db-export:/out
     command:
       - /bin/bash
       - -c
