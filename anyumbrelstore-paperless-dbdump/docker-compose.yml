@@ -26,10 +26,3 @@ services:
           echo "[dbdump] naechster Lauf: $$(date -d @$$target)"
           sleep $$((target - now))
         done
-    networks:
-      - paperless
-
-networks:
-  paperless:
-    name: paperless_main_network
-    external: true
