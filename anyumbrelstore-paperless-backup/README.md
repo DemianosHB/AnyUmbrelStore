@@ -1,46 +1,58 @@
 # Paperless Borg Backup (anyumbrelstore-paperless-backup)
 
-Headless-App: sichert die Paperless-Daten per Borgmatic in ein
-Borg-Repo auf einer Hetzner Storage Box. Kein Fork, keine Modifikation
-der offiziellen Paperless-App: der Paperless-App-Datenordner wird nur
-lesend gemountet, die App laesst Paperless sonst voellig unberuehrt.
+Headless-App mit **zwei Containern in einer App**: DB-Dump der
+Paperless-Datenbank (dbdump) und Borgmatic-Backup auf die Hetzner
+Storage Box (backup). Kein Fork, keine Modifikation der offiziellen
+Paperless-App: der Paperless-App-Datenordner wird nur lesend
+gemountet, die DB wird uebers gemeinsame Docker-Netzwerk gelesen.
 
-Container: anyumbrelstore-paperless-backup_backup_1
+Container:
+
+    anyumbrelstore-paperless-backup_dbdump_1   (DB-Dump, 01:30 Berlin)
+    anyumbrelstore-paperless-backup_backup_1   (Borgmatic, 02:30 Berlin)
+
 App-Daten: ~/umbrel/app-data/anyumbrelstore-paperless-backup/data
 
 ## Was gesichert wird
 
-    /mnt/source/media       Dokumente (Originale, Archiv, Thumbnails)
-    /mnt/source/db-export   taegliche SQL-Dumps (von anyumbrelstore-paperless-dbdump)
+    /mnt/source/media     Dokumente (Originale, Archiv, Thumbnails)
+    /config/db-export     taegliche SQL-Dumps (dbdump-Container, 7 Tagesversionen)
 
 Nicht gesichert (bewusst): pgdata, redisdata, Suchindizes -
-regenerierbar bzw. Laufzeitdaten. Zeitplan: taeglich 02:30 (Europe/
-Berlin), passend nach dem dbdump um 01:30. Retention: 7 daily,
-4 weekly, 6 monthly.
+regenerierbar bzw. Laufzeitdaten. Zeitplan: DB-Dump 01:30, Backup
+02:30 (Europe/Berlin). Retention im Repo: 7 daily / 4 weekly /
+6 monthly.
 
 ## Voraussetzungen
 
 1. Sub-Account auf der Storage Box mit aktivierter SSH-Unterstuetzung
    UND externer Erreichbarkeit (Hetzner Console). NICHT "Nur lesen".
    Borg laeuft auf Port 23, Sub-Account-Host z.B. uXXXXX-sub1.your-storagebox.de.
-2. anyumbrelstore-paperless-dbdump installiert (fuer db-export).
+2. Offizielle Paperless-App installiert (DB paperless, Host paperless_db_1).
+
+## Migration von der alten Loesung
+
+Falls die eigenstaendige App anyumbrelstore-paperless-dbdump installiert
+ist: Diese App installieren, danach dbdump deinstallieren (ihre Dumps
+liegen dann ohnehin hier). Der Ordner db-export im Paperless-App-Daten-
+Ordner ist veraltet und kann geloescht werden.
 
 ## Einrichtung (einmalig, per SSH auf dem Umbrel)
 
-Im Folgenden: APP=anyumbrelstore-paperless-backup_backup_1 und
+Im Folgenden: BK=anyumbrelstore-paperless-backup_backup_1 und
 DATA=~/umbrel/app-data/anyumbrelstore-paperless-backup/data
 
 1. SSH-Key erzeugen und beim Sub-Account hinterlegen:
 
-        docker exec -it $APP ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -N ""
-        docker exec -it $APP cat /root/.ssh/id_ed25519.pub
+        docker exec -it $BK ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -N ""
+        docker exec -it $BK cat /root/.ssh/id_ed25519.pub
 
    Den angezeigten Key in der Hetzner Console als SSH-Key des
    Sub-Accounts speichern.
 
 2. Host-Key der Storage Box uebernehmen:
 
-        docker exec -it $APP sh -c "ssh-keyscan -p 23 uXXXXX-sub1.your-storagebox.de >> /root/.ssh/known_hosts"
+        docker exec -it $BK sh -c "ssh-keyscan -p 23 uXXXXX-sub1.your-storagebox.de >> /root/.ssh/known_hosts"
 
 3. Borg-Passphrase erzeugen (dateibasiert, nie im Repo):
 
@@ -53,7 +65,7 @@ DATA=~/umbrel/app-data/anyumbrelstore-paperless-backup/data
 
         source_directories:
           - /mnt/source/media
-          - /mnt/source/db-export
+          - /config/db-export
 
         repositories:
           - path: ssh://uXXXXX-sub1@uXXXXX-sub1.your-storagebox.de:23/./borg/paperless
@@ -75,39 +87,40 @@ DATA=~/umbrel/app-data/anyumbrelstore-paperless-backup/data
 
 5. Borg-Repo initialisieren:
 
-        docker exec -it $APP sh -c "export BORG_PASSPHRASE=$(cat /config/borg-passphrase) && borg init --encryption=repokey --remote-path=borg-1.4 ssh://uXXXXX-sub1@uXXXXX-sub1.your-storagebox.de:23/./borg/paperless"
+        docker exec -it $BK sh -c "export BORG_PASSPHRASE=$(cat /config/borg-passphrase) && borg init --encryption=repokey --remote-path=borg-1.4 ssh://uXXXXX-sub1@uXXXXX-sub1.your-storagebox.de:23/./borg/paperless"
 
 6. Erster Testlauf + Kontrolle:
 
-        docker exec -it $APP sh -c "export BORG_PASSPHRASE=$(cat /config/borg-passphrase) && borgmatic --stats -v 1"
-        docker logs $APP
+        docker exec -it $BK sh -c "export BORG_PASSPHRASE=$(cat /config/borg-passphrase) && borgmatic --stats -v 1"
+        docker exec -it anyumbrelstore-paperless-backup_dbdump_1 ls -lh /out
+        docker logs $BK
 
-Danach laeuft der Cron des Containers automatisch (02:30 Berlin).
+Danach laufen beide Zeitplaene automatisch (01:30 / 02:30 Berlin).
 
 ## Restore
 
 Archive anzeigen:
 
-        docker exec -it $APP sh -c "export BORG_PASSPHRASE=$(cat /config/borg-passphrase) && borgmatic list"
+        docker exec -it $BK sh -c "export BORG_PASSPHRASE=$(cat /config/borg-passphrase) && borgmatic list"
 
 Dateien aus einem Archiv extrahieren: /mnt/source ist nur-lesend,
 extrahieren geht deshalb nach /config/restore:
 
-        mkdir -p $DATA/restore && cd $DATA/restore
-        docker exec -it --workdir /config/restore $APP sh -c "export BORG_PASSPHRASE=$(cat /config/borg-passphrase) && borgmatic extract --archive ARCHIVNAME --path media"
+        mkdir -p $DATA/restore
+        docker exec -it --workdir /config/restore $BK sh -c "export BORG_PASSPHRASE=$(cat /config/borg-passphrase) && borgmatic extract --archive ARCHIVNAME --path media"
 
 Danach die Dateien vom Host aus nach ~/umbrel/app-data/paperless/data/
-kopieren. DB-Dump einspielen:
+kopieren. DB-Dump einspielen (Dump liegt auch lokal in $DATA/db-export):
 
-        gunzip -c db-export/paperless-YYYY-MM-DD.sql.gz | sudo docker exec -i paperless_db_1 psql -U paperless paperless
+        gunzip -c $DATA/db-export/paperless-YYYY-MM-DD.sql.gz | sudo docker exec -i paperless_db_1 psql -U paperless paperless
 
 Suchindex danach neu aufbauen (document_index reindex im
 webserver-Container).
 
 ## Monitoring (optional)
 
-Das Image enthaelt Apprise. Fuer Pushover-Meldungen bei Fehlern einen
-Hook in config.yaml ergaenzen (URL-Schema siehe Apprise-Doku zu
+Das Backup-Image enthaelt Apprise. Fuer Pushover-Meldungen bei Fehlern
+einen Hook in config.yaml ergaenzen (URL-Schema siehe Apprise-Doku zu
 Pushover/pover://):
 
         commands:
@@ -118,9 +131,9 @@ Pushover/pover://):
 
 ## Updates
 
-Image ist Semver-Tag + Digest-gepinnt (2.1.10); Renovate oeffnet
-automatisch Update-PRs. App-Updates entfernen die Konfiguration und
-Secrets in den App-Daten nicht.
+borgmatic-Image ist Semver-Tag + Digest-gepinnt (2.1.10); Renovate
+oeffnet automatisch Update-PRs. App-Updates entfernen die Konfiguration
+und Secrets in den App-Daten nicht.
 
 ## Warum keine offizielle Duplicati-App / kein Fork?
 
