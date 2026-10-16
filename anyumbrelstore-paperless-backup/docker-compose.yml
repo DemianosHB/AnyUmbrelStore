@@ -40,9 +40,13 @@ services:
   # 2) Duplicati: offizielles Container-Image (identischer Digest wie in der
   #    offiziellen Umbrel-App). Sichert media + db-export per SFTP
   #    (Port 22, Passwort-Auth, keine SSH-Keys) auf die Storage Box.
+  #    Laeuft absichtlich als root (Image-Default): /data wird teils von
+  #    Docker beim Anlegen der Bind-Mounts und vom root-laufenden
+  #    dbdump-Container als root-owned erzeugt; mit user 1000:1000
+  #    crashte Duplicati beim Start (Permission denied auf /data/Duplicati).
+  #    Die Backup-Quellen bleiben nur lesend gemountet.
   duplicati:
     image: duplicati/duplicati:2.4.0.1@sha256:e32e280cc30e98ac5cea8d2b339cd19810b1b39e638fb9d39253786630104de0
-    user: "1000:1000"
     restart: on-failure
     stop_grace_period: 1m
     volumes:
