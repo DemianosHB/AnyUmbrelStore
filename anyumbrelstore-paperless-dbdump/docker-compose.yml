@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+  dbdump:
+    image: docker.io/library/postgres:16
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Berlin
+      PGHOST: paperless_db_1
+      PGPORT: "5432"
+      PGUSER: paperless
+      PGPASSWORD: paperless
+      PGDATABASE: paperless
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -euo pipefail
+        while :; do
+          ts=$$(date +%F)
+          echo "[dbdump] pg_dump $$PGDATABASE ($$PGUSER@$$PGHOST) -> /out/paperless-$$ts.sql.gz"
+          pg_dump | gzip > "/out/paperless-$$ts.sql.gz.part" && mv "/out/paperless-$$ts.sql.gz.part" "/out/paperless-$$ts.sql.gz"
+          find /out -name 'paperless-*.sql.gz' -mtime +7 -delete
+          target=$$(date -d "tomorrow 01:30" +%s)
+          now=$$(date +%s)
+          echo "[dbdump] naechster Lauf: $$(date -d @$$target)"
+          sleep $$((target - now))
+        done
+    networks:
+      - paperless
+
+networks:
+  paperless:
+    name: paperless_main_network
+    external: true
