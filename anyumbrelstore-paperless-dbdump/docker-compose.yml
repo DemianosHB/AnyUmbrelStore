@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   dbdump:
-    image: docker.io/library/postgres:16
+    image: docker.io/library/postgres:18
     restart: unless-stopped
     environment:
       TZ: Europe/Berlin
