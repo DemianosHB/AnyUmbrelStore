@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  backup:
+    # Borgmatic-Collective-Image: Borg + Borgmatic + crond (S6).
+    # SemVer-Tag mit Digest-Pin; Renovate aktualisiert Version + Digest.
+    image: ghcr.io/borgmatic-collective/borgmatic:2.1.10@sha256:25a97d84a2371c385c0031a02b64f7167de85631a85b84ef46dc01a80010d19e
+    restart: unless-stopped
+    stop_grace_period: 30m
+    environment:
+      TZ: Europe/Berlin
+      CRON: "30 2 * * *"
+      CRON_COMMAND: "borgmatic-start --stats -v 1 2>&1"
+      BORG_PASSPHRASE_FILE: /config/borg-passphrase
+    volumes:
+      # Sicherungsgueter, nur lesend (Restore bewusst ueber /config/restore)
+      - ${UMBREL_ROOT}/app-data/paperless/data:/mnt/source:ro
+      # Persistente Konfiguration + Secrets: in den App-Daten, nie im Repo
+      - ${APP_DATA_DIR}/data:/config
+      - ${APP_DATA_DIR}/data/borgmatic.d:/etc/borgmatic.d
+      - ${APP_DATA_DIR}/data/ssh:/root/.ssh
+      - ${APP_DATA_DIR}/data/borg-config:/root/.config/borg
+      - ${APP_DATA_DIR}/data/borg-cache:/root/.cache/borg
+      - ${APP_DATA_DIR}/data/borgmatic-state:/root/.local/state/borgmatic

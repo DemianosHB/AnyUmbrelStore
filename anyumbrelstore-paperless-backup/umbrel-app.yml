@@ -1,0 +1,32 @@
+manifestVersion: "1"
+id: anyumbrelstore-paperless-backup
+storage:
+  dataRoot: data
+category: files
+name: Paperless Borg Backup
+version: "1.0.0"
+tagline: Borgmatic-Sicherung der Paperless-Daten auf die Hetzner Storage Box
+description: >-
+  Headless-App: sichert taeglich um 02:30 Uhr (Europe/Berlin) die
+  Paperless-Daten (Dokumente unter media/ und die SQL-Dumps von
+  anyumbrelstore-paperless-dbdump unter db-export/) per Borgmatic in ein
+  Borg-Repo auf einer Hetzner Storage Box (SSH Port 23). Kein Fork und
+  keine Modifikation der offiziellen Paperless-App: der App-Datenordner
+  wird nur lesend gemountet. Kein Web-Interface: Konfiguration und
+  Secrets (config.yaml, SSH-Key, Borg-Passphrase) liegen ausschliesslich
+  in den App-Daten auf dem Umbrel, nie in diesem Repo. Restore per
+  docker exec (borgmatic list/extract), siehe README der App.
+developer: DemianosHB
+website: https://github.com/DemianosHB/AnyUmbrelStore
+dependencies: []
+repo: https://github.com/DemianosHB/AnyUmbrelStore
+support: https://github.com/DemianosHB/AnyUmbrelStore/issues
+releaseNotes: "1.0.0 - initiale Version. borgmatic-collective-Image 2.1.10 (digest-gepinnt), Cron 02:30 Berlin, Quellen /mnt/source/media und /mnt/source/db-export, nur lesend gemountet."
+port: 0
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+submitter: anyumbrelstore
+submission: https://github.com/DemianosHB/AnyUmbrelStore/
+icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-paperless-backup/icon.svg

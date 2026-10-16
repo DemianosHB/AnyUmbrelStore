@@ -8,6 +8,7 @@ Implements the packaging rules from getumbrel/umbrel-apps
 * version format: semver (optional +patchN packaging suffix) or sha256 digest,
   never a bare "latest"
 * unique host ports within this store and against the official app store
+* headless apps (no app_proxy) may use port 0; web UI apps need a positive port
   (manifest ports and raw compose host bindings)
 * app_proxy wiring (APP_HOST container name pattern, APP_PORT)
 * image tags: moving tags (latest/main) must be digest-pinned
@@ -172,9 +173,14 @@ def check_app(store_root: str, app_id: str, official_ports: set[int],
         err(manifest_rel, f"version {version!r} must be upstream semver (optional +patchN packaging suffix) or a sha256 digest")
 
     # ---- port ----
+    # Headless apps (ohne app_proxy) nutzen port 0 = "kein Web-UI".
+    # Die Kreuzpruefung mit app_proxy erfolgt weiter unten, nachdem die
+    # Compose-Datei geladen wurde.
     port = manifest.get("port")
-    if not isinstance(port, int) or port <= 0:
-        err(manifest_rel, f"port must be a positive integer, got {port!r}")
+    if not isinstance(port, int) or port < 0:
+        err(manifest_rel, f"port must be a non-negative integer, got {port!r}")
+    elif port == 0:
+        pass  # headless app; app_proxy-Absenz wird unten geprueft
     else:
         if port in official_ports:
             err(manifest_rel, f"port {port} conflicts with the official Umbrel App Store")
@@ -225,8 +231,11 @@ def check_app(store_root: str, app_id: str, official_ports: set[int],
     # ---- app_proxy wiring ----
     proxy = services.get("app_proxy")
     if proxy is None:
-        warn(compose_rel, "no app_proxy service: the app must open to a web UI some other way")
+        if port != 0:
+            warn(compose_rel, "no app_proxy service and port != 0: headless apps should use port 0")
     else:
+        if port == 0:
+            err(manifest_rel, "port is 0 but app_proxy is defined: web UI apps need a positive port")
         proxy_env = {e.split("=", 1)[0]: e.split("=", 1)[-1] for e in proxy.get("environment") or []}
         if isinstance(proxy.get("environment"), dict):
             proxy_env = proxy.get("environment") or {}
