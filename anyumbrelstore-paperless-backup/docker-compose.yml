@@ -1,6 +1,37 @@
 version: "3.7"
 
 services:
+  # 1) DB-Dump: Paperless-PostgreSQL taeglich 01:30 (Europe/Berlin)
+  #    in die App-Daten (db-export, 7 Tagesversionen, atomar).
+  dbdump:
+    image: docker.io/library/postgres:16
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Berlin
+      PGHOST: paperless_db_1
+      PGPORT: "5432"
+      PGUSER: paperless
+      PGPASSWORD: paperless
+      PGDATABASE: paperless
+    volumes:
+      - ${APP_DATA_DIR}/data/db-export:/out
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -euo pipefail
+        while :; do
+          ts=$$(date +%F)
+          echo "[dbdump] pg_dump $$PGDATABASE ($$PGUSER@$$PGHOST) -> /out/paperless-$$ts.sql.gz"
+          pg_dump | gzip > "/out/paperless-$$ts.sql.gz.part" && mv "/out/paperless-$$ts.sql.gz.part" "/out/paperless-$$ts.sql.gz"
+          find /out -name 'paperless-*.sql.gz' -mtime +7 -delete
+          target=$$(date -d "tomorrow 01:30" +%s)
+          now=$$(date +%s)
+          echo "[dbdump] naechster Lauf: $$(date -d @$$target)"
+          sleep $$((target - now))
+        done
+
+  # 2) Borgmatic: media + db-export taeglich 02:30 in das Borg-Repo
   backup:
     # Borgmatic-Collective-Image: Borg + Borgmatic + crond (S6).
     # SemVer-Tag mit Digest-Pin; Renovate aktualisiert Version + Digest.
