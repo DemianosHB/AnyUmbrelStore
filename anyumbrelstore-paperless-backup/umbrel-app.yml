@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: files
 name: Paperless Backup
-version: "1.1.1"
+version: "1.1.2"
 tagline: Duplicati-Backup der Paperless-Daten inkl. DB-Dump auf die Hetzner Storage Box
 description: >-
   Eine App, zwei Container: dbdump sichert die
@@ -22,7 +22,7 @@ website: https://github.com/DemianosHB/AnyUmbrelStore
 dependencies: []
 repo: https://github.com/DemianosHB/AnyUmbrelStore
 support: https://github.com/DemianosHB/AnyUmbrelStore/issues
-releaseNotes: "1.1.1 - Fix fuer Crash beim Start. Duplicati laeuft wieder als root (Image-Default), da UID 1000 auf die root-owned App-Daten (/data) keinen Schreibzugriff hatte (Permission denied). Backup-Quellen bleiben nur lesend gemountet. dbdump-Image auf postgres:18 angehoben (pg_dump-Client 18 ist fuer PostgreSQL-16-Server zulaessig). 1.1.0 - Backup-Engine von Borgmatic auf Duplicati (offizielles Image, digest-gepinnt) umgestellt: SFTP Port 22 mit Passwort-Auth statt SSH-Keys, Web-UI fuer Job-Einrichtung und Restore. dbdump-Service unveraendert (taeglich 01:30, 7 Tagesversionen)."
+releaseNotes: "1.1.2 - Re-Release des Permission-Fixes aus 1.1.1 (Duplicati laeuft als root statt UID 1000, behebt den Crash beim Start wegen root-owned /data). Grund: 1.1.1 wurde auf dem Zielsystem bereits als installierte Version registriert, und Umbrel bietet bei identischer Versionsnummer kein Update an. dbdump bleibt postgres:18. 1.1.1 - Fix fuer Crash beim Start: Duplicati laeuft als root (Image-Default), da UID 1000 auf die root-owned App-Daten (/data) keinen Schreibzugriff hatte (Permission denied). dbdump-Image auf postgres:18 angehoben (pg_dump-Client 18 ist fuer PostgreSQL-16-Server zulaessig)."
 port: 39120
 gallery: []
 path: ""
