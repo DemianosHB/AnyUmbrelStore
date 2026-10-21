@@ -9,6 +9,8 @@
 //   * headline with outcome + key numbers
 //   * per-app result table with known-justification annotations
 //     (app store check) / alert & info bullets (upstream watch)
+//   * tag changes & changelog sync findings ([TAGDIFF]/[CHANGE]/[UPDATE]/
+//     [NOTE ] lines from scripts/pr-changelog.py, app store check)
 //   * collapsible full log + links to commit and workflow run
 //
 // Configuration via environment variables:
@@ -32,7 +34,9 @@ const REPORTS = {
       'Prüft alle App-Pakete gegen die offiziellen Umbrel-Packaging-Regeln: ' +
       'Manifest-Schema, Versionen (kein bare "latest", Digest-Pinning beweglicher Tags), ' +
       'Port-Konflikte im eigenen Store und gegen den offiziellen Store, app_proxy-Wiring, ' +
-      'Icon-Existenz und Security-Gates.',
+      'Icon-Existenz und Security-Gates. Bei Tag- oder Digest-Bumps ermittelt der Check ' +
+      'zusätzlich die Upstream-Änderungen zwischen altem und neuem Tag und gleicht ' +
+      'releaseNotes (Changelog) der umbrel-app.yml sowie die Versions-Tabelle im README ab.',
   },
   'upstream-watch': {
     marker: '<!-- upstream-watch-report -->',
@@ -254,6 +258,36 @@ function appStoreParts(raw, outcome, cfg) {
     parts.push('');
   }
 
+  // ------------------------------------------- tag & changelog sync findings
+  // Lines emitted by scripts/pr-changelog.py (appended to the check output).
+  const tagdiffs = tagged(raw, 'TAGDIFF');
+  const changes = tagged(raw, 'CHANGE');
+  const updates = tagged(raw, 'UPDATE');
+  const syncNotes = tagged(raw, 'NOTE ');
+  if (tagdiffs.length || changes.length || updates.length || syncNotes.length) {
+    parts.push('### 🔄 Tag-Änderungen & Changelog-Sync', '');
+    for (const t of tagdiffs) {
+      parts.push('- **Tag-Änderung:** ' + t);
+    }
+    for (const c of changes) {
+      parts.push('- ' + c);
+    }
+    for (const n of syncNotes) {
+      parts.push('- ℹ️ ' + n);
+    }
+    for (const u of updates) {
+      parts.push('- ✏️ ' + u);
+    }
+    if (updates.length) {
+      parts.push(
+        '',
+        '> Die ✏️ Dateiänderungen liegen im Workspace und werden nach ' +
+          'bestandenem Check automatisch als Commit zum PR-Branch hinzugefügt.'
+      );
+    }
+    parts.push('');
+  }
+
   if (errors.length) {
     parts.push('### ❌ Fehler – blockieren den Merge', '');
     for (const s of errors.map(splitAppEntry)) {
@@ -399,3 +433,4 @@ module.exports = async function prReport(args) {
     core.info('Kommentar erstellt: ' + created.html_url);
   }
 };
+
