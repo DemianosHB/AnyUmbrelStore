@@ -3,7 +3,7 @@ name: Branch Cleanup
 on:
   push:
     branches: [master]
-  workflow_dispatch:
+  workflow_dispatch
 
 permissions:
   contents: write
@@ -18,9 +18,16 @@ jobs:
           fetch-depth: 0
 
       # Löscht Branches, deren PR gemergt wurde (deckt auch Squash-Merges ab,
-      # da via gh pr list --state merged geprüft wird). Offene PRs wie
-      # Renovate-Branches und master bleiben unberührt. Fork-Branches
-      # existieren nicht im Remote und werden übersprungen.
+      # da via gh pr list --state merged geprüft wird). WICHTIG: Renovate legt
+      # Branches mit stabilen Namen wieder neu an, sobald die nächste Version
+      # desselben Updates ansteht - so wurde z. B. nach dem Merge von PR #32 der
+      # Branch "renovate/anyumbrelstore-profilearr-app-updates" für PR #35 neu
+      # erstellt. Ein solcher neu angelegter Branch darf nie gelöscht werden,
+      # nur weil ein älterer, gemergter PR denselben Namen trug: Der Cleanup
+      # hat sonst den Head-Branch eines offenen PRs gelöscht und den PR
+      # unmergable gemacht (geschehen am 21.10.2026: PR #35). Branches, die
+      # Head eines offenen PRs sind, werden daher ebenso übersprungen wie
+      # nicht existierende Fork-Branches.
       - name: Delete merged branches
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -32,7 +39,13 @@ jobs:
             echo "Keine gemergten PR-Branches - nichts zu tun."
             exit 0
           fi
+          open=$(gh pr list --state open --limit 100 \
+            --json headRefName --jq '.[].headRefName' | sort -u)
           for branch in $merged; do
+            if echo "$open" | grep -qxF "$branch"; then
+              echo "Übersprungen - Branch ist Head eines offenen PRs: $branch"
+              continue
+            fi
             if git ls-remote --heads origin | grep -q "refs/heads/$branch$"; then
               echo "Lösche gemergten Branch: $branch"
               git push origin --delete "$branch"
