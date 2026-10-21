@@ -39,6 +39,36 @@ jobs:
         if: github.event_name == 'pull_request'
         run: git diff --name-only ${{ github.event.pull_request.base.sha }}..HEAD || true
 
+      # Die Check-Skripte (check-apps.py, pr-changelog.py, pr-report.js) sind
+      # Teil der Check-Logik des Base-Branches – der Workflow selbst läuft
+      # bei pull_request-Events über den Merge-Ref (= Version des Base-
+      # Branches). Der Job checkt aber head.sha aus (siehe oben), und PR-
+      # Branches, die älter sind als Skript-Änderungen (z. B. bestehende
+      # Renovate-Branches), haben dort veraltete oder fehlende Skripte: Der
+      # Changelog-Sync lief dann still leer durch. Die Skripte werden daher
+      # vom Base-Branch nach /tmp/ci-scripts geladen – außerhalb des
+      # Workspaces, damit der Commit-Step sie nicht mit in den PR committet.
+      # Nur wenn der Base-Branch ein Skript nicht (mehr) enthält, fällt der
+      # Job auf die Version im PR-Checkout zurück.
+      - name: Fetch CI scripts from the base branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin "${{ github.event.pull_request.base.ref }}"
+          mkdir -p /tmp/ci-scripts
+          ok=1
+          for f in check-apps.py pr-changelog.py pr-report.js; do
+            if git show "FETCH_HEAD:scripts/$f" > "/tmp/ci-scripts/$f" 2>/dev/null; then
+              echo "scripts/$f: Version vom Base-Branch '${{ github.event.pull_request.base.ref }}' geladen."
+            elif [ -f "scripts/$f" ]; then
+              cp "scripts/$f" "/tmp/ci-scripts/$f"
+              echo "::warning::scripts/$f fehlt auf dem Base-Branch - nutze die Version aus dem PR-Branch."
+            else
+              echo "::error::scripts/$f weder im Base-Branch noch im PR-Branch gefunden."
+              ok=0
+            fi
+          done
+          [ "$ok" = 1 ]
+
       # Schritt 1 des Checks: Was hat sich mit dem neuen Tag geändert?
       # Vergleicht die docker-compose.yml der betroffenen Apps zwischen
       # Base-SHA und HEAD (alte vs. neue Image-Tags/Digests), ruft die
@@ -48,13 +78,18 @@ jobs:
       # die Versions-Tabelle des READMEs. Es wird nur der Workspace geändert;
       # gepusht wird erst nach bestandenem Package-Check (Commit-Step), damit
       # die Checks in demselben Lauf die aktualisierten Dateien validieren.
+      # pipefail: Bricht der Sync ab, fällt der Step jetzt hörbar auf -
+      # zuvor verschluckte die Pipe an tee den Exit-Code von Python und der
+      # Step lief mit leerer Ausgabe "erfolgreich" durch.
       - name: Detect new tags, sync changelog & README
         id: changelog
         if: github.event_name == 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python scripts/pr-changelog.py \
+          set -o pipefail
+          python /tmp/ci-scripts/pr-changelog.py \
+            --root "$PWD" \
             --base-sha "${{ github.event.pull_request.base.sha }}" | tee /tmp/changelog-output.txt
           if [ -n "$(git status --porcelain)" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -64,7 +99,12 @@ jobs:
         id: checks
         run: |
           set +e
-          python scripts/check-apps.py \
+          CHECK_APPS="scripts/check-apps.py"
+          if [ -f /tmp/ci-scripts/check-apps.py ]; then
+            CHECK_APPS="/tmp/ci-scripts/check-apps.py"
+          fi
+          python "$CHECK_APPS" \
+            --root "$PWD" \
             --repo "${{ github.repository }}" \
             --official /tmp/umbrel-apps \
             --base-sha "${{ github.event.pull_request.base.sha }}" | tee /tmp/check-output.txt
@@ -99,7 +139,7 @@ jobs:
       # pro App, Begründungen für erwartete Warnungen, Tag-Änderungen &
       # Changelog-Sync, einklappbares Log). Ein bestehender Bot-Kommentar
       # wird aktualisiert statt neu angelegt; die Aufbereitung liegt in
-      # scripts/pr-report.js.
+      # scripts/pr-report.js (geladen vom Base-Branch, siehe Fetch-Step).
       - name: Report results on the PR
         if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v9
@@ -108,4 +148,4 @@ jobs:
           REPORT_FILE: /tmp/check-output.txt
           REPORT_KIND: app-store-check
         with:
-          script: return require('./scripts/pr-report.js')({ github, context, core })
+          script: return require('/tmp/ci-scripts/pr-report.js')({ github, context, core });
