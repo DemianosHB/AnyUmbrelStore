@@ -5,7 +5,7 @@ services:
       APP_PORT: 6868
 
   server:
-    image: ghcr.io/dictionarry-hub/profilarr:2.2.0
+    image: ghcr.io/dictionarry-hub/profilarr:2.3.0
     restart: on-failure
     volumes:
       - ${APP_DATA_DIR}/data:/config
@@ -20,5 +20,5 @@ services:
         condition: service_healthy
 
   parser:
-    image: ghcr.io/dictionarry-hub/profilarr-parser:2.2.0
+    image: ghcr.io/dictionarry-hub/profilarr-parser:2.3.0
     restart: on-failure
