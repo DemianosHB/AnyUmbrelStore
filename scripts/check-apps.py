@@ -254,7 +254,10 @@ def check_app(store_root: str, app_id: str, official_ports: set[int],
         image = service.get("image")
         if not image:
             continue
-        m = re.fullmatch(r"(.*):([^@]+)(@sha256:[a-f0-9]{64})?", str(image))
+        # Non-greedy image part and a tag that must not contain ":" or "@" -
+        # otherwise the digest lands in the tag group for digest-pinned
+        # refs (image:latest@sha256:...) and the digest stays empty.
+        m = re.fullmatch(r"(.*?):([^:@]+)(@sha256:[a-f0-9]{64})?", str(image))
         if not m:
             err(compose_rel, f"service {service_name}: unparsable image reference {image!r}")
             continue
@@ -335,3 +338,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

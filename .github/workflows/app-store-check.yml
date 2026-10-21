@@ -5,8 +5,11 @@ on:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 
+# contents: write wird für den Commit-Step benötigt, der die Changelog- und
+# README-Aktualisierungen auf den PR-Branch pusht (Fork-PRs scheitern dort
+# harmlos mit einer Warnung - die Änderungen stehen dann nur im PR-Kommentar).
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -14,9 +17,13 @@ jobs:
     name: Validate app packages
     runs-on: ubuntu-latest
     steps:
+      # HEAD des PRs statt des Merge-Refs auschecken, damit der Commit-Step
+      # auf den PR-Branch pushen kann; fetch-depth 0 für die Base-SHA-Vergleiche.
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - uses: actions/setup-python@v7
         with:
@@ -32,18 +39,67 @@ jobs:
         if: github.event_name == 'pull_request'
         run: git diff --name-only ${{ github.event.pull_request.base.sha }}..HEAD || true
 
+      # Schritt 1 des Checks: Was hat sich mit dem neuen Tag geändert?
+      # Vergleicht die docker-compose.yml der betroffenen Apps zwischen
+      # Base-SHA und HEAD (alte vs. neue Image-Tags/Digests), ruft die
+      # Upstream-Release-Notes zwischen altem und neuem Tag ab (Compare-API
+      # als Fallback) und schreibt daraus einen Changelog-Eintrag in die
+      # releaseNotes der umbrel-app.yml sowie die neue Manifest-Version in
+      # die Versions-Tabelle des READMEs. Es wird nur der Workspace geändert;
+      # gepusht wird erst nach bestandenem Package-Check (Commit-Step), damit
+      # die Checks in demselben Lauf die aktualisierten Dateien validieren.
+      - name: Detect new tags, sync changelog & README
+        id: changelog
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/pr-changelog.py \
+            --base-sha "${{ github.event.pull_request.base.sha }}" | tee /tmp/changelog-output.txt
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run package checks
         id: checks
         run: |
+          set +e
           python scripts/check-apps.py \
             --repo "${{ github.repository }}" \
             --official /tmp/umbrel-apps \
             --base-sha "${{ github.event.pull_request.base.sha }}" | tee /tmp/check-output.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          cat /tmp/changelog-output.txt >> /tmp/check-output.txt || true
+          exit $status
+
+      # Changelog-/README-Änderungen aus dem Sync-Schritt als Commit auf den
+      # PR-Branch bringen - nur wenn alle Checks grün sind. Pushes mit dem
+      # GITHUB_TOKEN lösen keine neuen Workflow-Runs aus; die aktualisierten
+      # Dateien wurden in diesem Lauf bereits validiert, da der Sync-Schritt
+      # vor dem Package-Check läuft. Bei Fork-PRs scheitert der Push (Token
+      # darf nicht ins Fork-Repo pushen) und wird nur als Warnung gemeldet -
+      # die Änderungen stehen dann trotzdem im PR-Kommentar.
+      - name: Commit changelog & README updates to the PR branch
+        if: >-
+          github.event_name == 'pull_request' &&
+          steps.checks.outcome == 'success' &&
+          steps.changelog.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
+          git commit -m "chore: Changelog & README für neue Tags synchronisiert"
+          if ! git push origin HEAD:"${{ github.event.pull_request.head.ref }}"; then
+            echo "::warning::Push auf den PR-Branch fehlgeschlagen (z. B. Fork-PR). Die Changelog-/README-Änderungen stehen nur im PR-Kommentar und müssen manuell übernommen werden."
+            exit 0
+          fi
 
       # Ergebnis des Checks als aufbereiteter Kommentar am PR (Ergebnistabelle
-      # pro App, Begründungen für erwartete Warnungen, einklappbares Log).
-      # Ein bestehender Bot-Kommentar wird aktualisiert statt neu angelegt;
-      # die Aufbereitung liegt in scripts/pr-report.js.
+      # pro App, Begründungen für erwartete Warnungen, Tag-Änderungen &
+      # Changelog-Sync, einklappbares Log). Ein bestehender Bot-Kommentar
+      # wird aktualisiert statt neu angelegt; die Aufbereitung liegt in
+      # scripts/pr-report.js.
       - name: Report results on the PR
         if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v9
