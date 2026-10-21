@@ -18,6 +18,11 @@ dependencies: []
 repo: https://github.com/Dictionarry-Hub/profilarr
 support: https://github.com/Dictionarry-Hub/profilarr/issues
 releaseNotes: >-
+  2.3.1 - Profilarr v2.3.1 bumps Deno to 2.9.8 to address the eMudhra intermediate CA
+  compromise. You can read more about the incident here. 🐛 Fixes Remove the regex preview
+  from the pattern picker (#1001) Update Deno to 2.9.8 (#1003) ⚙️ CI Stop caching image
+  builds (#1002) Full Changelog :
+  https://github.com/Dictionarry-Hub/profilarr/compare/v2.3.0...v2.3.1
   2.3.0 - Profilarr v2.3.0 adds experimental Sonarr v5 support, scoped API keys, password
   and SSO login together, and Basic Auth for Arr instances behind a reverse proxy. It also
   substantially reduces memory use and image size. Upgrade notes The local authentication
