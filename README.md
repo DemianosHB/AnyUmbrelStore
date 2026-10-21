@@ -18,7 +18,7 @@ Ein [Community App Store](https://github.com/getumbrel/umbrel-community-app-stor
 | App | ID | Version | Kategorie | Port |
 |---|---|---|---|---|
 | [Gluetun VPN](https://github.com/passteque/gluetun) | `anyumbrelstore-gluetun` | latest (Dev) | Networking | 8010 |
-| [Profilarr](https://github.com/Dictionarry-Hub/profilarr) | `anyumbrelstore-profilearr` | 2.2.0+patch1 | Media | 6868 |
+| [Profilarr](https://github.com/Dictionarry-Hub/profilarr) | `anyumbrelstore-profilearr` | 2.3.0 | Media | 6868 |
 | [Paperless Backup](https://github.com/DemianosHB/AnyUmbrelStore/tree/master/anyumbrelstore-paperless-backup) | `anyumbrelstore-paperless-backup` | 1.1.2 | Files | 39120 |
 
 ### Gluetun VPN

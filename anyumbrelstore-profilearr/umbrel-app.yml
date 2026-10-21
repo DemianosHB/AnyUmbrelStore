@@ -18,6 +18,13 @@ dependencies: []
 repo: https://github.com/Dictionarry-Hub/profilarr
 support: https://github.com/Dictionarry-Hub/profilarr/issues
 releaseNotes: >-
+  2.3.0 - Profilarr v2.3.0 adds experimental Sonarr v5 support, scoped API keys, password
+  and SSO login together, and Basic Auth for Arr instances behind a reverse proxy. It also
+  substantially reduces memory use and image size. Upgrade notes The local authentication
+  bypass is gone. Any existing API keys become full access "default" keys. AUTH=oidc is
+  deprecated. Use AUTH=on with all three OIDC settings. Security This release fixes three
+  security issues. Read each advisory for details and any steps to take.
+  GHSA-w2w8-9gr2-cg28: sanitized backup downloads. …
   Added an app icon, storage.dataRoot for umbrelOS 2.0 external
   drives, and aligned the manifest with the umbrel packaging
   conventions. Version suffix +patch1 marks this packaging update.
