@@ -15,8 +15,16 @@
 #                  needed by studio) are intentionally not included.
 #
 # The maintenance scripts live in hooks/ (mounted read-only): umbrelOS
-# re-copies only compose, templates, exports.sh, torrc and hooks/ on app
+# re-copies only compose, templates, exports.sh, tornc and hooks/ on app
 # updates, never data/ - so script fixes reach existing installs.
+#
+# Bind-mount policy: umbreld pre-creates every bind-mount source path
+# with mkdir -p before each install/update attempt, so only directories
+# are mounted from app-data. Single-file mounts would make every install
+# retry and every app update fail with EEXIST once nuvio-fetch has
+# checked out real files. The runtime tree (data/runtime/{db-init,kong})
+# is rebuilt by nuvio-fetch on every app start; the hooks/*.sh mounts
+# are files umbreld owns and re-copies itself, so they are safe.
 #
 # Ports:
 #   app_proxy -> account-dashboard:8080 (Account-Dashboard, manifest port 30122)
@@ -64,15 +72,16 @@ services:
       - -c
       - log_min_messages=fatal
     volumes:
-      - ${APP_DATA_DIR}/data/self-host/volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
-      - ${APP_DATA_DIR}/data/self-host/volumes/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:Z
-      - ${APP_DATA_DIR}/data/self-host/volumes/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:Z
-      - ${APP_DATA_DIR}/data/self-host/volumes/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:Z
-      - ${APP_DATA_DIR}/data/self-host/volumes/db/_supabase.sql:/docker-entrypoint-initdb.d/migrations/97-_supabase.sql:Z
-      - ${APP_DATA_DIR}/data/self-host/volumes/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
-      - ${APP_DATA_DIR}/data/self-host/volumes/db/pooler.sql:/docker-entrypoint-initdb.d/migrations/99-pooler.sql:Z
-      - ${APP_DATA_DIR}/data/self-host/database/migrations/00000000000000_baseline.sql:/docker-entrypoint-initdb.d/migrations/99999999990000-nuvio-baseline.sql:ro,Z
-      - ${APP_DATA_DIR}/data/self-host/database/migrations/00000000000001_auth_trigger.sql:/docker-entrypoint-initdb.d/migrations/99999999990001-nuvio-auth-trigger.sql:ro,Z
+      # Directory mount only (umbreld pre-creates bind-mount sources with
+      # mkdir -p before every install/update attempt - single-file mounts
+      # would fail with EEXIST after the first checkout). nuvio-fetch
+      # rebuilds this tree on every app start; the layout matches the
+      # upstream initdb.d structure exactly:
+      #   migrations/: 97-_supabase.sql, 99-logs.sql, 99-pooler.sql,
+      #     99-realtime.sql, 99999999990000-nuvio-baseline.sql,
+      #     99999999990001-nuvio-auth-trigger.sql
+      #   init-scripts/: 98-webhooks.sql, 99-roles.sql, 99-jwt.sql
+      - ${APP_DATA_DIR}/data/runtime/db-init:/docker-entrypoint-initdb.d:Z
       - ${APP_DATA_DIR}/data/self-host/volumes/db/data:/var/lib/postgresql/data:Z
       - db-config:/etc/postgresql-custom
     depends_on:
@@ -84,10 +93,14 @@ services:
         "CMD-SHELL",
         "pg_isready -U postgres -h localhost && psql -U supabase_admin -d \"$${POSTGRES_DB}\" -Atqc \"select exists(select 1 from nuvio_migrations.schema_migrations where version = '00000000000000')\" | grep -qx t"
         ]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-      start_period: 30s
+      # First initdb applies the full Supabase init plus the Nuvio
+      # baseline dump (minutes on Umbrel-class hardware); probes failing
+      # during start_period do not count. Warm starts report healthy on
+      # the first probe. Worst case wait: 300s + 60 x 10s = 15 min.
+      interval: 10s
+      timeout: 10s
+      retries: 60
+      start_period: 300s
 
   nuvio-migrate:
     image: docker.io/supabase/postgres:17.6.1.084
@@ -123,8 +136,11 @@ services:
     ports:
       - 30123:8000/tcp # Backend-URL für Nuvio-Clients (http://umbrel.local:30123)
     volumes:
-      - ${APP_DATA_DIR}/data/self-host/volumes/api/kong.yml:/home/kong/temp.yml:ro
-      - ${APP_DATA_DIR}/data/self-host/volumes/api/kong-entrypoint.sh:/home/kong/kong-entrypoint.sh:ro
+      # Directory mount only (rebuilt by nuvio-fetch: kong/temp.yml +
+      # kong/kong-entrypoint.sh). The upstream entrypoint hard-codes
+      # /home/kong/temp.yml and /home/kong is empty in the kong image, so
+      # mounting the whole directory is safe.
+      - ${APP_DATA_DIR}/data/runtime/kong:/home/kong:ro,Z
     depends_on:
       nuvio-fetch:
         condition: service_completed_successfully
