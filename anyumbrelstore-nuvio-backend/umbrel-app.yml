@@ -6,7 +6,7 @@ category: media
 name: Nuvio Backend
 # Packaging-Version dieser App. Upstream (NuvioMedia/self-host) published keine
 # Releases; der gepinnte Upstream-Commit steht in docker-compose.yml (nuvio-fetch).
-version: "0.1.2"
+version: "0.1.3"
 tagline: Selbst gehostetes Nuvio-Backend mit Account-Dashboard
 description: >-
   Nuvio als eigenständiges Backend für eigene Nuvio-Clients. Nach der
@@ -23,6 +23,13 @@ dependencies: []
 repo: https://github.com/NuvioMedia/self-host
 support: https://github.com/NuvioMedia/self-host/issues
 releaseNotes: >-
+  0.1.3 - Fix für kollidierende Dienstnamen: Alle Umbrel-Apps teilen sich
+  umbrel_main_network, wo kurze Service-Aliase wie "db" oder "rest" mit
+  anderen Apps kollidieren und nicht-deterministisch zu fremden Containern
+  auflösen (nuvio-migrate prüfte z. B. gegen eine fremde Postgres-Instanz).
+  Alle internen Verbindungen (nuvio.env-Mappings, kong.yml-Routen per sed,
+  nuvio-migrate, nuvio-seed) nutzen jetzt die eindeutigen Container-Namen.
+  Keine Neu-Installation erforderlich, ein App-Update genügt.
   0.1.2 - Fix für hängende Erstinstallation: der db-Init wurde in 0.1.1
   mit einem Verzeichnis-Mount über /docker-entrypoint-initdb.d versehentlich
   über die eingebauten Init-Skripte des supabase/postgres-Images gelegt

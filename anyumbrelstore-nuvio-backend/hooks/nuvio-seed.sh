@@ -8,7 +8,9 @@
 set -eu
 
 AVATAR_DIR=/app-data/self-host/assets/avatars
-STORAGE_URL=http://kong:8000/storage/v1/object
+# Shared-network alias safety (see nuvio-migrate.sh): use the unique
+# compose container name instead of the short "kong" service alias.
+STORAGE_URL=http://anyumbrelstore-nuvio-backend_kong_1:8000/storage/v1/object
 KEY="${SERVICE_ROLE_KEY:?SERVICE_ROLE_KEY missing}"
 
 [ -d "$AVATAR_DIR" ] || { echo "[nuvio-seed] ERROR: $AVATAR_DIR missing"; exit 1; }
