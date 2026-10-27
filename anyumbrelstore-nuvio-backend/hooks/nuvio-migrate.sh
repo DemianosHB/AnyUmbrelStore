@@ -13,7 +13,12 @@
 set -eu
 
 DB_NAME="${POSTGRES_DB:-postgres}"
-PSQL="psql -h db -U supabase_admin -d $DB_NAME"
+# All Umbrel app containers share umbrel_main_network, where short
+# service aliases like "db" collide across apps and resolve
+# non-deterministically. Use the unique compose container name instead
+# (same convention as app_proxy in docker-compose.yml).
+DB_HOST="anyumbrelstore-nuvio-backend_db_1"
+PSQL="psql -h $DB_HOST -U supabase_admin -d $DB_NAME"
 
 log() { echo "[nuvio-migrate] $*"; }
 

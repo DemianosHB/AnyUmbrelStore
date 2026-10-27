@@ -23,6 +23,19 @@ set -eu
 DATA_DIR=/app-data
 REPO_DIR="$DATA_DIR/self-host"
 UPSTREAM_REPO=https://github.com/NuvioMedia/self-host.git
+
+# Umbrel runs every app's containers on the shared umbrel_main_network,
+# where short compose service aliases ("db", "rest", "kong", ...) collide
+# across apps and resolve non-deterministically. All internal URLs use
+# the unique compose container names instead (same convention as
+# app_proxy's APP_HOST in docker-compose.yml).
+CONTAINER_DB="anyumbrelstore-nuvio-backend_db_1"
+CONTAINER_AUTH="anyumbrelstore-nuvio-backend_auth_1"
+CONTAINER_REST="anyumbrelstore-nuvio-backend_rest_1"
+CONTAINER_STORAGE="anyumbrelstore-nuvio-backend_storage_1"
+CONTAINER_IMGPROXY="anyumbrelstore-nuvio-backend_imgproxy_1"
+CONTAINER_FUNCTIONS="anyumbrelstore-nuvio-backend_functions_1"
+CONTAINER_KONG="anyumbrelstore-nuvio-backend_kong_1"
 PINNED_COMMIT="${NUVIO_SELFHOST_PINNED_COMMIT:?NUVIO_SELFHOST_PINNED_COMMIT not set}"
 BACKUP_ENV="$DATA_DIR/nuvio-env.backup"
 TARGET_ENV="$DATA_DIR/nuvio.env"
@@ -118,6 +131,15 @@ cp -f "$REPO_DIR/volumes/db/jwt.sql" "$RUNTIME_DIR/db-init/init-scripts/99-jwt.s
 cp -f "$REPO_DIR/volumes/api/kong.yml" "$RUNTIME_DIR/kong/temp.yml"
 cp -f "$REPO_DIR/volumes/api/kong-entrypoint.sh" "$RUNTIME_DIR/kong/kong-entrypoint.sh"
 chmod 755 "$RUNTIME_DIR/kong/kong-entrypoint.sh"
+
+# Rewrite kong.yml's upstream service hosts to the unique container
+# names (shared-network alias safety, see CONTAINER_* above).
+sed -i \
+    -e "s|http://auth:9999|http://${CONTAINER_AUTH}:9999|g" \
+    -e "s|http://rest:3000|http://${CONTAINER_REST}:3000|g" \
+    -e "s|http://storage:5000|http://${CONTAINER_STORAGE}:5000|g" \
+    -e "s|http://functions:9000|http://${CONTAINER_FUNCTIONS}:9000|g" \
+    "$RUNTIME_DIR/kong/temp.yml"
 log "runtime bind-mount tree rebuilt under data/runtime"
 
 # --- 2) .env lifecycle -----------------------------------------------------
@@ -197,7 +219,7 @@ JWT_EXP=${JWT_EXPIRY}
 GOTRUE_API_HOST=0.0.0.0
 GOTRUE_API_PORT=9999
 GOTRUE_DB_DRIVER=postgres
-GOTRUE_DB_DATABASE_URL=postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+GOTRUE_DB_DATABASE_URL=postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@${CONTAINER_DB}:${POSTGRES_PORT}/${POSTGRES_DB}
 GOTRUE_DB_MAX_POOL_SIZE=60
 GOTRUE_DB_MAX_IDLE_POOL_SIZE=30
 GOTRUE_DB_CONN_MAX_LIFETIME=10m
@@ -245,7 +267,7 @@ GOTRUE_MFA_TOTP_VERIFY_ENABLED=${MFA_TOTP_VERIFY_ENABLED}
 GOTRUE_MFA_MAX_ENROLLED_FACTORS=${MFA_MAX_ENROLLED_FACTORS}
 
 # rest (PostgREST)
-PGRST_DB_URI=postgres://authenticator:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+PGRST_DB_URI=postgres://authenticator:${POSTGRES_PASSWORD}@${CONTAINER_DB}:${POSTGRES_PORT}/${POSTGRES_DB}
 PGRST_DB_ANON_ROLE=anon
 PGRST_JWT_SECRET=${PGRST_JWT_SECRET_VALUE}
 PGRST_DB_USE_LEGACY_GUCS=false
@@ -257,16 +279,16 @@ PGRST_ADMIN_SERVER_HOST=localhost
 # storage (Storage API)
 SERVICE_KEY=${SERVICE_ROLE_KEY}
 AUTH_JWT_SECRET=${JWT_SECRET}
-DATABASE_URL=postgres://supabase_storage_admin:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+DATABASE_URL=postgres://supabase_storage_admin:${POSTGRES_PASSWORD}@${CONTAINER_DB}:${POSTGRES_PORT}/${POSTGRES_DB}
 STORAGE_PUBLIC_URL=${SUPABASE_PUBLIC_URL}
-POSTGREST_URL=http://rest:3000
+POSTGREST_URL=http://${CONTAINER_REST}:3000
 REQUEST_ALLOW_X_FORWARDED_PATH=true
 FILE_SIZE_LIMIT=52428800
 STORAGE_BACKEND=file
 FILE_STORAGE_BACKEND_PATH=/var/lib/storage
 TENANT_ID=${STORAGE_TENANT_ID}
 ENABLE_IMAGE_TRANSFORMATION=true
-IMGPROXY_URL=http://imgproxy:5001
+IMGPROXY_URL=http://${CONTAINER_IMGPROXY}:5001
 
 # imgproxy
 IMGPROXY_BIND=:5001
@@ -275,12 +297,12 @@ IMGPROXY_USE_ETAG=true
 IMGPROXY_MAX_SRC_RESOLUTION=16.8
 
 # functions (edge-runtime)
-SUPABASE_URL=http://kong:8000
+SUPABASE_URL=http://${CONTAINER_KONG}:8000
 SUPABASE_ANON_KEY=${ANON_KEY}
 SUPABASE_SERVICE_ROLE_KEY=${SERVICE_ROLE_KEY}
 SUPABASE_PUBLISHABLE_KEYS={"default":""}
 SUPABASE_SECRET_KEYS={"default":""}
-SUPABASE_DB_URL=postgresql://postgres:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+SUPABASE_DB_URL=postgresql://postgres:${POSTGRES_PASSWORD}@${CONTAINER_DB}:${POSTGRES_PORT}/${POSTGRES_DB}
 VERIFY_JWT=${FUNCTIONS_VERIFY_JWT}
 
 # kong (declarative config templating)
