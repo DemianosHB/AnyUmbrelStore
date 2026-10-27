@@ -23,8 +23,11 @@
 # are mounted from app-data. Single-file mounts would make every install
 # retry and every app update fail with EEXIST once nuvio-fetch has
 # checked out real files. The runtime tree (data/runtime/{db-init,kong})
-# is rebuilt by nuvio-fetch on every app start; the hooks/*.sh mounts
-# are files umbreld owns and re-copies itself, so they are safe.
+# is rebuilt by nuvio-fetch on every app start; db-init is side-mounted
+# at /nuvio-init and copied into the image's /docker-entrypoint-initdb.d
+# by the db entrypoint (mounting it over initdb.d would shadow the
+# image's built-in init scripts). The hooks/*.sh mounts are files
+# umbreld owns and re-copies itself, so they are safe.
 #
 # Ports:
 #   app_proxy -> account-dashboard:8080 (Account-Dashboard, manifest port 30122)
@@ -65,6 +68,16 @@ services:
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     environment:
       POSTGRES_HOST: /var/run/postgresql
+    # nuvio-fetch's runtime tree is side-mounted at /nuvio-init and copied
+    # into the image's /docker-entrypoint-initdb.d on every container start.
+    # Mounting it over /docker-entrypoint-initdb.d would shadow the image's
+    # built-in init scripts (roles, auth/storage schemas, extensions) -
+    # upstream only overrides single files and keeps the rest intact.
+    entrypoint:
+      - /bin/sh
+      - -c
+      - mkdir -p /docker-entrypoint-initdb.d/migrations /docker-entrypoint-initdb.d/init-scripts && cp -f /nuvio-init/migrations/*.sql /docker-entrypoint-initdb.d/migrations/ && cp -f /nuvio-init/init-scripts/*.sql /docker-entrypoint-initdb.d/init-scripts/ && exec docker-entrypoint.sh "$@"
+      - --
     command:
       - postgres
       - -c
@@ -81,7 +94,15 @@ services:
       #     99-realtime.sql, 99999999990000-nuvio-baseline.sql,
       #     99999999990001-nuvio-auth-trigger.sql
       #   init-scripts/: 98-webhooks.sql, 99-roles.sql, 99-jwt.sql
-      - ${APP_DATA_DIR}/data/runtime/db-init:/docker-entrypoint-initdb.d:Z
+      # Side-mounted at /nuvio-init (umbreld-safe directory mount); the
+      # entrypoint copies the files into the image's initdb.d, keeping the
+      # image's built-in init scripts intact - the same net effect as
+      # upstream's single-file overrides:
+      #   migrations/: 97-_supabase.sql, 99-logs.sql, 99-pooler.sql,
+      #     99-realtime.sql, 99999999990000-nuvio-baseline.sql,
+      #     99999999990001-nuvio-auth-trigger.sql
+      #   init-scripts/: 98-webhooks.sql, 99-roles.sql, 99-jwt.sql
+      - ${APP_DATA_DIR}/data/runtime/db-init:/nuvio-init:ro,Z
       - ${APP_DATA_DIR}/data/self-host/volumes/db/data:/var/lib/postgresql/data:Z
       - db-config:/etc/postgresql-custom
     depends_on:
@@ -97,6 +118,10 @@ services:
       # baseline dump (minutes on Umbrel-class hardware); probes failing
       # during start_period do not count. Warm starts report healthy on
       # the first probe. Worst case wait: 300s + 60 x 10s = 15 min.
+      # NOTE: the db log shows harmless "FATAL: role \"postgres\" does not
+      # exist" noise from pg_isready - the supabase image uses supabase_admin
+      # as its superuser (POSTGRES_USER=supabase_admin). Upstream produces the
+      # same noise; the healthcheck passes anyway.
       interval: 10s
       timeout: 10s
       retries: 60

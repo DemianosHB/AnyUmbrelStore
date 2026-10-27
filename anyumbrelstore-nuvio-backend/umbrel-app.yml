@@ -6,7 +6,7 @@ category: media
 name: Nuvio Backend
 # Packaging-Version dieser App. Upstream (NuvioMedia/self-host) published keine
 # Releases; der gepinnte Upstream-Commit steht in docker-compose.yml (nuvio-fetch).
-version: "0.1.1"
+version: "0.1.2"
 tagline: Selbst gehostetes Nuvio-Backend mit Account-Dashboard
 description: >-
   Nuvio als eigenständiges Backend für eigene Nuvio-Clients. Nach der
@@ -23,7 +23,14 @@ dependencies: []
 repo: https://github.com/NuvioMedia/self-host
 support: https://github.com/NuvioMedia/self-host/issues
 releaseNotes: >-
-  0.1.1 - Fix für fehlgeschlagene Erstinstallation: alle Einzel-Datei-Mounts
+  0.1.2 - Fix für hängende Erstinstallation: der db-Init wurde in 0.1.1
+  mit einem Verzeichnis-Mount über /docker-entrypoint-initdb.d versehentlich
+  über die eingebauten Init-Skripte des supabase/postgres-Images gelegt
+  (Rollen- und Schema-Anlage fehlten, die Nuvio-Baseline brach ab, die DB
+  wurde nie healthy). nuvio-init wird jetzt seitlich nach /nuvio-init
+  gemountet und vom db-Entrypoint in das initdb.d des Images kopiert -
+  die Image-Skripte laufen wieder wie upstream. 0.1.1 - Fix für
+  fehlgeschlagene Erstinstallation: alle Einzel-Datei-Mounts
   durch Verzeichnis-Mounts ersetzt, da umbreld Mount-Quellpfade vor jedem
   Install-/Update-Versuch als Verzeichnisse anlegt (EEXIST-Fehler bei jedem
   Wiederholungsversuch und jedem App-Update); DB-Healthcheck-Fenster für die
