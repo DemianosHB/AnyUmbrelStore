@@ -9,13 +9,14 @@ name: Nuvio Backend
 version: "0.1.0"
 tagline: Selbst gehostetes Nuvio-Backend mit Account-Dashboard
 description: >-
-  Nuvio als eigenständiges Backend für eigene Nuvio-Clients. Enthält das
-  Account-Dashboard zur Kontoverwaltung sowie den API-Stack aus
-  NuvioMedia/self-host (PostgreSQL, GoTrue-Auth, PostgREST, Storage,
-  Edge Functions, Kong-Gateway). Das Upstream-Repo wird als gepinnter
-  Commit nach app-data geklont, Secrets werden beim ersten Start
-  automatisch generiert. Backend-URL für Nuvio-Clients:
-  http://umbrel.local:30123, Dashboard: http://umbrel.local:30122
+  Nuvio als eigenständiges Backend für eigene Nuvio-Clients. Nach der
+  Installation im Account-Dashboard (http://umbrel.local:30122) zuerst einen
+  Account anlegen; Nuvio-Clients verbinden sich dann mit der Backend-URL
+  http://umbrel.local:30123. Enthält das Account-Dashboard zur
+  Kontoverwaltung sowie den API-Stack aus NuvioMedia/self-host
+  (PostgreSQL, GoTrue-Auth, PostgREST, Storage, Edge Functions,
+  Kong-Gateway). Das Upstream-Repo wird als gepinnter Commit nach app-data
+  geklont, Secrets werden beim ersten Start automatisch generiert.
 developer: NuvioMedia
 website: https://nuvio.tv
 dependencies: []
@@ -32,6 +33,8 @@ releaseNotes: >-
 port: 30122
 gallery: []
 path: ""
+backupIgnore:
+  - data/self-host/.git/*
 defaultUsername: ""
 defaultPassword: ""
 submitter: "anyumbrelstore"
