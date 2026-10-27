@@ -23,6 +23,8 @@ dependencies: []
 repo: https://github.com/NuvioMedia/self-host
 support: https://github.com/NuvioMedia/self-host/issues
 releaseNotes: >-
+  v16.5 - Update des Docker-Images auf v16.5. Keine automatisierten Release-Notes abrufbar
+  – Details: https://github.com/postgrest/postgrest/releases.
   0.1.0 - Erste Packaging-Version. Klon von NuvioMedia/self-host (Commit
   30f1568) per nuvio-fetch One-Shot-Service, Supabase-Stack im
   Upstream-Default-Profil (ohne Studio, Realtime und Supavisor),
