@@ -6,7 +6,7 @@ category: media
 name: Nuvio Backend
 # Packaging-Version dieser App. Upstream (NuvioMedia/self-host) published keine
 # Releases; der gepinnte Upstream-Commit steht in docker-compose.yml (nuvio-fetch).
-version: "0.1.3"
+version: "0.1.4"
 tagline: Selbst gehostetes Nuvio-Backend mit Account-Dashboard
 description: >-
   Nuvio als eigenständiges Backend für eigene Nuvio-Clients. Nach der
@@ -23,6 +23,13 @@ dependencies: []
 repo: https://github.com/NuvioMedia/self-host
 support: https://github.com/NuvioMedia/self-host/issues
 releaseNotes: >-
+  0.1.4 - Fix für "No suitable key or wrong key type" im Account-Dashboard:
+  Der Fetch-Hook schrieb nach dem ersten Start den Platzhalter
+  JWT_JWKS={"keys":[]} ins .env und gab ihn danach bei jeder Regeneration
+  als PGRST_JWT_SECRET an PostgREST weiter - PostgREST lehnte damit jeden
+  JWT ab (Profil-Verifikation schlug fehl). Der Platzhalter wird jetzt
+  erkannt und das HS256-Secret (JWT_SECRET) wie bei Upstream verwendet.
+  Keine Neu-Installation erforderlich, ein App-Update genügt.
   0.1.3 - Fix für kollidierende Dienstnamen: Alle Umbrel-Apps teilen sich
   umbrel_main_network, wo kurze Service-Aliase wie "db" oder "rest" mit
   anderen Apps kollidieren und nicht-deterministisch zu fremden Containern

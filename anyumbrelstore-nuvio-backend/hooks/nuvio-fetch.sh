@@ -194,13 +194,21 @@ esac
 [ -n "${SERVICE_ROLE_KEY:-}" ] || die "SERVICE_ROLE_KEY missing"
 
 # JWKS: upstream maps ${JWT_JWKS:-${JWT_SECRET}} for PostgREST and
-# ${JWT_JWKS:-{"keys":[]}} for Storage. Persist valid JSON for both cases.
-if [ -n "${JWT_JWKS:-}" ]; then
-    PGRST_JWT_SECRET_VALUE=$JWT_JWKS
-else
-    PGRST_JWT_SECRET_VALUE=$JWT_SECRET
-    set_env JWT_JWKS '{"keys":[]}'
-fi
+# ${JWT_JWKS:-{"keys":[]}} for Storage. JWT_JWKS stays empty in .env
+# unless asymmetric signing keys are configured. The '{"keys":[]}'
+# placeholder persisted below (so Storage always receives valid JSON)
+# must NOT be forwarded to PostgREST: an empty JWKS makes PostgREST
+# reject every legacy HS256 JWT with "No suitable key or wrong key
+# type" (account-dashboard profile verification fails).
+case "${JWT_JWKS:-}" in
+    ""|'{"keys":[]}')
+        PGRST_JWT_SECRET_VALUE=$JWT_SECRET
+        [ -n "${JWT_JWKS:-}" ] || set_env JWT_JWKS '{"keys":[]}'
+        ;;
+    *)
+        PGRST_JWT_SECRET_VALUE=$JWT_JWKS
+        ;;
+esac
 
 cp "$REPO_DIR/.env" "$TARGET_ENV"
 
