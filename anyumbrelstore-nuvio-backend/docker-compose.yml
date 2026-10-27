@@ -168,7 +168,7 @@ services:
       - ${APP_DATA_DIR}/data/self-host/volumes/auth/templates:/etc/gotrue/templates:ro,z
 
   rest:
-    image: docker.io/postgrest/postgrest:v14.12
+    image: docker.io/postgrest/postgrest:v16.5
     restart: unless-stopped
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     depends_on:
@@ -215,7 +215,7 @@ services:
       - storage-data:/var/lib/storage
 
   imgproxy:
-    image: docker.io/darthsim/imgproxy:v3.30.1
+    image: docker.io/darthsim/imgproxy:v4.0.20
     restart: unless-stopped
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     volumes:
