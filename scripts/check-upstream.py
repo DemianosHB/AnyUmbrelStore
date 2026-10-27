@@ -62,6 +62,12 @@ WATCHES = [
         "manifest": "anyumbrelstore-profilearr/umbrel-app.yml",
     },
     {
+        "app": "anyumbrelstore-aiostreams",
+        "repo": "Viren070/AIOStreams",
+        "kind": "stable",
+        "manifest": "anyumbrelstore-aiostreams/umbrel-app.yml",
+    },
+    {
         "app": "anyumbrelstore-gluetun (webui sidecar)",
         "repo": "Sir-Scuzza/gluetun-webui",
         "kind": "repo-exists",  # no semver releases; Renovate tracks the digest
