@@ -6,7 +6,7 @@ category: media
 name: Nuvio Backend
 # Packaging-Version dieser App. Upstream (NuvioMedia/self-host) published keine
 # Releases; der gepinnte Upstream-Commit steht in docker-compose.yml (nuvio-fetch).
-version: "0.1.0"
+version: "0.1.1"
 tagline: Selbst gehostetes Nuvio-Backend mit Account-Dashboard
 description: >-
   Nuvio als eigenständiges Backend für eigene Nuvio-Clients. Nach der
@@ -23,7 +23,14 @@ dependencies: []
 repo: https://github.com/NuvioMedia/self-host
 support: https://github.com/NuvioMedia/self-host/issues
 releaseNotes: >-
-  0.1.0 - Erste Packaging-Version. Klon von NuvioMedia/self-host (Commit
+  0.1.1 - Fix für fehlgeschlagene Erstinstallation: alle Einzel-Datei-Mounts
+  durch Verzeichnis-Mounts ersetzt, da umbreld Mount-Quellpfade vor jedem
+  Install-/Update-Versuch als Verzeichnisse anlegt (EEXIST-Fehler bei jedem
+  Wiederholungsversuch und jedem App-Update); DB-Healthcheck-Fenster für die
+  Erstinitialisierung (initdb mit Supabase- und Nuvio-Baseline) auf bis zu
+  15 Minuten erweitert; Runtime-Baum (db-init, kong) wird von nuvio-fetch
+  bei jedem App-Start neu aufgebaut. 0.1.0 - Erste Packaging-Version. Klon
+  von NuvioMedia/self-host (Commit
   30f1568) per nuvio-fetch One-Shot-Service, Supabase-Stack im
   Upstream-Default-Profil (ohne Studio, Realtime und Supavisor),
   automatische Secret-Generierung beim ersten Start mit Backup gegen
@@ -35,6 +42,7 @@ gallery: []
 path: ""
 backupIgnore:
   - data/self-host/.git/*
+  - data/runtime/*
 defaultUsername: ""
 defaultPassword: ""
 submitter: "anyumbrelstore"
