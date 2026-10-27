@@ -1,0 +1,39 @@
+manifestVersion: "1"
+id: anyumbrelstore-nuvio-backend
+storage:
+  dataRoot: data
+category: media
+name: Nuvio Backend
+# Packaging-Version dieser App. Upstream (NuvioMedia/self-host) published keine
+# Releases; der gepinnte Upstream-Commit steht in docker-compose.yml (nuvio-fetch).
+version: "0.1.0"
+tagline: Selbst gehostetes Nuvio-Backend mit Account-Dashboard
+description: >-
+  Nuvio als eigenständiges Backend für eigene Nuvio-Clients. Enthält das
+  Account-Dashboard zur Kontoverwaltung sowie den API-Stack aus
+  NuvioMedia/self-host (PostgreSQL, GoTrue-Auth, PostgREST, Storage,
+  Edge Functions, Kong-Gateway). Das Upstream-Repo wird als gepinnter
+  Commit nach app-data geklont, Secrets werden beim ersten Start
+  automatisch generiert. Backend-URL für Nuvio-Clients:
+  http://umbrel.local:30123, Dashboard: http://umbrel.local:30122
+developer: NuvioMedia
+website: https://nuvio.tv
+dependencies: []
+repo: https://github.com/NuvioMedia/self-host
+support: https://github.com/NuvioMedia/self-host/issues
+releaseNotes: >-
+  0.1.0 - Erste Packaging-Version. Klon von NuvioMedia/self-host (Commit
+  30f1568) per nuvio-fetch One-Shot-Service, Supabase-Stack im
+  Upstream-Default-Profil (ohne Studio, Realtime und Supavisor),
+  automatische Secret-Generierung beim ersten Start mit Backup gegen
+  App-Updates, idempotente DB-Migrationen per nuvio-migrate,
+  Avatar-Seeding per nuvio-seed. Dashboard via app_proxy (Port 30122),
+  Backend-API (Kong) auf Host-Port 30123.
+port: 30122
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+submitter: "anyumbrelstore"
+submission: "https://github.com/DemianosHB/AnyUmbrelStore/"
+icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-nuvio-backend/icon.svg
