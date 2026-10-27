@@ -1,0 +1,63 @@
+manifestVersion: "1"
+id: anyumbrelstore-aiostreams
+storage:
+  dataRoot: data
+environment:
+  - name: BASE_URL
+    services:
+      - server
+    default: http://umbrel.local:30124
+    note: >-
+      Öffentliche URL der Instanz (Protokoll, Host und Port). Standard ist die
+      Umbrel-Launch-URL. Für Clients ohne mDNS (z. B. manche Android-TV-Apps)
+      auf die IP-URL umstellen, z. B. http://192.168.1.50:30124.
+category: media
+name: AIOStreams
+# renovate: datasource=docker depName=ghcr.io/viren070/aiostreams extractVersion=^v?(.*)$ versioning=semver
+version: "2.37.0"
+tagline: Stremio-Super-Addon - Addons, Debrid und Usenet in einer Stream-Liste
+description: >-
+  AIOStreams bündelt Stremio-Addons und Debrid-/Usenet-Dienste (z. B. TorBox,
+  Torrentio, Comet, MediaFusion) in einem einzigen, hoch anpassbaren
+  Super-Addon: Ergebnisse werden gefiltert, sortiert, dedupliziert und
+  formatiert in einer sauberen Stream-Liste zusammengeführt.
+
+
+  Erste Schritte: Weboberfläche öffnen, im Dashboard einloggen (Benutzer
+  admin, Passwort siehe App-Zugangsdaten), Addons und Debrid-Dienste
+  einrichten, dann das erzeugte Addon über den Install-Button zu Stremio
+  hinzufügen. Enthält außerdem einen Addon-Marktplatz (80+ Addons), eine
+  native Usenet-Streaming-Engine und eine Jellyfin-kompatible
+  Weboberfläche zum direkten Ansehen ohne Stremio.
+
+
+  Hinweis: Das Addon ist ohne Umbrel-Login im lokalen Netz erreichbar
+  (Stremio- und Jellyfin-Clients senden keine Umbrel-Cookies und erreichen
+  das Addon über dynamische Config-ID-Pfade); das Dashboard selbst ist über
+  den Operator-Login geschützt. Erzeugte Addon-URLs basieren auf der
+  Umbrel-Domain (umbrel.local) - für Clients ohne mDNS BASE_URL in den
+  App-Einstellungen auf die IP-URL umstellen. Nur im lokalen Netz betreiben.
+releaseNotes: >-
+  2.37.0 - Erste Packaging-Version: AIOStreams v2.37.0 von GHCR (Semver-Tag,
+  Renovate aktualisiert Manifest und Image gebündelt). BASE_URL ist auf die
+  Umbrel-Launch-URL gesetzt, SECRET_KEY wird per derive_entropy deterministisch
+  erzeugt (64 Hex-Zeichen, bleibt über Updates stabil), Dashboard-Login via
+  AIOSTREAMS_AUTH mit APP_PASSWORD (Benutzer admin). SQLite-Datenbank in den
+  App-Daten, Disk-Cache vom Backup ausgenommen. Upstream-Watch für neue
+  Releases und Breaking Changes aktiviert.
+developer: Viren070
+website: https://docs.aiostreams.viren070.me
+dependencies: []
+repo: https://github.com/Viren070/AIOStreams
+support: https://github.com/Viren070/AIOStreams/issues
+port: 30124
+gallery: []
+path: ""
+backupIgnore:
+  - data/cache/*
+defaultUsername: "admin"
+defaultPassword: ""
+deterministicPassword: true
+submitter: "anyumbrelstore"
+submission: "https://github.com/DemianosHB/AnyUmbrelStore/"
+icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-aiostreams/icon.svg

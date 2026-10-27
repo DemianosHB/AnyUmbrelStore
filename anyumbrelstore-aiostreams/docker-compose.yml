@@ -1,0 +1,31 @@
+services:
+  app_proxy:
+    environment:
+      APP_HOST: anyumbrelstore-aiostreams_server_1
+      APP_PORT: 3000
+      # Stremio-, Jellyfin- und AIOStreams-App-Clients senden keine Umbrel-
+      # Login-Cookies und erreichen das Addon über dynamische Config-ID-Pfade,
+      # die sich nicht per Whitelist freigeben lassen. Die App ist deshalb
+      # bewusst öffentlich; das Dashboard ist über den AIOStreams-Operator-
+      # Login geschützt (AIOSTREAMS_AUTH, siehe App-Zugangsdaten).
+      PROXY_AUTH_ADD: "false"
+
+  server:
+    image: ghcr.io/viren070/aiostreams:v2.37.0
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data:/app/data
+    environment:
+      PORT: "3000"
+      # Öffentliche URL für Addon-Install-Links und Built-in-Addons;
+      # entspricht der Umbrel-Launch-URL dieser App.
+      BASE_URL: http://${DEVICE_DOMAIN_NAME}:${APP_PROXY_PORT}
+      # Verschlüsselt die gespeicherten Addon-Konfigurationen; Muss exakt
+      # 64 Hex-Zeichen sein und über Updates stabil bleiben. Der Wert wird
+      # per derive_entropy aus dem App-Seed erzeugt (siehe exports.sh).
+      SECRET_KEY: ${APP_ANYUMBRELSTORE_AIOSTREAMS_SECRET_KEY}
+      DATABASE_URI: sqlite://./data/db.sqlite
+      # Operator-Login für das Dashboard; Passwort ist der per-install
+      # APP_PASSWORD-Wert (in Umbrel unter App-Zugangsdaten sichtbar).
+      AIOSTREAMS_AUTH: admin:${APP_PASSWORD}
+      TZ: Europe/Berlin
