@@ -304,7 +304,7 @@ def main() -> int:
         lines.append("")
         lines.append("## ⚠️ Handlungsbedarf")
         lines += [f"- {a}" for a in alerts] or ["- (keine)"]
-        lines.append(["", "## ℹ️ Hinweise"])
+        lines += ["", "## ℹ️ Hinweise"]
         lines += [f"- {i}" for i in infos] or ["- (keine)"]
         with open(args.report_file, "w", encoding="utf-8") as f:
             f.write("\n".join(lines) + "\n")
