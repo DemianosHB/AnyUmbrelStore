@@ -6,7 +6,7 @@ category: media
 name: Nuvio Backend
 # Packaging-Version dieser App. Upstream (NuvioMedia/self-host) published keine
 # Releases; der gepinnte Upstream-Commit steht in docker-compose.yml (nuvio-fetch).
-version: "0.1.4"
+version: "0.1.5"
 tagline: Selbst gehostetes Nuvio-Backend mit Account-Dashboard
 description: >-
   Nuvio als eigenständiges Backend für eigene Nuvio-Clients. Nach der
@@ -23,6 +23,11 @@ dependencies: []
 repo: https://github.com/NuvioMedia/self-host
 support: https://github.com/NuvioMedia/self-host/issues
 releaseNotes: >-
+  0.1.5 - Dependency-Updates der One-Shot-Services (Renovate): curlimages/curl
+  8.11.1 -> 8.23.0 und alpine 3.22 -> 3.24. Keine funktionalen Änderungen am
+  Supabase-Stack (bleibt versionengekoppelt an den gepinnten
+  NuvioMedia/self-host-Commit). Keine Neu-Installation erforderlich, ein
+  App-Update genügt.
   0.1.4 - Fix für "No suitable key or wrong key type" im Account-Dashboard:
   Der Fetch-Hook schrieb nach dem ersten Start den Platzhalter
   JWT_JWKS={"keys":[]} ins .env und gab ihn danach bei jeder Regeneration
