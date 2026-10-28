@@ -1,0 +1,24 @@
+services:
+  app_proxy:
+    environment:
+      APP_HOST: anyumbrelstore-infinidysk_server_1
+      APP_PORT: 3000
+      # WebDAV- und SABnzbd-Clients (z. B. AIOStreams als NzbDAV-Service)
+      # senden keine Umbrel-Login-Cookies; InfiniDysk bringt ein eigenes
+      # Login mit (Admin-Account wird beim Erststart im Web-UI angelegt).
+      PROXY_AUTH_ADD: "false"
+
+  server:
+    image: ghcr.io/infinidysk/infinidysk:v1.6.3
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data:/config
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Europe/Berlin
+    healthcheck:
+      test: ["CMD", "curl", "-fsSL", "http://localhost:3000/healthz"]
+      interval: 30s
+      retries: 3
+      start_period: 60s

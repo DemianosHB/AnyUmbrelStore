@@ -1,0 +1,52 @@
+manifestVersion: "1"
+id: anyumbrelstore-infinidysk
+storage:
+  dataRoot: data
+category: media
+name: InfiniDysk
+# renovate: datasource=docker depName=ghcr.io/infinidysk/infinidysk extractVersion=^v?(.*)$ versioning=semver
+version: "1.6.3"
+tagline: Usenet-Streaming über ein virtuelles WebDAV-Laufwerk
+description: >-
+  InfiniDysk (NzbDAV SuperFork) mountet Usenet-Inhalte als virtuelles
+  WebDAV-Laufwerk und streamt sie direkt, ohne sie komplett herunterladen
+  zu müssen: NZB-Dateien werden on-the-fly entpackt und als Dateien über
+  WebDAV bereitgestellt. Enthält außerdem eine SABnzbd-kompatible API.
+
+
+  Erste Schritte: Weboberfläche öffnen und beim Erststart einen Admin-Account
+  anlegen. Danach Usenet-Provider (Newznab-Indexer und NNTP-Server) sowie
+  WebDAV-Zugangsdaten in den Einstellungen hinterlegen.
+
+
+  Anbindung an AIOStreams (optional): InfiniDysk im AIOStreams-Dashboard als
+  NzbDAV-Service hinzufügen - URL http://anyumbrelstore-infinidysk_server_1:3000,
+  API-Key und WebDAV-Credentials aus den InfiniDysk-Einstellungen, Public URL
+  leer lassen und den AIOStreams-Auth-Token setzen. AIOStreams proxied die
+  Streams dann für alle Player, sodass Usenet-Inhalte direkt in Nuvio/Stremio
+  abspielbar sind.
+
+
+  Hinweis: Die App ist ohne Umbrel-Login im lokalen Netz erreichbar (WebDAV-
+  und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
+  eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
+releaseNotes: >-
+  1.6.3 - Erste Packaging-Version: InfiniDysk v1.6.3 von GHCR (Semver-Tag,
+  Renovate aktualisiert Manifest und Image gebündelt). Port 30125, Konfiguration
+  in den App-Daten (/config-Volume), Healthcheck auf /healthz, PUID/PGID 1000,
+  Zeitzone Europe/Berlin. Erststart: Admin-Account im Web-UI anlegen, danach
+  Provider und WebDAV-Credentials hinterlegen. Als NzbDAV-Service an AIOStreams
+  anbindbar, mit Stream-Proxy über AIOStreams.
+developer: InfiniDysk
+website: https://www.infinidysk.com
+dependencies: []
+repo: https://github.com/infinidysk/infinidysk
+support: https://github.com/infinidysk/infinidysk/issues
+port: 30125
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+submitter: "anyumbrelstore"
+submission: "https://github.com/DemianosHB/AnyUmbrelStore/pull/52"
+icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-infinidysk/icon.svg

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="InfiniDysk">
+  <defs>
+    <linearGradient id="ig" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4fc3f7"/>
+      <stop offset="1" stop-color="#7c4dff"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="104" fill="#0b1020"/>
+  <path d="M256 256 C236 216 196 186 156 186 C104 186 72 218 72 256 C72 294 104 326 156 326 C196 326 236 296 256 256 C276 216 316 186 356 186 C408 186 440 218 440 256 C440 294 408 326 356 326 C316 326 276 296 256 256 Z" fill="none" stroke="url(#ig)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="256" cy="256" r="16" fill="url(#ig)"/>
+</svg>
