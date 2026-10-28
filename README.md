@@ -17,17 +17,17 @@ Ein [Community App Store](https://github.com/getumbrel/umbrel-community-app-stor
 
 | App | ID | Version | Kategorie | Port |
 |---|---|---|---|---|
-| [Gluetun VPN](https://github.com/passteque/gluetun) | `anyumbrelstore-gluetun` | latest (Dev) | Networking | 8010 |
+| [Gluetun VPN](https://github.com/passteque/gluetun) | `anyumbrelstore-gluetun` | latest (Dev) | Networking | 30126 |
 | [Profilarr](https://github.com/Dictionarry-Hub/profilarr) | `anyumbrelstore-profilearr` | 2.3.1 | Media | 6868 |
 | [Paperless Backup](https://github.com/DemianosHB/AnyUmbrelStore/tree/master/anyumbrelstore-paperless-backup) | `anyumbrelstore-paperless-backup` | 1.1.2 | Files | 39120 |
 | [AIOStreams](https://github.com/Viren070/AIOStreams) | `anyumbrelstore-aiostreams` | 2.37.0 | Media | 30124 |
-| [Nuvio Backend](https://github.com/NuvioMedia/self-host) | `anyumbrelstore-nuvio-backend` | 0.1.4 | Media | 30122 |
+| [Nuvio Backend](https://github.com/NuvioMedia/self-host) | `anyumbrelstore-nuvio-backend` | 0.1.5 | Media | 30122 |
 | [InfiniDysk](https://github.com/infinidysk/infinidysk) | `anyumbrelstore-infinidysk` | 1.6.3 | Media | 30125 |
 | [Watchly](https://github.com/TimilsinaBimal/Watchly) | `anyumbrelstore-watchly` | 1.17.2 | Media | 30127 |
 
 ### Gluetun VPN
 
-Leichter VPN-Client-Container (WireGuard & OpenVPN, viele Anbieter). Die Weboberfläche zeigt Verbindungsstatus und Server-Infos. Für andere Apps, die durch den Tunnel routen sollen, veröffentlicht er zusätzlich:
+Leichter VPN-Client-Container (WireGuard & OpenVPN, viele Anbieter). Die Weboberfläche (umbrel.local:30126) zeigt Verbindungsstatus, öffentliche IP und Server-Infos und erlaubt Start/Stopp aus dem Browser (API-Key siehe App-Zugangsdaten). Für andere Apps, die durch den Tunnel routen sollen, veröffentlicht er zusätzlich:
 
 - HTTP-Proxy: Port **8009**
 - SOCKS5-Proxy: Port **1080**
@@ -35,7 +35,7 @@ Leichter VPN-Client-Container (WireGuard & OpenVPN, viele Anbieter). Die Webober
 
 Beim Installieren müssen VPN-Anbieter, VPN-Typ und WireGuard-Schlüssel angegeben werden (`VPN_SERVICE_PROVIDER`, `VPN_TYPE`, `WIREGUARD_PRIVATE_KEY`, `SERVER_COUNTRIES`).
 
-Gluetun folgt dem **Entwicklungs-Kanal** (`latest`, digest-gepinnt), da der eingebaute SOCKS5-Proxy bisher nur dort und in keinem Stable-Release enthalten ist. Renovate aktualisiert den Digest automatisch.
+Gluetun folgt dem **Entwicklungs-Kanal** (`latest`, digest-gepinnt), da der eingebaute SOCKS5-Proxy bisher nur dort und in keinem Stable-Release enthalten ist. Renovate aktualisiert den Digest automatisch. Die WebUI läuft auf Port 30126 (Packaging-Update: der ursprüngliche Port 8010 kollidiert mit dem Ryot-Paket aus einem anderen Community-Store); HTTP-Proxy (8009), SOCKS5 (1080) und Shadowsocks (8388) bleiben unverändert – AIOStreams und InfiniDysk erreichen Gluetun über den Container-Namen.
 
 ### Profilarr
 
@@ -52,9 +52,9 @@ Die offizielle Paperless-App wird weder geforkt noch modifiziert – `media` wir
 
 ### AIOStreams
 
-Stremio-**Super-Addon**: bündelt mehrere Stremio-Addons und Debrid-/Usenet-Dienste (z. B. TorBox, Torrentio, Comet, MediaFusion) in einem einzigen, hoch anpassbaren Addon. Ergebnisse aller Quellen werden gefiltert, sortiert, dedupliziert und in einer sauberen Stream-Liste zusammengeführt – inklusive Addon-Marktplatz (80+ Addons), nativer Usenet-Streaming-Engine und Jellyfin-kompatibler Oberfläche zum direkten Ansehen ohne Stremio.
+Stremio-**Super-Addon**: bündelt mehrere Stremio-Addons und Debrid-/Usenet-Dienste (z. B. Torrentio, Comet, MediaFusion) in einem einzigen, hoch anpassbaren Addon. Ergebnisse aller Quellen werden gefiltert, sortiert, dedupliziert und in einer sauberen Stream-Liste zusammengeführt – inklusive Addon-Marktplatz (80+ Addons), nativer Usenet-Streaming-Engine und Jellyfin-kompatibler Oberfläche zum direkten Ansehen ohne Stremio.
 
-Erste Schritte: Weboberfläche öffnen, im Dashboard einloggen (Benutzer `admin`, Passwort siehe App-Zugangsdaten), Addons und Debrid-Dienste einrichten und das erzeugte Addon über den Install-Button zu Stremio hinzufügen. `BASE_URL` steht standardmäßig auf der Umbrel-Launch-URL; für Clients ohne mDNS (z. B. manche Android-TV-Apps) in den App-Einstellungen auf die IP-URL umstellen. Das Addon ist bewusst ohne Umbrel-Login im lokalen Netz erreichbar (Stremio- und Jellyfin-Clients senden keine Umbrel-Cookies und erreichen das Addon über dynamische Config-ID-Pfade); das Dashboard selbst ist über den Operator-Login geschützt. Nur im lokalen Netz betreiben. Renovate aktualisiert Manifest-Version und Image gebündelt.
+Erste Schritte: Weboberfläche öffnen, im Dashboard einloggen (Benutzer `admin`, Passwort siehe App-Zugangsdaten), Addons und Debrid-Dienste einrichten und das erzeugte Addon über den Install-Button zu Stremio hinzufügen. Debrid- und Usenet-Dienste werden als **Services** eingebunden (Config → Services); seit v2.37 sind die eigenständigen TorBox-Addons entfernt – der TorBox-API-Key (torbox.app → Settings) gehört unter Config → Services → TorBox. `BASE_URL` steht standardmäßig auf der Umbrel-Launch-URL; für Clients ohne mDNS (z. B. manche Android-TV-Apps) in den App-Einstellungen auf die IP-URL umstellen. Das Addon ist bewusst ohne Umbrel-Login im lokalen Netz erreichbar (Stremio- und Jellyfin-Clients senden keine Umbrel-Cookies und erreichen das Addon über dynamische Config-ID-Pfade); das Dashboard selbst ist über den Operator-Login geschützt. Nur im lokalen Netz betreiben. Renovate aktualisiert Manifest-Version und Image gebündelt.
 
 ### Nuvio Backend
 
@@ -66,7 +66,7 @@ Der Upstream wird als Klon an einer gepinnten Commit-Revision in die App-Daten g
 
 Usenet-Streaming über ein virtuelles WebDAV-Laufwerk: InfiniDysk (NzbDAV SuperFork) entpackt NZB-Dateien on-the-fly und stellt sie über WebDAV als Dateien bereit – inklusive SABnzbd-kompatibler API, ohne dass Downloads vollständig abgeschlossen werden müssen. Nach dem Erststart (Admin-Account im Web-UI anlegen) werden Newznab-Indexer und NNTP-Server hinterlegt.
 
-Optional als NzbDAV-Service an AIOStreams anbindbar (Stream-Proxy über AIOStreams), sodass Usenet-Inhalte direkt in Nuvio/Stremio abspielbar sind. Die App ist ohne Umbrel-Login im lokalen Netz erreichbar (WebDAV- und SABnzbd-Clients senden keine Umbrel-Cookies), aber über ihr eigenes Login geschützt. Renovate aktualisiert Manifest-Version und Image-Tag gebündelt.
+Anbindung an AIOStreams auf einem von zwei Wegen: als **NzbDAV-Service** (rein Playback – AIOStreams proxied die Streams, braucht für die Suche aber eigene Newznab-Addons) oder als **Custom Addon** über die Addon-Adapter der InfiniDysk-Search-Profiles (Manifest-URL `/adapters/addon/<token>/manifest.json`, Host-Teil in AIOStreams auf `anyumbrelstore-infinidysk_server_1:3000` ändern) – dann liefert InfiniDysk die Newznab-Suche selbst und AIOStreams übernimmt nur das Playback; beide Wege nicht miteinander kombinieren. Indexer-Anfragen (Newznab-Suche, NZB-Grabs) lassen sich über Settings → Indexers per HTTP(S)- oder SOCKS5-Proxy routen (global oder pro Indexer, z. B. durch den Gluetun-Container); NNTP-Provider-Verbindungen unterstützen keinen Proxy. Die App ist ohne Umbrel-Login im lokalen Netz erreichbar (WebDAV- und SABnzbd-Clients senden keine Umbrel-Cookies), aber über ihr eigenes Login geschützt. Renovate aktualisiert Manifest-Version und Image-Tag gebündelt.
 
 ### Watchly
 
