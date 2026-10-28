@@ -1,0 +1,56 @@
+manifestVersion: "1"
+id: anyumbrelstore-watchly
+storage:
+  dataRoot: data
+category: media
+name: Watchly
+# renovate: datasource=docker depName=ghcr.io/demianoshb/watchly versioning=semver
+version: "1.17.2"
+tagline: Personalisierte Empfehlungen aus deiner selbst gehosteten Nuvio-Historie
+description: >-
+  Watchly baut aus deiner Watch-Historie personalisierte Empfehlungs-Reihen
+  ("Top Picks for You", "Because you watched ...", Genre- und Keyword-Kataloge)
+  und blendet sie als Katalog-Addon in Nuvio ein. Diese Instanz ist so gebaut,
+  dass sie die Historie direkt aus dem selbst gehosteten Nuvio-Backend liest,
+  ohne Umweg über Trakt, Simkl oder die Nuvio-Cloud.
+
+
+  Erste Schritte: Weboberfläche öffnen (umbrel.local:30127), Konto anlegen und
+  TMDB-API-Key hinterlegen (kostenlos auf themoviedb.org), unter Accounts Nuvio
+  verbinden (Anmeldung direkt am eigenen Backend), gewünschte Kataloge
+  auswählen und speichern. Den angezeigten Installations-Link danach in der
+  Nuvio-App unter Einstellungen -> Addons einfügen; die Empfehlungs-Reihen
+  erscheinen auf dem Nuvio-Homescreen.
+
+
+  Technik: Das Start-Skript des Containers zeigt Watchly auf das eigene
+  Nuvio-Backend (NUVIO_BASE_URL); der Publishable-Key wird automatisch über
+  den Discovery-Endpunkt /.well-known/nuvio geholt. Der Nuvio-Login im
+  Browser läuft direkt gegen das eigene Backend, nicht gegen die Cloud.
+
+
+  Hinweis: Ohne Umbrel-Login im lokalen Netz erreichbar (Nuvio und Browser
+  rufen Manifest und Kataloge ohne Umbrel-Cookies auf); Watchly ist über sein
+  eigenes Kontosystem geschützt. Nur im lokalen Netz bzw. hinter einem VPN
+  betreiben.
+releaseNotes: >-
+  1.17.2 - Erste Packaging-Version: Watchly 1.17.2 als eigenes Multi-Arch-
+  Image (ghcr.io/demianoshb/watchly, amd64+arm64), gebaut aus dem unveränderten
+  Upstream-Source mit Start-Skript-Patch für self-hosted Nuvio-Backends
+  (NUVIO_BASE_URL/NUVIO_PUBLISHABLE_KEY per Env, Publishable-Key automatisch
+  per Discovery-Endpunkt). Port 30127, Redis-State in den App-Daten
+  persistiert, Healthcheck auf /. Image-Build im Store-Repo unter
+  docker/watchly (Workflow: Watchly Docker Image).
+developer: TimilsinaBimal
+website: https://watchly.elfhosted.com
+dependencies: []
+repo: https://github.com/TimilsinaBimal/Watchly
+support: https://github.com/TimilsinaBimal/Watchly/issues
+port: 30127
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+submitter: "anyumbrelstore"
+submission: "https://github.com/DemianosHB/AnyUmbrelStore/pull/56"
+icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-watchly/icon.svg
