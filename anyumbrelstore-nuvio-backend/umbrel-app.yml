@@ -23,6 +23,8 @@ dependencies: []
 repo: https://github.com/NuvioMedia/self-host
 support: https://github.com/NuvioMedia/self-host/issues
 releaseNotes: >-
+  3.24 - Update des Docker-Images auf 3.24. Keine automatisierten Release-Notes abrufbar –
+  Details: https://github.com/docker-library/alpine/releases.
   0.1.4 - Fix für "No suitable key or wrong key type" im Account-Dashboard:
   Der Fetch-Hook schrieb nach dem ersten Start den Platzhalter
   JWT_JWKS={"keys":[]} ins .env und gab ihn danach bei jeder Regeneration
