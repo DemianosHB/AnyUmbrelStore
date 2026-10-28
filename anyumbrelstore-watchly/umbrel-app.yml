@@ -16,7 +16,10 @@ description: >-
 
 
   Erste Schritte: Weboberfläche öffnen (umbrel.local:30127), Konto anlegen und
-  TMDB-API-Key hinterlegen (kostenlos auf themoviedb.org), unter Accounts Nuvio
+  TMDB-API-Key als TMDB_API_KEY-Env-Variable im server-Service der App
+  hinterlegen (kostenlos auf themoviedb.org, API Key v3; mehrere Watchly-
+  Code-Pfade ignorieren den in der Web-UI gesetzten Key, ohne die Env-
+  Variable schlägt das Manifest mit Fehler 500 fehl), unter Accounts Nuvio
   verbinden (Anmeldung direkt am eigenen Backend), gewünschte Kataloge
   auswählen und speichern. Den angezeigten Installations-Link danach in der
   Nuvio-App unter Einstellungen -> Addons einfügen; die Empfehlungs-Reihen
