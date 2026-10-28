@@ -5,8 +5,8 @@ Implements the packaging rules from getumbrel/umbrel-apps
 (.agents/skills/umbrel-package-app) as CI checks:
 
 * manifest structure, required fields, id == folder name, store-id prefix
-* version format: semver (optional +patchN packaging suffix) or sha256 digest,
-  never a bare "latest"
+* version format: semver (optional +patchN packaging suffix) or sha256 digest
+  (optional -pkgN packaging suffix), never a bare "latest"
 * unique host ports within this store and against the official app store
 * headless apps (no app_proxy) may use port 0; web UI apps need a positive port
   (manifest ports and raw compose host bindings)
@@ -31,7 +31,7 @@ import sys
 import yaml
 
 SEMVER = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
-SHA256 = re.compile(r"^sha256:[a-f0-9]{64}$")
+SHA256 = re.compile(r"^sha256:[a-f0-9]{64}(?:-pkg\d+)?$")
 MANIFEST_VERSION = re.compile(r"^\d+(\.\d+)?$")  # Umbrel schema versions: 1, 1.1, 1.2, 2.0
 MOVING_TAGS = {"latest", "main"}
 
