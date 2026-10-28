@@ -68,6 +68,15 @@ WATCHES = [
         "manifest": "anyumbrelstore-aiostreams/umbrel-app.yml",
     },
     {
+        # Nuvio Backend: upstream publishes no releases; the stack runs as a
+        # clone at a pinned commit (Renovate does not bump the Supabase stack
+        # images on purpose, see renovate.json). This watch only verifies the
+        # upstream repo stays public and auditable; pin bumps happen manually.
+        "app": "anyumbrelstore-nuvio-backend",
+        "repo": "NuvioMedia/self-host",
+        "kind": "repo-exists",
+    },
+    {
         "app": "anyumbrelstore-gluetun (webui sidecar)",
         "repo": "Sir-Scuzza/gluetun-webui",
         "kind": "repo-exists",  # no semver releases; Renovate tracks the digest
