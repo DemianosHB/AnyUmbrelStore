@@ -1,0 +1,36 @@
+services:
+  app_proxy:
+    environment:
+      APP_HOST: anyumbrelstore-watchly_server_1
+      APP_PORT: 8000
+      # Nuvio und Browser im LAN rufen Manifest und Config-Seite ohne
+      # Umbrel-Login-Cookies auf; Watchly hat ein eigenes Kontosystem.
+      PROXY_AUTH_ADD: "false"
+
+  server:
+    image: ghcr.io/demianoshb/watchly:1.17.2
+    restart: on-failure
+    depends_on:
+      - redis
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      APP_ENV: production
+      # Salt fuer Addon-Token, instance-spezifisch generiert
+      TOKEN_SALT: "173fe049837c618f5b26f8c9fd98e9fc7230929b421a8405f2dcd0c8cee73e07"
+      # Addon-Basis-URL, wie Nuvio sie erreicht
+      HOST_NAME: http://umbrel.internal:30127
+      ALLOW_SIGNUPS: "True"
+      # Selbst gehostetes Nuvio-Backend; Publishable-Key wird beim Start
+      # automatisch ueber /.well-known/nuvio geholt
+      NUVIO_BASE_URL: http://umbrel.internal:30123
+    healthcheck:
+      test: ["CMD", "curl", "-fsSL", "http://localhost:8000/"]
+      interval: 30s
+      retries: 3
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data/redis:/data
