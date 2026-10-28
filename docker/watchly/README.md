@@ -30,6 +30,34 @@ If the discovery request fails or the sed patterns no longer match after an
 upstream update, the container exits with an error instead of silently
 talking to the Nuvio cloud.
 
+## TMDB API key (required)
+
+Watchly needs a TMDB API key to build profiles, catalogs and manifests. The
+key set in the web UI (Settings → TMDB API Key) is stored per user and used
+by some code paths - but **not all**: `app/services/context.py`
+(`ProfileService()` without arguments), `app/services/language_service.py`
+and `app/services/row_generator.py` construct their TMDB client from the
+server-wide `TMDB_API_KEY` environment variable only. Without that env var
+the token manifest (`/<token>/manifest.json`) fails with a generic 500
+(`{"detail":"Something went wrong. Please try again."}`), even with the UI
+key set.
+
+For the Umbrel app set the env var in the rendered app compose
+(`~/umbrel/app-data/anyumbrelstore-watchly/docker-compose.yml`), service
+`server`, section `environment`:
+
+```yaml
+      TMDB_API_KEY: "<TMDB API Key v3>"
+```
+
+then apply it with `cd ~/umbrel/app-data/anyumbrelstore-watchly &&
+sudo docker-compose up -d`. Get a free key at
+https://www.themoviedb.org/settings/api (API Key v3).
+
+Note: Umbrel re-renders the app compose file on every app update and drops
+the env var again - re-apply it after updates until Watchly supports a
+key file or the per-user key everywhere.
+
 ## Bumping Watchly
 
 1. Set the new upstream tag in `.github/workflows/watchly-image.yml`

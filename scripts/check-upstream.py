@@ -95,6 +95,27 @@ WATCHES = [
         "manifest": "anyumbrelstore-paperless-backup/docker-compose.yml",
         "image": "duplicati/duplicati",
     },
+    {
+        # InfiniDysk: Renovate bumps manifest version and the v-prefixed GHCR
+        # image tag together (extractVersion strips the v). This watch adds
+        # the changelog radar for breaking changes between stable releases;
+        # the periodic "dev" releases have no semver tag and are skipped.
+        "app": "anyumbrelstore-infinidysk",
+        "repo": "infinidysk/infinidysk",
+        "kind": "stable",
+        "manifest": "anyumbrelstore-infinidysk/umbrel-app.yml",
+    },
+    {
+        # Watchly: the store builds its own image from the pinned upstream tag
+        # (docker/watchly, workflow watchly-image.yml, WATCHLY_REF). This watch
+        # reports new upstream releases so the WATCHLY_REF bump - and the
+        # entrypoint's sed/grep patterns, which upstream changes can break -
+        # are always deliberate steps.
+        "app": "anyumbrelstore-watchly",
+        "repo": "TimilsinaBimal/Watchly",
+        "kind": "stable",
+        "manifest": "anyumbrelstore-watchly/umbrel-app.yml",
+    },
 ]
 
 ISSUE_MARKER = "[upstream-watch]"
