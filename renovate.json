@@ -52,6 +52,22 @@
         "!scuzza/gluetun-webui",
         "!duplicati/duplicati"
       ]
+    },
+    {
+      "description": "Nuvio Backend: Die Supabase-Stack-Images (Kong, GoTrue, PostgREST, Storage-API, Postgres, Edge-Runtime, imgproxy) sind versionengekoppelt mit dem gepinnten Upstream-Commit aus NuvioMedia/self-host - nur die dort getestete Kombination laufen lassen. Renovate-Updates für diese Images sind deaktiviert; sie werden manuell gemeinsam mit dem Upstream-Pin (Commit-Revision im nuvio-fetch-Service) gebumpt. Die One-Shot-Images (alpine, curl) und das Digest des Account-Dashboards bleiben bei Renovate.",
+      "matchFileNames": [
+        "anyumbrelstore-nuvio-backend/docker-compose.yml"
+      ],
+      "matchPackageNames": [
+        "docker.io/kong/kong", "kong/kong",
+        "docker.io/supabase/gotrue", "supabase/gotrue",
+        "docker.io/postgrest/postgrest", "postgrest/postgrest",
+        "docker.io/supabase/storage-api", "supabase/storage-api",
+        "docker.io/supabase/postgres", "supabase/postgres",
+        "docker.io/supabase/edge-runtime", "supabase/edge-runtime",
+        "docker.io/darthsim/imgproxy", "darthsim/imgproxy"
+      ],
+      "enabled": false
     }
   ]
 }
