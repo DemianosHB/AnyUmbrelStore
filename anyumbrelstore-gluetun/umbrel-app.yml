@@ -5,7 +5,10 @@ storage:
 category: networking
 name: Gluetun VPN
 # renovate: datasource=docker depName=ghcr.io/qdm12/gluetun currentValue=latest
-version: "sha256:c2ee4191762fca6b6a3c3359a731198a95d9c9af4db32d466e223bf3a84e779b"
+# Packaging-Suffix -pkg1: liefert die Port-Aenderung ohne Image-Aenderung aus
+# (Umbrel erkennt Updates ueber String-Ungleichheit der Version; Renovate-
+# Regex erfasst weiterhin nur den Digest und laesst den Suffix unberuehrt).
+version: "sha256:c2ee4191762fca6b6a3c3359a731198a95d9c9af4db32d466e223bf3a84e779b-pkg1"
 tagline: VPN-Client-Container mit eingebautem Web-Interface
 description: >-
   Leichter VPN-Client-Container mit Unterstützung für viele Anbieter,
@@ -35,11 +38,15 @@ dependencies: []
 repo: https://github.com/passteque/gluetun
 support: https://github.com/passteque/gluetun/issues
 releaseNotes: >-
-  Switched to the development (latest) image, digest-pinned, to bring
-  back the built-in SOCKS5 proxy which only exists on the master
-  branch and in no stable release yet. SOCKS5 listens on port 1080
-  (TCP and UDP). HTTP proxy and Shadowsocks remain enabled.
-port: 8010
+  Packaging-Update: WebUI-Port von 8010 auf 30126 geaendert, da Port 8010
+  mit dem Ryot-Paket (mathieu-ryot) aus einem anderen Community-Store
+  kollidiert. Image unveraendert (gleicher Digest, Packaging-Suffix -pkg1).
+  HTTP-Proxy (8009), SOCKS5 (1080) und Shadowsocks (8388) bleiben
+  unveraendert; AIOStreams/InfiniDysk erreichen Gluetun weiterhin ueber
+  den Container-Namen. Die neue WebUI-Adresse ist umbrel.local:30126.
+# Wechsel von 8010 auf 30126: Port 8010 kollidiert mit dem Ryot-Paket
+# aus mathieuletyrant/umbrel-community-app-store (mathieu-ryot).
+port: 30126
 gallery: []
 path: ""
 defaultUsername: ""
