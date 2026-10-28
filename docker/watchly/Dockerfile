@@ -9,7 +9,7 @@
 
 ARG WATCHLY_REF=1.17.2
 
-FROM python:3.12-slim AS source
+FROM python:3.15-slim AS source
 ARG WATCHLY_REF
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git ca-certificates \
@@ -17,7 +17,7 @@ RUN apt-get update \
 WORKDIR /src
 RUN git clone --depth 1 --branch "${WATCHLY_REF}" https://github.com/TimilsinaBimal/Watchly.git .
 
-FROM python:3.12-slim
+FROM python:3.15-slim
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc curl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
