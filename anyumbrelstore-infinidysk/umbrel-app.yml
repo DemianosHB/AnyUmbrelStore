@@ -45,6 +45,8 @@ support: https://github.com/infinidysk/infinidysk/issues
 port: 30125
 gallery: []
 path: ""
+defaultUsername: ""
+defaultPassword: ""
 submitter: "anyumbrelstore"
-submission: "https://github.com/DemianosHB/AnyUmbrelStore/"
+submission: "https://github.com/DemianosHB/AnyUmbrelStore/pull/52"
 icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-infinidysk/icon.svg
