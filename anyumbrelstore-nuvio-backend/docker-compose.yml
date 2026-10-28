@@ -43,7 +43,7 @@ services:
       APP_PORT: 8080
 
   nuvio-fetch:
-    image: docker.io/library/alpine:3.22
+    image: docker.io/library/alpine:3.24
     restart: "no"
     environment:
       # Upstream publishes no releases/tags; pin the revision here.
@@ -63,7 +63,7 @@ services:
       - apk add --no-cache git openssl && exec sh /scripts/nuvio-fetch.sh
 
   db:
-    image: docker.io/supabase/postgres:17.6.1.084
+    image: docker.io/supabase/postgres:17.11.0.008
     restart: unless-stopped
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     environment:
@@ -128,7 +128,7 @@ services:
       start_period: 300s
 
   nuvio-migrate:
-    image: docker.io/supabase/postgres:17.6.1.084
+    image: docker.io/supabase/postgres:17.11.0.008
     restart: "no"
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     volumes:
@@ -142,7 +142,7 @@ services:
         condition: service_healthy
 
   kong:
-    image: docker.io/kong/kong:3.9.1
+    image: docker.io/kong/kong:3.9.4
     restart: unless-stopped
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     environment:
@@ -180,7 +180,7 @@ services:
       retries: 5
 
   auth:
-    image: docker.io/supabase/gotrue:v2.189.0
+    image: docker.io/supabase/gotrue:v2.197.0
     restart: unless-stopped
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     ulimits:
@@ -209,7 +209,7 @@ services:
       - ${APP_DATA_DIR}/data/self-host/volumes/auth/templates:/etc/gotrue/templates:ro,z
 
   rest:
-    image: docker.io/postgrest/postgrest:v14.12
+    image: docker.io/postgrest/postgrest:v14.18
     restart: unless-stopped
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     depends_on:
@@ -226,7 +226,7 @@ services:
       - postgrest
 
   storage:
-    image: docker.io/supabase/storage-api:v1.60.4
+    image: docker.io/supabase/storage-api:v1.84.32
     restart: unless-stopped
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     depends_on:
@@ -256,7 +256,7 @@ services:
       - storage-data:/var/lib/storage
 
   imgproxy:
-    image: docker.io/darthsim/imgproxy:v3.30.1
+    image: docker.io/darthsim/imgproxy:v3.31.4
     restart: unless-stopped
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     volumes:
@@ -273,7 +273,7 @@ services:
       retries: 3
 
   functions:
-    image: docker.io/supabase/edge-runtime:v1.74.0
+    image: docker.io/supabase/edge-runtime:v1.77.9
     restart: unless-stopped
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     volumes:
@@ -308,7 +308,7 @@ services:
         condition: service_healthy
 
   nuvio-seed:
-    image: docker.io/curlimages/curl:8.11.1
+    image: docker.io/curlimages/curl:8.23.0
     restart: "no"
     env_file: ${APP_DATA_DIR}/data/nuvio.env
     volumes:
