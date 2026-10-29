@@ -19,6 +19,10 @@ Watch kinds:
                   the Docker image tag pinned in the app's compose file
 * "dev-channel" - package tracks :latest (Gluetun); compare against the
                   last known stable baseline instead of the manifest
+* "commit-watch" - upstream publishes no releases; the package pins an upstream
+                  commit via a compose env entry. The watch compares the pin
+                  with the upstream default branch and reports new upstream
+                  commits so the manual pin bump stays a deliberate step
 * "repo-exists" - only check that the upstream repo is still public
 
 Output: human-readable report on stdout, optional Markdown report file.
@@ -70,11 +74,16 @@ WATCHES = [
     {
         # Nuvio Backend: upstream publishes no releases; the stack runs as a
         # clone at a pinned commit (Renovate does not bump the Supabase stack
-        # images on purpose, see renovate.json). This watch only verifies the
-        # upstream repo stays public and auditable; pin bumps happen manually.
+        # images on purpose, see renovate.json). commit-watch compares the
+        # pinned commit with the upstream default branch and reports new
+        # upstream commits, so the manual pin bump (supabase stack images and
+        # the account-dashboard image together, see docker-compose.yml) is
+        # always a deliberate step.
         "app": "anyumbrelstore-nuvio-backend",
         "repo": "NuvioMedia/self-host",
-        "kind": "repo-exists",
+        "kind": "commit-watch",
+        "manifest": "anyumbrelstore-nuvio-backend/docker-compose.yml",
+        "pin_env": "NUVIO_SELFHOST_PINNED_COMMIT",
     },
     {
         "app": "anyumbrelstore-gluetun (webui sidecar)",
@@ -186,6 +195,25 @@ def pinned_tag_from_compose(root: str, rel_path: str, image: str) -> str | None:
     return None
 
 
+
+def pinned_commit_from_compose(root: str, rel_path: str, env_var: str) -> str | None:
+    """Read a pinned upstream commit sha from a compose env entry.
+
+    'NUVIO_SELFHOST_PINNED_COMMIT: 30f1568...' -> '30f1568...'
+    """
+    path = os.path.join(root, rel_path)
+    pattern = re.compile(rf"^\s*{re.escape(env_var)}:\s*([0-9a-f]{{7,40}})\s*$")
+    try:
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                m = pattern.search(line)
+                if m:
+                    return m.group(1)
+    except OSError:
+        pass
+    return None
+
+
 def scan_for_keywords(body: str, keywords: list[str]) -> list[str]:
     hits = []
     low = (body or "").lower()
@@ -202,6 +230,53 @@ def check_repo_exists(repo: str, token: str | None) -> tuple[bool, str | None]:
     return True, (data.get("pushed_at") or "")[:10]
 
 
+
+def check_commit_watch(watch: dict, root: str, token: str | None,
+                       alerts: list[str], infos: list[str]) -> None:
+    """Compare a pinned upstream commit (compose env) with upstream HEAD."""
+    repo = watch["repo"]
+    app = watch["app"]
+    pinned = pinned_commit_from_compose(root, watch["manifest"], watch["pin_env"])
+    if pinned is None:
+        alerts.append(f"{app}: Gepinnter Upstream-Commit "
+                      f"({watch['pin_env']}) aus {watch['manifest']} "
+                      "nicht lesbar.")
+        return
+
+    data = gh_request(f"{GITHUB_API}/repos/{repo}/compare/{pinned}...HEAD", token)
+    if data is None:
+        alerts.append(
+            f"{app}: Das Upstream-Repo **{repo}** ist nicht mehr öffentlich "
+            f"aufrufbar oder der Pin {pinned[:7]} existiert dort nicht mehr "
+            "(404). Quelle fehlt – Image ist nicht mehr auditierbar. "
+            "Alternative prüfen.")
+        return
+
+    ahead = data.get("ahead_by") or 0
+    compare_url = data.get("html_url") or (
+        f"https://github.com/{repo}/compare/{pinned}...HEAD")
+    if ahead:
+        commits = data.get("commits") or []
+        newest = commits[-1] if commits else {}
+        newest_message = (newest.get("commit") or {}).get("message", "")
+        newest_message = newest_message.split("\n")[0]
+        newest_sha = (newest.get("sha") or "")[:7]
+        hits = scan_for_keywords(
+            " ".join((c.get("commit") or {}).get("message", "")
+                     for c in commits), BREAKING_KEYWORDS)
+        hint = (" Breaking-Stichworte in den Commit-Messages: "
+                f"{', '.join(hits)}." if hits else "")
+        alerts.append(
+            f"{app}: **{ahead} neue Upstream-Commit(s)** seit Pin "
+            f"{pinned[:7]} – Pin-Bump prüfen (Supabase-Stack-Images und "
+            "Account-Dashboard-Image zusammen anheben, siehe "
+            f"docker-compose.yml). Neuester Commit: {newest_message} "
+            f"({newest_sha}). Vergleich: {compare_url}{hint}")
+    else:
+        infos.append(f"{app}: Upstream-Repo ok, Pin {pinned[:7]} ist HEAD "
+                     f"(keine neuen Upstream-Commits). {compare_url}")
+
+
 def check_release_watch(watch: dict, root: str, token: str | None,
                         alerts: list[str], infos: list[str]) -> None:
     repo = watch["repo"]
@@ -216,6 +291,10 @@ def check_release_watch(watch: dict, root: str, token: str | None,
                 f"{app}: Das Upstream-Repo **{repo}** ist nicht mehr öffentlich "
                 "aufrufbar (404). Quelle fehlt – Image ist nicht mehr auditierbar "
                 "und wird vermutlich nicht mehr gepflegt. Alternative prüfen.")
+        return
+
+    if watch["kind"] == "commit-watch":
+        check_commit_watch(watch, root, token, alerts, infos)
         return
 
     releases = gh_request(f"{GITHUB_API}/repos/{repo}/releases?per_page=15", token)
