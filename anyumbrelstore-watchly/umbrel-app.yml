@@ -37,6 +37,8 @@ description: >-
   eigenes Kontosystem geschützt. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
 releaseNotes: >-
+  8-alpine - Update des Docker-Images auf 8-alpine. Keine automatisierten Release-Notes
+  abrufbar – Details: https://github.com/docker-library/redis/releases.
   1.17.2 - Erste Packaging-Version: Watchly 1.17.2 als eigenes Multi-Arch-
   Image (ghcr.io/demianoshb/watchly, amd64+arm64), gebaut aus dem unveränderten
   Upstream-Source mit Start-Skript-Patch für self-hosted Nuvio-Backends
