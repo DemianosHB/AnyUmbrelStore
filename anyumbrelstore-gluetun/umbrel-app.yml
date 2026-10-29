@@ -38,6 +38,8 @@ dependencies: []
 repo: https://github.com/passteque/gluetun
 support: https://github.com/passteque/gluetun/issues
 releaseNotes: >-
+  Automatische(s) Digest-Update(s) (Renovate): ghcr.io/qdm12/gluetun:latest
+  sha256:c2ee4191762f → sha256:4af0c8040034.
   Packaging-Update: WebUI-Port von 8010 auf 30126 geaendert, da Port 8010
   mit dem Ryot-Paket (mathieu-ryot) aus einem anderen Community-Store
   kollidiert. Image unveraendert (gleicher Digest, Packaging-Suffix -pkg1).
