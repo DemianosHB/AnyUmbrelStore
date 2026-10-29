@@ -5,8 +5,10 @@ Implements the packaging rules from getumbrel/umbrel-apps
 (.agents/skills/umbrel-package-app) as CI checks:
 
 * manifest structure, required fields, id == folder name, store-id prefix
-* version format: semver (optional +patchN packaging suffix) or sha256 digest
-  (optional -pkgN packaging suffix), never a bare "latest"
+* version format: semver with optional 4th numeric component for upstream
+  four-part versions (e.g. Duplicati 2.4.1.0) (optional +patchN packaging
+  suffix) or sha256 digest (optional -pkgN packaging suffix), never a bare
+  "latest"
 * unique host ports within this store and against the official app store
 * headless apps (no app_proxy) may use port 0; web UI apps need a positive port
   (manifest ports and raw compose host bindings)
@@ -30,7 +32,7 @@ import sys
 
 import yaml
 
-SEMVER = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
+SEMVER = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")  # 4th component: upstream four-part versions (e.g. Duplicati 2.4.1.0)
 SHA256 = re.compile(r"^sha256:[a-f0-9]{64}(?:-pkg\d+)?$")
 MANIFEST_VERSION = re.compile(r"^\d+(\.\d+)?$")  # Umbrel schema versions: 1, 1.1, 1.2, 2.0
 MOVING_TAGS = {"latest", "main"}
@@ -170,7 +172,7 @@ def check_app(store_root: str, app_id: str, official_ports: set[int],
     if version == "latest" or (version in MOVING_TAGS):
         err(manifest_rel, "version must not be a bare moving tag such as 'latest'")
     elif not (SEMVER.match(version) or SHA256.match(version)):
-        err(manifest_rel, f"version {version!r} must be upstream semver (optional +patchN packaging suffix) or a sha256 digest")
+        err(manifest_rel, f"version {version!r} must be upstream semver (3 or 4 numeric components, optional +patchN packaging suffix) or a sha256 digest")
 
     # ---- port ----
     # Headless apps (ohne app_proxy) nutzen port 0 = "kein Web-UI".
@@ -338,4 +340,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
