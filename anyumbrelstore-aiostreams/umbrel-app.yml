@@ -14,7 +14,7 @@ environment:
 category: media
 name: AIOStreams
 # renovate: datasource=docker depName=ghcr.io/viren070/aiostreams extractVersion=^v?(.*)$ versioning=semver
-version: "2.37.0"
+version: "2.37.0+patch1"
 tagline: Stremio-Super-Addon - Addons, Debrid und Usenet in einer Stream-Liste
 description: >-
   AIOStreams bündelt Stremio-Addons und Debrid-/Usenet-Dienste (z. B. TorBox,
@@ -38,13 +38,13 @@ description: >-
   Umbrel-Domain (umbrel.local) - für Clients ohne mDNS BASE_URL in den
   App-Einstellungen auf die IP-URL umstellen. Nur im lokalen Netz betreiben.
 releaseNotes: >-
-  2.37.0 - Erste Packaging-Version: AIOStreams v2.37.0 von GHCR (Semver-Tag,
-  Renovate aktualisiert Manifest und Image gebündelt). BASE_URL ist auf die
-  Umbrel-Launch-URL gesetzt, SECRET_KEY wird per derive_entropy deterministisch
-  erzeugt (64 Hex-Zeichen, bleibt über Updates stabil), Dashboard-Login via
-  AIOSTREAMS_AUTH mit APP_PASSWORD (Benutzer admin). SQLite-Datenbank in den
-  App-Daten, Disk-Cache vom Backup ausgenommen. Upstream-Watch für neue
-  Releases und Breaking Changes aktiviert.
+  2.37.0+patch1 - RAM-Stabilität nach Proxy-Streaming-Diagnose (2026-10-30):
+  Der Node-Heap wuchs nach 4K-Proxy-Streams auf ~4 GB und wurde nicht ans OS
+  zurückgegeben. Fixes: NODE_OPTIONS --max-old-space-size=2560 zwingt V8 zu
+  aggressivem GC vor dem Limit; mem_limit 4g als cgroup-Deckel, damit im
+  Notfall nur diese App neu startet statt eines host-weiten OOM-Kills.
+  Kein Image-Bump (weiter AIOStreams v2.37.0); UmbrelOS liefert das Update
+  über den Versions-String aus.
 developer: Viren070
 website: https://docs.aiostreams.viren070.me
 dependencies: []
