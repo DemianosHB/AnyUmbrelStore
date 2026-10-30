@@ -29,3 +29,13 @@ services:
       # APP_PASSWORD-Wert (in Umbrel unter App-Zugangsdaten sichtbar).
       AIOSTREAMS_AUTH: admin:${APP_PASSWORD}
       TZ: Europe/Berlin
+      # RAM-Diagnose 2026-10-30: Der Node-Heap wächst nach Proxy-Streaming-
+      # Sessions auf ~4 GB und V8 gibt den Speicher nicht ans OS zurück
+      # (Basiswert nach Container-Start: ~500 MB). Das V8-Old-Space-Limit
+      # zwingt Node zu aggressivem GC, bevor das cgroup-Limit greift -
+      # OOM-Kills werden damit unwahrscheinlich statt Standard.
+      NODE_OPTIONS: "--max-old-space-size=2560"
+    # Cgroup-Deckel: Im Notfall startet nur der AIOStreams-Container neu
+    # statt eines host-weiten OOM-Kills. 4 GB lassen 4K-Proxy-Streams
+    # bewusst Luft (Streaming-Puffer + Heap über 2,5 GB Old-Space).
+    mem_limit: 4g
