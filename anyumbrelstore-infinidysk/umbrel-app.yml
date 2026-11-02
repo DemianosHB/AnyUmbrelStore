@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: media
 name: InfiniDysk
-# renovate: datasource=docker depName=ghcr.io/infinidysk/infinidysk extractVersion=^v?(.*)$ versioning=semver
+# renovate: datasource=docker depName=ghcr.io/infinidysk/infinidysk extractVersion=^v?(?<version>.*)$ versioning=semver
 version: "1.6.3"
 tagline: Usenet-Streaming über ein virtuelles WebDAV-Laufwerk
 description: >-
