@@ -31,6 +31,14 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
+  v1.7.0 - (2026-10-29) Features health: stop a running health check or repair from the
+  Health page (#1753) (02e9b21) Bug Fixes deps: Bump body-parser from 2.3.0 to 2.4.0 in
+  /frontend (#1742) (a77b5ff) deps: Bump fast-uri from 3.1.8 to 3.1.9 in /frontend (#1743)
+  (ff0f4d3) deps: Bump github/codeql-action (#1758) (0ac3c86) deps: Bump ip-address from
+  10.7.2 to 10.7.5 in /frontend (#1744) (6fac334) deps: Bump the github-actions group
+  across 1 directory with 2 updates (#1722) (4dd62f6) deps: Bump the npm-minor-and-patch
+  group (#1757) (2dc8b53) deps: Bump the npm-minor-and-patch group across 1 directory with
+  1 …
   1.6.3 - Erste Packaging-Version: InfiniDysk v1.6.3 von GHCR (Semver-Tag,
   Renovate aktualisiert Manifest und Image gebündelt). Port 30125, Konfiguration
   in den App-Daten (/config-Volume), Healthcheck auf /healthz, PUID/PGID 1000,
