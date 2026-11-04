@@ -3,15 +3,21 @@ services:
     environment:
       APP_HOST: anyumbrelstore-stremthru_server_1
       APP_PORT: 8080
-      # Stremio-Addon-Endpunkte, Store-API und Player senden keine
-      # Umbrel-Login-Cookies; StremThru bringt ein eigenes Auth mit
-      # (Dashboard-Login admin + App-Passwort, Addon-Credentials im
-      # Manifest-Token).
-      PROXY_AUTH_ADD: "false"
+      # Umbrel-Login bleibt für das Dashboard aktiv; nur die Endpunkte, die
+      # Addon-Clients (AIOStreams) und Player (Nuvio) ohne Umbrel-Cookies
+      # anfragen, sind gewhitelisted: Stremio-Addon-Ressourcen (/stremio/*)
+      # und Store-/Playback-/Proxy-API (/v0/*, inkl. der 302-Clips für
+      # ungecachte Downloads). Beide sind durch StremThrus eigenes Auth
+      # geschützt (Credentials im Manifest-Token bzw. Proxy-Authorization).
+      PROXY_AUTH_WHITELIST: "/stremio/*,/v0/*"
 
   server:
     image: muniftanjim/stremthru:0.105.4
     restart: on-failure
+    # Nicht-root-Betrieb: Umbrel legt die App-Daten als 1000:1000 an;
+    # StremThru (Go-Binary + tini) braucht keine Root-Rechte, nur
+    # Schreibzugriff auf /app/data.
+    user: "1000:1000"
     volumes:
       - ${APP_DATA_DIR}/data:/app/data
     environment:
@@ -19,7 +25,7 @@ services:
       # Base-URL für generierte Addon-/Stream-Links: im Heimnetz und via
       # VPN-Pi-hole aufgelöst (gleiche Zone wie InfiniDysk).
       STREMTHRU_BASE_URL: http://umbrel.internal:30128
-      # Dashboard-/Proxy-Login: admin + App-Passwort.
+      # Dashboard-/Proxy-Login: admin + App-Passwort (deterministicPassword).
       STREMTHRU_AUTH: admin:${APP_PASSWORD}
       STREMTHRU_AUTH_ADMIN: admin
       # Vault-Secret (verschlüsselte Ablage von Store-Tokens im
