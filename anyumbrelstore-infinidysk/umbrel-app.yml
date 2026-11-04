@@ -5,7 +5,7 @@ storage:
 category: media
 name: InfiniDysk
 # renovate: datasource=docker depName=ghcr.io/infinidysk/infinidysk extractVersion=^v?(?<version>.*)$ versioning=semver
-version: "1.7.0"
+version: "1.7.1"
 tagline: Usenet-Streaming über ein virtuelles WebDAV-Laufwerk
 description: >-
   InfiniDysk (NzbDAV SuperFork) mountet Usenet-Inhalte als virtuelles
@@ -31,6 +31,8 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
+  v1.7.1 - (2026-11-03) Bug Fixes ui: only offer 1.x releases as updates (#1771) (18230cd)
+  ui: tell 1.x users that 2.0 is in beta (#1790) (d09a5b3)
   v1.7.0 - (2026-10-29) Features health: stop a running health check or repair from the
   Health page (#1753) (02e9b21) Bug Fixes deps: Bump body-parser from 2.3.0 to 2.4.0 in
   /frontend (#1742) (a77b5ff) deps: Bump fast-uri from 3.1.8 to 3.1.9 in /frontend (#1743)
