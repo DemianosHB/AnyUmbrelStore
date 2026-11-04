@@ -24,6 +24,7 @@ Ein [Community App Store](https://github.com/getumbrel/umbrel-community-app-stor
 | [Nuvio Backend](https://github.com/NuvioMedia/self-host) | `anyumbrelstore-nuvio-backend` | 0.1.5 | Media | 30122 |
 | [InfiniDysk](https://github.com/infinidysk/infinidysk) | `anyumbrelstore-infinidysk` | 1.7.1 | Media | 30125 |
 | [Watchly](https://github.com/TimilsinaBimal/Watchly) | `anyumbrelstore-watchly` | 1.17.2 | Media | 30127 |
+| [StremThru](https://github.com/MunifTanjim/stremthru) | `anyumbrelstore-stremthru` | 0.105.4 | Media | 30128 |
 
 ### Gluetun VPN
 
@@ -73,6 +74,12 @@ Anbindung an AIOStreams auf einem von zwei Wegen: als **NzbDAV-Service** (rein P
 Personalisierte Empfehlungen aus deiner Nuvio-Historie: Watchly liest die Watch-Historie direkt aus dem selbst gehosteten Nuvio-Backend und baut daraus Empfehlungs-Reihen („Top Picks for You", „Because you watched …", Genre- und Keyword-Kataloge), die als Katalog-Addon auf dem Nuvio-Homescreen erscheinen – ohne Umweg über Trakt, Simkl oder die Nuvio-Cloud.
 
 Das Image wird vom Store selbst gebaut (siehe Pflege-Abschnitt) und per Start-Skript auf das eigene Nuvio-Backend gezeigt; der Publishable-Key wird beim Container-Start automatisch über den Discovery-Endpunkt geholt. **Wichtig:** Watchly benötigt einen TMDB-API-Key als `TMDB_API_KEY`-Env-Variable im `server`-Service – mehrere Watchly-Code-Pfade ignorieren den in der Web-UI hinterlegten Key, ohne die Env-Variable schlägt das Manifest mit Fehler 500 fehl (Details: [`docker/watchly/README.md`](docker/watchly/README.md)).
+
+### StremThru
+
+Selbst gehosteter Companion für Stremio und Nuvio: StremThru legt sich als Schicht vor Debrid-Dienste (u. a. TorBox) und stellt eigene Stremio-Addons bereit – darunter **Torz** (Torrent- und Debrid-Suche; ungecachte Treffer stoßen einen Download beim Store an und werden nach kurzer Wartezeit abspielbar), **Store** (Katalog des eigenen Debrid-Kontos), **Wrap** und **Sidekick** – dazu ein Stream-Proxy mit Byte-Serving. Im Nuvio-Stack schließt es die Lücke, dass Nuvio ungecachte Torrentio-/Comet-Treffer nicht abspielen kann, weil Nuvio keine Torrent-Engine hat: StremThru übernimmt den Download-Trigger bei TorBox.
+
+Dashboard-Login: `admin` plus App-Passwort (App-Zugangsdaten). Store-Tokens (z. B. der TorBox-API-Key) werden über den Vault im Dashboard hinterlegt und persistiert (Vault-Secret aus `APP_SEED`). Anbindung an AIOStreams über das Marketplace-Addon „StremThru Torz“ (StremThru-URL `http://umbrel.internal:30128`, Credential `admin` + App-Passwort). Die TorBox-API läuft ohne Tunnel direkt von der Heim-IP (`STREMTHRU_STORE_TUNNEL=*:false`); optional über `STREMTHRU_HTTP_PROXY` auf den Gluetun-Container routbar.
 
 ## Struktur
 

@@ -125,6 +125,16 @@ WATCHES = [
         "kind": "stable",
         "manifest": "anyumbrelstore-watchly/umbrel-app.yml",
     },
+    {
+        # StremThru: Renovate bumps manifest version and the plain semver
+        # Docker Hub tag together (no extractVersion needed, tags have no
+        # v prefix). This watch adds the changelog radar for breaking
+        # changes between stable releases.
+        "app": "anyumbrelstore-stremthru",
+        "repo": "MunifTanjim/stremthru",
+        "kind": "stable",
+        "manifest": "anyumbrelstore-stremthru/umbrel-app.yml",
+    },
 ]
 
 ISSUE_MARKER = "[upstream-watch]"

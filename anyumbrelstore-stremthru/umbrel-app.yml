@@ -1,0 +1,52 @@
+manifestVersion: "1"
+id: anyumbrelstore-stremthru
+storage:
+  dataRoot: data
+category: media
+name: StremThru
+# renovate: datasource=docker depName=muniftanjim/stremthru versioning=semver
+version: "0.105.4"
+tagline: Debrid-Companion für Stremio und Nuvio (Torz, Store, Stream-Proxy)
+description: >-
+  StremThru ist ein selbst gehosteter Companion für Stremio und Nuvio: Es
+  legt sich als Schicht vor Debrid-Dienste (u. a. TorBox) und stellt eigene
+  Stremio-Addons bereit - Torz (Torrent- und Debrid-Suche; ungecachte
+  Treffer stoßen einen Download beim Store an und werden nach kurzer
+  Wartezeit abspielbar), Store (Katalog des eigenen Debrid-Kontos), Wrap
+  und Sidekick. Dazu ein Stream-Proxy mit Byte-Serving.
+
+
+  Erste Schritte: Dashboard öffnen (umbrel.internal:30128), Login mit admin
+  plus dem App-Passwort (in der Umbrel-App-Ansicht angezeigt). Danach im
+  Dashboard den TorBox-API-Key als Store hinterlegen (Vault) und das
+  Torz-Addon konfigurieren.
+
+
+  Anbindung an AIOStreams (optional): Im AIOStreams-Dashboard im Marketplace
+  das Addon "StremThru Torz" hinzufügen, als StremThru-URL
+  http://umbrel.internal:30128 eintragen und admin plus App-Passwort als
+  Credential angeben. Ungecachte Treffer lösen dann einen Download bei
+  TorBox aus, statt in Nuvio unabspielbar zu bleiben.
+
+
+  Hinweis: Das Dashboard ist durch den Umbrel-Login geschützt. Die
+  Stremio-Addon- und Playback-Endpunkte (/stremio/*, /v0/*) sind für
+  Addon-Clients und Player ohne Umbrel-Cookies über die Proxy-Whitelist
+  erreichbar und durch StremThrus eigenes Auth geschützt (Addon-Credentials
+  im Manifest-Token bzw. Proxy-Authorization). Nur im lokalen Netz bzw.
+  hinter einem VPN betreiben.
+releaseNotes: ""
+developer: MunifTanjim
+website: https://stremthru.13377001.xyz
+dependencies: []
+repo: https://github.com/MunifTanjim/stremthru
+support: https://github.com/MunifTanjim/stremthru/issues
+port: 30128
+gallery: []
+path: ""
+defaultUsername: "admin"
+defaultPassword: ""
+deterministicPassword: true
+submitter: "anyumbrelstore"
+submission: "https://github.com/DemianosHB/AnyUmbrelStore/pull/74"
+icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-stremthru/icon.svg
