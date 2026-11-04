@@ -1,0 +1,36 @@
+services:
+  app_proxy:
+    environment:
+      APP_HOST: anyumbrelstore-stremthru_server_1
+      APP_PORT: 8080
+      # Stremio-Addon-Endpunkte, Store-API und Player senden keine
+      # Umbrel-Login-Cookies; StremThru bringt ein eigenes Auth mit
+      # (Dashboard-Login admin + App-Passwort, Addon-Credentials im
+      # Manifest-Token).
+      PROXY_AUTH_ADD: "false"
+
+  server:
+    image: muniftanjim/stremthru:0.105.4
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data:/app/data
+    environment:
+      STREMTHRU_PORT: "8080"
+      # Base-URL für generierte Addon-/Stream-Links: im Heimnetz und via
+      # VPN-Pi-hole aufgelöst (gleiche Zone wie InfiniDysk).
+      STREMTHRU_BASE_URL: http://umbrel.internal:30128
+      # Dashboard-/Proxy-Login: admin + App-Passwort.
+      STREMTHRU_AUTH: admin:${APP_PASSWORD}
+      STREMTHRU_AUTH_ADMIN: admin
+      # Vault-Secret (verschlüsselte Ablage von Store-Tokens im
+      # Dashboard); APP_SEED ist stabil pro App-Installation.
+      STREMTHRU_VAULT_SECRET: ${APP_SEED}
+      # TorBox-API direkt von der Heim-IP (TorBox blockiert keine
+      # Heim-IPs); Tunnel optional möglich über STREMTHRU_HTTP_PROXY
+      # (z. B. Gluetun HTTP-Proxy).
+      STREMTHRU_STORE_TUNNEL: "*:false"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8080/"]
+      interval: 30s
+      retries: 3
+      start_period: 30s
