@@ -35,6 +35,25 @@ services:
       # Heim-IPs); Tunnel optional möglich über STREMTHRU_HTTP_PROXY
       # (z. B. Gluetun HTTP-Proxy).
       STREMTHRU_STORE_TUNNEL: "*:false"
+      # RAM-/Disk-Deckel gegen den Vorfall vom 04.11.2026 (Box-Freeze
+      # nach StremThru-Installation: 4,5 GB RAM-Peak + 27 GB Disk-Writes
+      # in 2 h, Userspace tot bis Stromcycle): StremThru peert ohne das
+      # Flag lazy EAGER mit der öffentlichen Instanz (stremthru.13377001.xyz,
+      # Dockerdefault von STREMTHRU_PEER_URI, base64-kodiert im Upstream-
+      # Code) und zieht bei jedem suchenden IMDb-ID blockierend Torrent-
+      # Infos in die lokale SQLite (sqlite://./data/stremthru.db).
+      # lazy = Pulls laufen queued im Hintergrund statt synchron-bulk;
+      # no_spill_torz = Torrent-File-Listen nicht zurück an den Peer pushen.
+      STREMTHRU_PEER_FLAG: "lazy,no_spill_torz"
+      # Disk-backed Torz-Torrentfile-Cache (Upstream-Default 256MB) klein halten.
+      STREMTHRU_TORZ_TORRENT_FILE_CACHE_SIZE: 64MB
+      # Go-Runtime früh GCen lassen: Heap-Deckel deutlich unter dem
+      # cgroup-mem_limit, damit der GC läuft, bevor der Kernel in den
+      # Memory-Pressure-Livelock geht.
+      GOMEMLIMIT: 1GiB
+    # Container stirbt notfalls allein (OOM-Restart über restart: on-failure)
+    # und zieht die 16-GB-Box nicht mehr in einen Reclaim-Livelock.
+    mem_limit: 1500m
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8080/"]
       interval: 30s

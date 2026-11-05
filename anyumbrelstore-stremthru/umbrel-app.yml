@@ -5,7 +5,7 @@ storage:
 category: media
 name: StremThru
 # renovate: datasource=docker depName=muniftanjim/stremthru versioning=semver
-version: "0.105.4"
+version: "0.105.4+patch1"
 tagline: Debrid-Companion für Stremio und Nuvio (Torz, Store, Stream-Proxy)
 description: >-
   StremThru ist ein selbst gehosteter Companion für Stremio und Nuvio: Es
@@ -35,7 +35,13 @@ description: >-
   erreichbar und durch StremThrus eigenes Auth geschützt (Addon-Credentials
   im Manifest-Token bzw. Proxy-Authorization). Nur im lokalen Netz bzw.
   hinter einem VPN betreiben.
-releaseNotes: ""
+releaseNotes: >-
+  Packaging-Patch (kein Image-Bump, weiterhin 0.105.4): RAM-/Disk-Deckel
+  gegen den Vorfall vom 04.11.2026 (Box-Freeze nach StremThru-Installation
+  durch 4,5 GB RAM-Peak + 27 GB Disk-Writes in 2 h) - mem_limit 1500m,
+  GOMEMLIMIT 1GiB, STREMTHRU_PEER_FLAG lazy,no_spill_torz (kein eager
+  Bulk-Pull von der öffentlichen Peer-Instanz), Torz-Torrentfile-Cache
+  64MB.
 developer: MunifTanjim
 website: https://stremthru.13377001.xyz
 dependencies: []
