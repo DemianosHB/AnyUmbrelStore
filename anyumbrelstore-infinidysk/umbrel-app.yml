@@ -4,8 +4,8 @@ storage:
   dataRoot: data
 category: media
 name: InfiniDysk
-# renovate: datasource=docker depName=ghcr.io/infinidysk/infinidysk extractVersion=^v?(?<version>.*)$ versioning=semver
-version: "1.7.1"
+# renovate: datasource=docker depName=ghcr.io/demianoshb/infinidysk extractVersion=^v?(?<version>.*)$ versioning=semver
+version: "1.7.1-lang1"
 tagline: Usenet-Streaming über ein virtuelles WebDAV-Laufwerk
 description: >-
   InfiniDysk (NzbDAV SuperFork) mountet Usenet-Inhalte als virtuelles
@@ -31,22 +31,16 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
-  v1.7.1 - (2026-11-03) Bug Fixes ui: only offer 1.x releases as updates (#1771) (18230cd)
-  ui: tell 1.x users that 2.0 is in beta (#1790) (d09a5b3)
-  v1.7.0 - (2026-10-29) Features health: stop a running health check or repair from the
-  Health page (#1753) (02e9b21) Bug Fixes deps: Bump body-parser from 2.3.0 to 2.4.0 in
-  /frontend (#1742) (a77b5ff) deps: Bump fast-uri from 3.1.8 to 3.1.9 in /frontend (#1743)
-  (ff0f4d3) deps: Bump github/codeql-action (#1758) (0ac3c86) deps: Bump ip-address from
-  10.7.2 to 10.7.5 in /frontend (#1744) (6fac334) deps: Bump the github-actions group
-  across 1 directory with 2 updates (#1722) (4dd62f6) deps: Bump the npm-minor-and-patch
-  group (#1757) (2dc8b53) deps: Bump the npm-minor-and-patch group across 1 directory with
-  1 …
-  1.6.3 - Erste Packaging-Version: InfiniDysk v1.6.3 von GHCR (Semver-Tag,
-  Renovate aktualisiert Manifest und Image gebündelt). Port 30125, Konfiguration
-  in den App-Daten (/config-Volume), Healthcheck auf /healthz, PUID/PGID 1000,
-  Zeitzone Europe/Berlin. Erststart: Admin-Account im Web-UI anlegen, danach
-  Provider und WebDAV-Credentials hinterlegen. Als NzbDAV-Service an AIOStreams
-  anbindbar, mit Stream-Proxy über AIOStreams.
+  v1.7.1-lang1 - Erster Build aus dem eigenen Fork ghcr.io/demianoshb/infinidysk
+  (Basis: Upstream v1.7.1) mit Preferred audio languages
+  (infinidysk/infinidysk#1765): Das neue Profil-Setting
+  PreferredAudioLanguages (z. B. ["de","en"]) sortiert Suchkandidaten nach
+  Sprach-Rang, damit Preflight/Watchtower/Watchdog bevorzugt
+  deutschsprachige Releases verifizieren. Fork:
+  github.com/DemianosHB/infinidysk (Branch v1), Release v1.7.1-lang1.
+  Zukünftige Fork-Updates erscheinen als vX.Y.Z-langN-Tags; Renovate bumpt
+  Image und Manifest-Version gebündelt (Annotation mit benannter
+  extractVersion-Gruppe, Lektion PR #72).
 developer: InfiniDysk
 website: https://www.infinidysk.com
 dependencies: []

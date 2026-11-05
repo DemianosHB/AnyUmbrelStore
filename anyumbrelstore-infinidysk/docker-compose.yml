@@ -9,7 +9,12 @@ services:
       PROXY_AUTH_ADD: "false"
 
   server:
-    image: ghcr.io/infinidysk/infinidysk:v1.7.1
+    # Eigener Fork-Build (DemianosHB/infinidysk): Upstream-1.x plus
+    # Preferred audio languages (infinidysk/infinidysk#1765). Upstream 1.x
+    # ist feature-frozen; Fork-Releases kommen als vX.Y.Z-langN-Tags.
+    # Renovate bumpt Image + Manifest-Version gebündelt (Annotation in
+    # umbrel-app.yml, benannte extractVersion-Gruppe).
+    image: ghcr.io/demianoshb/infinidysk:v1.7.1-lang1
     restart: on-failure
     volumes:
       - ${APP_DATA_DIR}/data:/config
