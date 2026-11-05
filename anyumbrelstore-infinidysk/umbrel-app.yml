@@ -5,7 +5,7 @@ storage:
 category: media
 name: InfiniDysk
 # renovate: datasource=docker depName=ghcr.io/demianoshb/infinidysk extractVersion=^v?(?<version>.*)$ versioning=semver
-version: "1.7.1-lang1"
+version: "1.7.1-lang2"
 tagline: Usenet-Streaming über ein virtuelles WebDAV-Laufwerk
 description: >-
   InfiniDysk (NzbDAV SuperFork) mountet Usenet-Inhalte als virtuelles
@@ -31,13 +31,14 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
-  v1.7.1-lang1 - Erster Build aus dem eigenen Fork ghcr.io/demianoshb/infinidysk
-  (Basis: Upstream v1.7.1) mit Preferred audio languages
-  (infinidysk/infinidysk#1765): Das neue Profil-Setting
-  PreferredAudioLanguages (z. B. ["de","en"]) sortiert Suchkandidaten nach
-  Sprach-Rang, damit Preflight/Watchtower/Watchdog bevorzugt
-  deutschsprachige Releases verifizieren. Fork:
-  github.com/DemianosHB/infinidysk (Branch v1), Release v1.7.1-lang1.
+  v1.7.1-lang2 - Watchdog-Fix im Fork: Der Watchdog-Play-Flow
+  (Commit b25c7f5) committet keinen schlechter rangierten Kandidaten
+  mehr, waehrend ein besserrangiger (z. B. deutschsprachiger) Kandidat
+  noch in der Verifizierung ist - das Rennen zwischen Verify und Commit
+  respektiert jetzt den Sprach-Rang. Zusaetzlich CI-Stabilitaet: Der
+  flaky MultiSegmentStreamStriping-Test ist deterministisch gepinnt
+  (Commit 315b5fb, test-only, kein Produktionscode). Fork:
+  github.com/DemianosHB/infinidysk (Branch v1), Release v1.7.1-lang2.
   Zukünftige Fork-Updates erscheinen als vX.Y.Z-langN-Tags; Renovate bumpt
   Image und Manifest-Version gebündelt (Annotation mit benannter
   extractVersion-Gruppe, Lektion PR #72).
