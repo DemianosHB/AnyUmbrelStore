@@ -22,7 +22,7 @@ Ein [Community App Store](https://github.com/getumbrel/umbrel-community-app-stor
 | [Paperless Backup](https://github.com/DemianosHB/AnyUmbrelStore/tree/master/anyumbrelstore-paperless-backup) | `anyumbrelstore-paperless-backup` | 2.4.1.0 | Files | 39120 |
 | [AIOStreams](https://github.com/Viren070/AIOStreams) | `anyumbrelstore-aiostreams` | 2.37.0 | Media | 30124 |
 | [Nuvio Backend](https://github.com/NuvioMedia/self-host) | `anyumbrelstore-nuvio-backend` | 0.1.5 | Media | 30122 |
-| [InfiniDysk](https://github.com/infinidysk/infinidysk) | `anyumbrelstore-infinidysk` | 1.7.1-lang2 | Media | 30125 |
+| [InfiniDysk](https://github.com/infinidysk/infinidysk) | `anyumbrelstore-infinidysk` | 1.7.1-lang3 | Media | 30125 |
 | [Watchly](https://github.com/TimilsinaBimal/Watchly) | `anyumbrelstore-watchly` | 1.17.2 | Media | 30127 |
 | [StremThru](https://github.com/MunifTanjim/stremthru) | `anyumbrelstore-stremthru` | 0.105.4 | Media | 30128 |
 
