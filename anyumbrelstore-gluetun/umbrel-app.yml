@@ -10,7 +10,7 @@ name: Gluetun VPN
 # (Regex erlaubt nur Whitespace dazwischen); erfasst nur den Digest
 # und laesst den -pkgN-Suffix unberuehrt.
 # renovate: datasource=docker depName=ghcr.io/qdm12/gluetun currentValue=latest
-version: "sha256:4af0c804003481e100180e1f8d4d5e9c48163fedc0f88d061881b615aef9d183-pkg1"
+version: "sha256:806ce0cc74c9e8919a33ffc3ae1f345a5ff09857801fb791b3f1c96a735e4115-pkg1"
 tagline: VPN-Client-Container mit eingebautem Web-Interface
 description: >-
   Leichter VPN-Client-Container mit Unterstützung für viele Anbieter,
