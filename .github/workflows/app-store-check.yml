@@ -125,10 +125,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -o pipefail
-          python /tmp/ci-scripts/pr-changelog.py \
-            --root "$PWD" \
-            --base-sha "${{ github.event.pull_request.base.sha }}" \
-            --summary-file /tmp/changelog-summary.json | tee /tmp/changelog-output.txt
+          SCRIPT=/tmp/ci-scripts/pr-changelog.py
+          # Rückwärtskompatibel: das Skript kommt vom Base-Branch (siehe Fetch-Step)
+          # und kennt --summary-file erst nach dem Merge dieses PRs.
+          if python "$SCRIPT" --help 2>/dev/null | grep -q -- '--summary-file'; then
+            python "$SCRIPT" \
+              --root "$PWD" \
+              --base-sha "${{ github.event.pull_request.base.sha }}" \
+              --summary-file /tmp/changelog-summary.json | tee /tmp/changelog-output.txt
+          else
+            echo "::warning::pr-changelog.py auf dem Base-Branch kennt --summary-file noch nicht - JSON-Summary wird in diesem Lauf übersprungen."
+            python "$SCRIPT" \
+              --root "$PWD" \
+              --base-sha "${{ github.event.pull_request.base.sha }}" | tee /tmp/changelog-output.txt
+          fi
           if [ -n "$(git status --porcelain)" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
