@@ -19,6 +19,17 @@
         "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+packageName=(?<packageName>[^\\s]+))?(?:\\s+extractVersion=(?<extractVersion>[^\\s]+))?(?:\\s+versioning=(?<versioning>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*version:\\s*[\"']?(?<currentValue>(?:v?[0-9]|latest)[^\"'\\s]*)[\"']?",
         "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+currentValue=(?<currentValue>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*version:\\s*[\"']?(?<currentDigest>sha256:[a-f0-9]+)[\"']?"
       ]
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)\\.github/workflows/watchly-image\\.yml$/",
+        "/(^|/)docker/watchly/Dockerfile$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+extractVersion=(?<extractVersion>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*WATCHLY_REF:\\s*\\$\\{\\{\\s*inputs\\.watchly_ref\\s*\\|\\|\\s*[\\\"']?(?<currentValue>[^\\\"'\\s}]+)[\\\"']?",
+        "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+extractVersion=(?<extractVersion>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*ARG\\s+WATCHLY_REF=(?<currentValue>[^\\s]+)"
+      ]
     }
   ],
   "packageRules": [
@@ -59,15 +70,56 @@
         "anyumbrelstore-nuvio-backend/docker-compose.yml"
       ],
       "matchPackageNames": [
-        "docker.io/kong/kong", "kong/kong",
-        "docker.io/supabase/gotrue", "supabase/gotrue",
-        "docker.io/postgrest/postgrest", "postgrest/postgrest",
-        "docker.io/supabase/storage-api", "supabase/storage-api",
-        "docker.io/supabase/postgres", "supabase/postgres",
-        "docker.io/supabase/edge-runtime", "supabase/edge-runtime",
-        "docker.io/darthsim/imgproxy", "darthsim/imgproxy"
+        "docker.io/kong/kong",
+        "kong/kong",
+        "docker.io/supabase/gotrue",
+        "supabase/gotrue",
+        "docker.io/postgrest/postgrest",
+        "postgrest/postgrest",
+        "docker.io/supabase/storage-api",
+        "supabase/storage-api",
+        "docker.io/supabase/postgres",
+        "supabase/postgres",
+        "docker.io/supabase/edge-runtime",
+        "supabase/edge-runtime",
+        "docker.io/darthsim/imgproxy",
+        "darthsim/imgproxy"
       ],
       "enabled": false
+    },
+    {
+      "description": "Reine Digest-Updates (z. B. Gluetun :latest, gluetun-webui :main, Duplicati) automatisch mergen, sobald der App-Store-Check grün ist",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Bündelt alle GitHub-Actions-Updates (SHA-Pins) in einen gemeinsamen Pull Request",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "GitHub Actions updates"
+    },
+    {
+      "description": "Bündelt den Watchly-Upstream-Bump (WATCHLY_REF in Workflow und Dockerfile) in einen PR - bewusst ohne Automerge (Entrypoint-Muster manuell prüfen, siehe README)",
+      "matchPackageNames": [
+        "TimilsinaBimal/Watchly"
+      ],
+      "groupName": "watchly upstream bump"
     }
-  ]
+  ],
+  "timezone": "Europe/Berlin",
+  "schedule": [
+    "before 5am on monday"
+  ],
+  "prCreation": "not-pending",
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 3,
+  "dependencyDashboard": true
 }

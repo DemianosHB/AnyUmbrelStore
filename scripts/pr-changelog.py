@@ -28,6 +28,10 @@ scripts/pr-report.js:
   [CHANGE] ...   what changed upstream, per release between old/new tag
   [NOTE ] ...    hints and things to double-check (e.g. version not bumped)
   [UPDATE] ...  files modified in the workspace by the sync
+  [BREAK] ...   breaking-change findings (keywords/conventional commits in
+                release notes or commits, major version jump, removed env
+                vars/host ports, dev-channel commits) - also emitted as
+                ::warning:: annotation and collected into the JSON summary
 
 Exit code is always 0 - the sync must never break the check itself.
 """
@@ -42,15 +46,32 @@ import textwrap
 import urllib.error
 import urllib.request
 
+import yaml
+
 GITHUB_API = "https://api.github.com"
 MOVING_TAGS = {"latest", "main"}
 
 # Same breaking-change radar as scripts/check-upstream.py; hits are surfaced
-# in the [CHANGE]/[NOTE ] lines so the PR comment flags them for review.
+# in the [BREAK]/[CHANGE] lines so the PR comment flags them for review.
 BREAKING_KEYWORDS = [
     "breaking", "⚠", "deprecat", "renamed", "removed",
     "no longer", "must now", "migrate", "migration", "incompatible",
 ]
+
+# Conventional-Commits-Marker ("BREAKING CHANGE:" / "feat!:") - zuverlässiger
+# als Stichworte allein, wenn Upstreams sauber committen.
+CONVENTIONAL_BREAKING_RE = re.compile(
+    r"(?im)^\s*(?:BREAKING[ -]CHANGE:|[a-z]+(?:\([^)\n]*\))?!:)"
+)
+
+
+def scan_breaking(text):
+    """Breaking-Change-Radar: Stichworte + Conventional-Commits-Marker."""
+    text = text or ""
+    hits = [k for k in BREAKING_KEYWORDS if k.lower() in text.lower()]
+    if CONVENTIONAL_BREAKING_RE.search(text):
+        hits.append("conventional-commit (BREAKING CHANGE / !)")
+    return hits
 
 # Length caps so the umbrel-app.yml stays readable (Umbrel renders releaseNotes
 # as one paragraph): the new entry itself, and the whole resulting value.
@@ -205,6 +226,42 @@ def images_from_compose_text(text):
             if image:
                 images[service] = (image, tag, digest)
     return images
+
+
+def compose_signature(text):
+    """service -> (env keys, host ports) aus der geparsten Compose-Datei."""
+    try:
+        data = yaml.safe_load(text) or {}
+    except Exception:
+        return {}
+    sig = {}
+    for name, svc in (data.get("services") or {}).items():
+        if not isinstance(svc, dict):
+            continue
+        env = svc.get("environment") or {}
+        if isinstance(env, list):
+            keys = {str(e).split("=", 1)[0] for e in env}
+        elif isinstance(env, dict):
+            keys = {str(k) for k in env.keys()}
+        else:
+            keys = set()
+        ports = set()
+        for p in svc.get("ports") or []:
+            if isinstance(p, int):
+                ports.add(p)
+            else:
+                host = str(p).split(":")[0]
+                if host.isdigit():
+                    ports.add(int(host))
+        sig[name] = (keys, ports)
+    return sig
+
+
+def note_breaking(stats, app_id, msg):
+    """Breaking-Befund: [BREAK]-Zeile + Workflow-Annotation + Summary-Eintrag."""
+    print(f"[BREAK] {app_id}: {msg}")
+    print(f"::warning ::{app_id}: {msg}")
+    stats.setdefault("breaking", {}).setdefault(app_id, []).append(msg)
 
 
 def manifest_field(lines, key_re):
@@ -363,8 +420,7 @@ def fetch_release_notes(repo, old_tag, new_tag, token):
             url = rel.get("html_url") or \
                 f"https://github.com/{repo}/releases/tag/{tag}"
             entries.append((ver, tag, body, url))
-            hits = [k for k in BREAKING_KEYWORDS
-                    if k.lower() in body_raw.lower()]
+            hits = scan_breaking(body_raw)
             if hits:
                 breaking[tag] = hits
         entries.sort(key=lambda e: e[0])
@@ -379,9 +435,12 @@ def fetch_release_notes(repo, old_tag, new_tag, token):
         if not cmp or not isinstance(cmp.get("commits"), list):
             continue
         subjects = []
+        messages = []
         for c in cmp["commits"]:
-            message = (c.get("commit", {}).get("message") or "").splitlines()
-            subject = message[0].strip() if message else ""
+            message = (c.get("commit", {}).get("message") or "")
+            messages.append(message)
+            lines = message.splitlines()
+            subject = lines[0].strip() if lines else ""
             if subject:
                 subjects.append(subject)
         if subjects:
@@ -390,8 +449,8 @@ def fetch_release_notes(repo, old_tag, new_tag, token):
             text = "Commits: " + "; ".join(subjects[:8]) + \
                 (" …" if len(subjects) > 8 else "")
             entries.append((new_v, new_tag, text, url))
-            hits = [k for k in BREAKING_KEYWORDS
-                    if k.lower() in " ".join(subjects).lower()]
+            # volle Commit-Messages scannen (BREAKING CHANGE: steht oft im Body)
+            hits = scan_breaking("\n".join(messages))
             if hits:
                 breaking[new_tag] = hits
         break
@@ -399,6 +458,19 @@ def fetch_release_notes(repo, old_tag, new_tag, token):
 
 
 # ----------------------------------------------------------------- main flow
+
+def fetch_commit_breaking(repo, token, limit=10):
+    """Neueste Commits des Default-Branches auf Breaking-Hinweise scannen.
+
+    Für Dev-Kanal-Images (moving tag + Digest-Update) gibt es keinen
+    Tag-Wechsel und damit keine Release-Notes - dieser Scan ist das Radar.
+    """
+    commits = gh_request(f"{GITHUB_API}/repos/{repo}/commits?per_page={limit}", token)
+    if not isinstance(commits, list):
+        return []
+    messages = "\n".join((c.get("commit") or {}).get("message") or "" for c in commits)
+    return scan_breaking(messages)
+
 
 def process_app(root, app_id, base_sha, token, stats):
     compose_path = os.path.join(root, app_id, "docker-compose.yml")
@@ -415,7 +487,29 @@ def process_app(root, app_id, base_sha, token, stats):
         return
 
     old_images = images_from_compose_text(old_compose)
-    new_images = images_from_compose_text("\n".join(read_lines(compose_path)))
+    new_compose_text = "\n".join(read_lines(compose_path))
+    new_images = images_from_compose_text(new_compose_text)
+
+    # ---- packaging-breaking: entfernte Env-Variablen / Host-Ports
+    old_sig = compose_signature(old_compose)
+    new_sig = compose_signature(new_compose_text)
+    for svc, (keys, ports) in new_sig.items():
+        old_keys, old_ports = old_sig.get(svc, (set(), set()))
+        removed_env = sorted(old_keys - keys)
+        if removed_env:
+            note_breaking(stats, app_id,
+                          f"Service {svc}: Env-Variable(n) {', '.join(removed_env)} "
+                          "entfernt/umbenannt - breaking für bestehende Installationen")
+        removed_ports = sorted(old_ports - ports)
+        if removed_ports:
+            note_breaking(stats, app_id,
+                          f"Service {svc}: Host-Port(s) {removed_ports} entfernt - "
+                          "bestehende Installationen verlieren den Zugriff")
+        added_env = sorted(keys - old_keys)
+        added_ports = sorted(ports - old_ports)
+        if added_env or added_ports:
+            print(f"[NOTE ] {app_id}: Service {svc}: neu - Env {added_env or '-'}, "
+                  f"Ports {added_ports or '-'}")
 
     changes = []  # (service, image, old_tag, new_tag, old_dig, new_dig)
     for service, (image, tag, digest) in new_images.items():
@@ -470,6 +564,10 @@ def process_app(root, app_id, base_sha, token, stats):
                 print(f"[CHANGE] {app_id}: {tag} – {text[:200]}"
                       + (f" ⚠️ mögliche Breaking Changes ({', '.join(hit)})"
                          if hit else "") + f" ({url})")
+                if hit:
+                    note_breaking(stats, app_id,
+                                  f"Release {tag} enthält Breaking-Change-Hinweise "
+                                  f"({', '.join(hit)}) - {url}")
         else:
             fallback_url = f"https://github.com/{repos[0]}/releases" if repos else ""
             notes = (f"Update des Docker-Images auf {new_tag}. "
@@ -478,6 +576,14 @@ def process_app(root, app_id, base_sha, token, stats):
                      + ".")
             print(f"[NOTE ] {app_id}: Für den Tag-Wechsel {old_tag} → {new_tag} "
                   f"sind keine Upstream-Release-Notes abrufbar.")
+
+        # Major-Sprung = potentiell breaking, auch ohne Stichwort-Treffer
+        old_v = parse_version(old_tag)
+        new_v = parse_version(new_tag)
+        if old_v and new_v and old_v[0] != new_v[0]:
+            note_breaking(stats, app_id,
+                          f"Major-Sprung {old_tag} → {new_tag} (erste Versionsstelle "
+                          "ändert sich) - potentiell breaking")
 
         notes = truncate_text(notes, MAX_ENTRY_CHARS)
         entry_text = f"{new_tag} - {notes}"
@@ -498,6 +604,17 @@ def process_app(root, app_id, base_sha, token, stats):
         digest_changes = [c for c in changes if c[4] != c[5]]
         if not digest_changes:
             return
+        # Dev-Kanal (moving tag, nur Digest neu): neueste Upstream-Commits scannen
+        for _, image, tag, _, od, nd in digest_changes:
+            if tag in MOVING_TAGS:
+                repos = candidate_repos(image, manifest_repo)
+                hits = fetch_commit_breaking(repos[0], token) if repos else []
+                if not hits and len(repos) > 1:
+                    hits = fetch_commit_breaking(repos[1], token)
+                if hits:
+                    note_breaking(stats, app_id,
+                                  f"Dev-Kanal {image}:{tag}: neueste Upstream-Commits "
+                                  f"enthalten Breaking-Hinweise ({', '.join(hits)})")
         summary = ", ".join(
             f"{image}:{tag} {short_digest(od)[:19]} → {short_digest(nd)[:19]}"
             for _, image, tag, _, od, nd in digest_changes)
@@ -547,6 +664,9 @@ def main() -> int:
     parser.add_argument("--root", default=".", help="app store repository root")
     parser.add_argument("--base-sha", default=None,
                         help="PR base sha to diff against")
+    parser.add_argument("--summary-file", default=None,
+                        help="write a JSON summary (breaking flags per app) "
+                             "to this file")
     args = parser.parse_args()
 
     token = os.environ.get("GITHUB_TOKEN") or None
@@ -575,6 +695,24 @@ def main() -> int:
 
     print(f"Changelog sync: {len(changed)} App(s) mit Tag-Änderungen geprüft, "
           f"{stats['files']} Datei(en) im Workspace aktualisiert.")
+
+    if args.summary_file:
+        apps_summary = {
+            app: {
+                "breaking": bool(stats.get("breaking", {}).get(app)),
+                "details": stats.get("breaking", {}).get(app, []),
+            }
+            for app in sorted(changed)
+        }
+        summary = {
+            "breaking": any(a["breaking"] for a in apps_summary.values()),
+            "apps": apps_summary,
+        }
+        with open(args.summary_file, "w", encoding="utf-8") as f:
+            json.dump(summary, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+        print(f"Summary geschrieben nach {args.summary_file} "
+              f"(breaking: {summary['breaking']}).")
     return 0
 
 

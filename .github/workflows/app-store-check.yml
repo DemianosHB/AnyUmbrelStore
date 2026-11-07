@@ -3,37 +3,74 @@ name: App Store Check
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches: [master]
+  schedule:
+    # zusätzlicher wöchentlicher Lauf auf master: Port-Kollisionen mit
+    # neuen Apps im offiziellen Store auch ohne offenen PR erkennen
+    - cron: "0 5 * * 1"
   workflow_dispatch:
 
-# contents: write wird für den Commit-Step benötigt, der die Changelog- und
-# README-Aktualisierungen auf den PR-Branch pusht (Fork-PRs scheitern dort
-# harmlos mit einer Warnung - die Änderungen stehen dann nur im PR-Kommentar).
+# Auf Repo-Ebene nur Lesezugriff; Schreibrechte bekommt nur der Job, der
+# Changelog/README auf den PR-Branch pusht (siehe Job-Permissions unten).
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+
+# Bei schnellen Push-Folgen (z. B. Renovate) nur den neuesten Lauf rechnen.
+concurrency:
+  group: app-store-check-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   check-packages:
     name: Validate app packages
     runs-on: ubuntu-latest
+    # contents: write wird für den Commit-Step benötigt, der die Changelog- und
+    # README-Aktualisierungen auf den PR-Branch pusht (Fork-PRs scheitern dort
+    # harmlos mit einer Warnung - die Änderungen stehen dann nur im PR-Kommentar).
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       # HEAD des PRs statt des Merge-Refs auschecken, damit der Commit-Step
       # auf den PR-Branch pushen kann; fetch-depth 0 für die Base-SHA-Vergleiche.
-      - uses: actions/checkout@v7
+      # (Checkout muss vor der lokalen Composite Action laufen - die braucht
+      # ein ausgechecktes Workspace.)
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          fetch-depth: ${{ github.event_name == 'pull_request' && '0' || '1' }}
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.15"
+      # Python inkl. pip-Cache als gemeinsame Composite Action.
+      - name: Python setup
+        uses: ./.github/actions/setup
 
       - name: Install dependencies
-        run: pip install pyyaml
+        run: pip install -r .github/requirements-ci.txt
+
+      # Der Clone des offiziellen Stores ändert sich selten: täglicher
+      # Cache-Key, bei Treffer nur ff-only pull statt frischem Clone.
+      - name: Cache key date
+        id: date
+        run: echo "today=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache official Umbrel App Store clone
+        id: umbrel-apps-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: /tmp/umbrel-apps
+          key: umbrel-apps-${{ steps.date.outputs.today }}
+          restore-keys: umbrel-apps-
 
       - name: Clone official Umbrel App Store (port reference)
-        run: git clone --depth 1 https://github.com/getumbrel/umbrel-apps.git /tmp/umbrel-apps
+        run: |
+          if [ -d /tmp/umbrel-apps/.git ]; then
+            git -C /tmp/umbrel-apps pull --ff-only
+          else
+            rm -rf /tmp/umbrel-apps
+            git clone --depth 1 https://github.com/getumbrel/umbrel-apps.git /tmp/umbrel-apps
+          fi
 
       - name: List changed files in this PR
         if: github.event_name == 'pull_request'
@@ -51,7 +88,7 @@ jobs:
       # Nur wenn der Base-Branch ein Skript nicht (mehr) enthält, fällt der
       # Job auf die Version im PR-Checkout zurück.
       - name: Fetch CI scripts from the base branch
-        if: github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         run: |
           git fetch origin "${{ github.event.pull_request.base.ref }}"
           mkdir -p /tmp/ci-scripts
@@ -88,9 +125,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -o pipefail
-          python /tmp/ci-scripts/pr-changelog.py \
-            --root "$PWD" \
-            --base-sha "${{ github.event.pull_request.base.sha }}" | tee /tmp/changelog-output.txt
+          SCRIPT=/tmp/ci-scripts/pr-changelog.py
+          # Rückwärtskompatibel: das Skript kommt vom Base-Branch (siehe Fetch-Step)
+          # und kennt --summary-file erst nach dem Merge dieses PRs.
+          if python "$SCRIPT" --help 2>/dev/null | grep -q -- '--summary-file'; then
+            python "$SCRIPT" \
+              --root "$PWD" \
+              --base-sha "${{ github.event.pull_request.base.sha }}" \
+              --summary-file /tmp/changelog-summary.json | tee /tmp/changelog-output.txt
+          else
+            echo "::warning::pr-changelog.py auf dem Base-Branch kennt --summary-file noch nicht - JSON-Summary wird in diesem Lauf übersprungen."
+            python "$SCRIPT" \
+              --root "$PWD" \
+              --base-sha "${{ github.event.pull_request.base.sha }}" | tee /tmp/changelog-output.txt
+          fi
           if [ -n "$(git status --porcelain)" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
@@ -112,6 +160,32 @@ jobs:
           set -e
           cat /tmp/changelog-output.txt >> /tmp/check-output.txt || true
           exit $status
+
+      # Optionaler harter Gate: schlägt fehl, wenn der Changelog-Sync Breaking
+      # Changes erkannt hat und das PR nicht das Label "breaking-ok" trägt.
+      # Aktivierung über die Repo-Variable FAIL_ON_BREAKING=true (Standard:
+      # nur ::warning::-Annotationen + Label breaking-change).
+      - name: Breaking-change gate
+        if: github.event_name == 'pull_request' && vars.FAIL_ON_BREAKING == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUMMARY_FILE: /tmp/changelog-summary.json
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -eu
+          if [ ! -s "$SUMMARY_FILE" ] || \
+             ! python3 -c "import json,sys; sys.exit(0 if json.load(open('$SUMMARY_FILE')).get('breaking') else 1)"; then
+            echo "Keine Breaking Changes erkannt - Gate bestanden."
+            exit 0
+          fi
+          echo "Breaking Changes erkannt:"
+          python3 -c "import json; s=json.load(open('$SUMMARY_FILE')); [print(' -', a + ':', d) for a, i in s['apps'].items() if i.get('breaking') for d in i.get('details', [])]"
+          if gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name' | grep -qx "breaking-ok"; then
+            echo "Label 'breaking-ok' gesetzt - Gate bestanden."
+            exit 0
+          fi
+          echo "::error ::Breaking Changes erkannt und kein Label 'breaking-ok' am PR - Gate fehlgeschlagen."
+          exit 1
 
       # Changelog-/README-Änderungen aus dem Sync-Schritt als Commit auf den
       # PR-Branch bringen - nur wenn alle Checks grün sind. Pushes mit dem
@@ -142,10 +216,11 @@ jobs:
       # scripts/pr-report.js (geladen vom Base-Branch, siehe Fetch-Step).
       - name: Report results on the PR
         if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           OUTCOME: ${{ steps.checks.outcome }}
           REPORT_FILE: /tmp/check-output.txt
           REPORT_KIND: app-store-check
+          SUMMARY_FILE: /tmp/changelog-summary.json
         with:
           script: return require('/tmp/ci-scripts/pr-report.js')({ github, context, core });

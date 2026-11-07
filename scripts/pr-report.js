@@ -10,7 +10,9 @@
 //   * per-app result table with known-justification annotations
 //     (app store check) / alert & info bullets (upstream watch)
 //   * tag changes & changelog sync findings ([TAGDIFF]/[CHANGE]/[UPDATE]/
-//     [NOTE ] lines from scripts/pr-changelog.py, app store check)
+//     [NOTE ]/[BREAK] lines from scripts/pr-changelog.py, app store check),
+//     with a prominent breaking-changes section at the top of the report and
+//     a `breaking-change` label on the PR when breaking changes are detected
 //   * collapsible full log + links to commit and workflow run
 //
 // Configuration via environment variables:
@@ -170,7 +172,7 @@ function footer() {
 
 // ---------------------------------------------------------------- app check
 
-function appStoreParts(raw, outcome, cfg) {
+function appStoreParts(raw, outcome, cfg, breaking) {
   const errors = tagged(raw, 'ERROR');
   const warns = tagged(raw, 'WARN ');
   const sm = raw.match(/Summary:\s*(\d+)\s*error\(s\),\s*(\d+)\s*warning\(s\)/);
@@ -206,6 +208,17 @@ function appStoreParts(raw, outcome, cfg) {
     scope + ' · **Fehler:** ' + errCount + ' · **Warnungen:** ' + warnCount,
     ''
   );
+
+  if (breaking && breaking.details.length) {
+    parts.push('### ⚠️ Breaking Changes erkannt', '');
+    for (const b of breaking.details) parts.push('- ' + b);
+    parts.push(
+      '',
+      '> Dafür wird das Label `breaking-change` am PR gesetzt. Bei bewusster ' +
+        'Übernahme bitte `breaking-ok` setzen (hebt den optionalen Gate auf).',
+      ''
+    );
+  }
 
   if (!parsedSummary && (outcome !== 'success' || !raw)) {
     parts.push(
@@ -386,10 +399,37 @@ module.exports = async function prReport(args) {
   const raw = readRaw(process.env.REPORT_FILE || cfg.file);
   const outcome = process.env.OUTCOME || 'unknown';
 
+  // Breaking-Change-Infos: strukturierte JSON-Summary (pr-changelog.py) plus
+  // [BREAK]-Zeilen und ⚠️-Treffer im Log als Fallback.
+  let summary = null;
+  if (process.env.SUMMARY_FILE) {
+    try {
+      summary = JSON.parse(fs.readFileSync(process.env.SUMMARY_FILE, 'utf8'));
+    } catch (e) {
+      summary = null;
+    }
+  }
+  const breakDetails = [];
+  if (summary && summary.apps) {
+    for (const app of Object.keys(summary.apps).sort()) {
+      const a = summary.apps[app];
+      if (a && a.breaking) {
+        for (const d of a.details || []) breakDetails.push('**' + app + '**: ' + d);
+      }
+    }
+  }
+  if (!breakDetails.length) {
+    for (const b of tagged(raw, 'BREAK')) breakDetails.push(b);
+  }
+  if (!breakDetails.length && /⚠️ mögliche Breaking Changes/.test(raw)) {
+    breakDetails.push('Breaking-Change-Hinweise in den Tag-Änderungen (siehe Log unten).');
+  }
+  const breaking = { has: breakDetails.length > 0, details: breakDetails };
+
   const parts =
     kind === 'upstream-watch'
       ? upstreamParts(raw, outcome, cfg)
-      : appStoreParts(raw, outcome, cfg);
+      : appStoreParts(raw, outcome, cfg, breaking);
 
   const body = [cfg.marker, '']
     .concat(parts)
@@ -431,6 +471,33 @@ module.exports = async function prReport(args) {
       body: body,
     });
     core.info('Kommentar erstellt: ' + created.html_url);
+  }
+
+  if (breaking.has && context.issue && context.issue.number) {
+    const labelArgs = {
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      issue_number: context.issue.number,
+      labels: ['breaking-change'],
+    };
+    try {
+      await github.rest.issues.addLabels(labelArgs);
+      core.info('Label breaking-change gesetzt.');
+    } catch (e) {
+      try {
+        await github.rest.issues.createLabel({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          name: 'breaking-change',
+          color: 'd73a4a',
+          description: 'Update enthält erkannte Breaking Changes - bitte sorgfältig prüfen',
+        });
+        await github.rest.issues.addLabels(labelArgs);
+        core.info('Label breaking-change erstellt und gesetzt.');
+      } catch (e2) {
+        core.warning('Label breaking-change konnte nicht gesetzt werden: ' + e2.message);
+      }
+    }
   }
 };
 

@@ -1,21 +1,25 @@
 # AnyUmbrelStore
 
-Ein [Community App Store](https://github.com/getumbrel/umbrel-community-app-store) für [umbrelOS](https://umbrel.com) mit kuratierten Self-Hosted-Apps, die (noch) nicht im offiziellen Store verfügbar sind.
+A [community app store](https://github.com/getumbrel/umbrel-community-app-store) for [umbrelOS](https://umbrel.com) with curated self-hosted apps that are (not yet) available in the official store.
 
-## Store hinzufügen
+[![App Store Check](https://github.com/DemianosHB/AnyUmbrelStore/actions/workflows/app-store-check.yml/badge.svg)](https://github.com/DemianosHB/AnyUmbrelStore/actions/workflows/app-store-check.yml)
+[![Upstream Changelog Watch](https://github.com/DemianosHB/AnyUmbrelStore/actions/workflows/upstream-watch.yml/badge.svg)](https://github.com/DemianosHB/AnyUmbrelStore/actions/workflows/upstream-watch.yml)
+[![Watchly Docker Image](https://github.com/DemianosHB/AnyUmbrelStore/actions/workflows/watchly-image.yml/badge.svg)](https://github.com/DemianosHB/AnyUmbrelStore/actions/workflows/watchly-image.yml)
 
-1. Öffne auf deinem Umbrel die **App Store** Seite.
-2. Wähle unten **External app store hinzufügen** und gib diese URL ein:
+## Add the store
+
+1. On your Umbrel, open the **App Store** page.
+2. At the bottom, choose **Add external app store** and enter this URL:
 
    ```
    https://github.com/DemianosHB/AnyUmbrelStore
    ```
 
-3. Die Apps dieses Stores erscheinen anschließend im App Store.
+3. The apps from this store then appear in the App Store.
 
-## Verfügbare Apps
+## Available apps
 
-| App | ID | Version | Kategorie | Port |
+| App | ID | Version | Category | Port |
 |---|---|---|---|---|
 | [Gluetun VPN](https://github.com/passteque/gluetun) | `anyumbrelstore-gluetun` | latest (Dev) | Networking | 30126 |
 | [Profilarr](https://github.com/Dictionarry-Hub/profilarr) | `anyumbrelstore-profilearr` | 2.3.1 | Media | 6868 |
@@ -28,82 +32,84 @@ Ein [Community App Store](https://github.com/getumbrel/umbrel-community-app-stor
 
 ### Gluetun VPN
 
-Leichter VPN-Client-Container (WireGuard & OpenVPN, viele Anbieter). Die Weboberfläche (umbrel.local:30126) zeigt Verbindungsstatus, öffentliche IP und Server-Infos und erlaubt Start/Stopp aus dem Browser (API-Key siehe App-Zugangsdaten). Für andere Apps, die durch den Tunnel routen sollen, veröffentlicht er zusätzlich:
+Lightweight VPN client container (WireGuard & OpenVPN, many providers). The web UI (umbrel.local:30126) shows connection status, public IP and server info and allows start/stop from the browser (API key: see app credentials). For other apps that should route through the tunnel, it additionally exposes:
 
-- HTTP-Proxy: Port **8009**
-- SOCKS5-Proxy: Port **1080**
-- Shadowsocks: Port **8388**
+- HTTP proxy: port **8009**
+- SOCKS5 proxy: port **1080**
+- Shadowsocks: port **8388**
 
-Beim Installieren müssen VPN-Anbieter, VPN-Typ und WireGuard-Schlüssel angegeben werden (`VPN_SERVICE_PROVIDER`, `VPN_TYPE`, `WIREGUARD_PRIVATE_KEY`, `SERVER_COUNTRIES`).
+On install, VPN provider, VPN type and WireGuard private key must be provided (`VPN_SERVICE_PROVIDER`, `VPN_TYPE`, `WIREGUARD_PRIVATE_KEY`, `SERVER_COUNTRIES`).
 
-Gluetun folgt dem **Entwicklungs-Kanal** (`latest`, digest-gepinnt), da der eingebaute SOCKS5-Proxy bisher nur dort und in keinem Stable-Release enthalten ist. Renovate aktualisiert den Digest automatisch. Die WebUI läuft auf Port 30126 (Packaging-Update: der ursprüngliche Port 8010 kollidiert mit dem Ryot-Paket aus einem anderen Community-Store); HTTP-Proxy (8009), SOCKS5 (1080) und Shadowsocks (8388) bleiben unverändert – AIOStreams und InfiniDysk erreichen Gluetun über den Container-Namen.
+Gluetun follows the **dev channel** (`latest`, digest-pinned) because the built-in SOCKS5 proxy server is so far only included there and in no stable release. Renovate updates the digest automatically. The web UI runs on port 30126 (packaging change: the original port 8010 collides with the Ryot package from another community store); HTTP proxy (8009), SOCKS5 (1080) and Shadowsocks (8388) remain unchanged – AIOStreams and InfiniDysk reach Gluetun via the container name.
 
 ### Profilarr
 
-Qualitätsprofile und Custom Formats für Radarr und Sonarr erstellen, testen und synchronisieren – inklusive integriertem Parser zum Testen von Profilen.
+Create, test and sync quality profiles and custom formats for Radarr and Sonarr – including an integrated parser for testing profiles.
 
 ### Paperless Backup
 
-Offsite-Backup für die offizielle Paperless-ngx-App – **eine App, zwei Container**:
+Offsite backup for the official Paperless-ngx app – **one app, two containers**:
 
-- **dbdump** (`postgres:18`): erstellt täglich um 01:30 (Europe/Berlin) einen `pg_dump | gzip`-Dump der Paperless-PostgreSQL-Datenbank in die App-Daten (`db-export`, 7 Tagesversionen, atomar geschrieben). Der pg_dump-Client darf neuer sein als der Datenbank-Server, niemals älter – Renovate kann den Tag daher gefahrlos weiter anheben.
-- **duplicati** (offizielles `duplicati/duplicati`-Image, digest-gepinnt wie die offizielle Umbrel-App): sichert täglich die Dokumente (`/mnt/source/media`) und die DB-Dumps (`/mnt/source/db-export`) per SFTP (Port 22, Passwort-Authentifizierung – bewusst ohne SSH-Keys), z. B. auf eine Hetzner Storage Box. Backup-Job, Zeitplan (passend nach dem DB-Dump, z. B. 02:30), AES-256-Verschlüsselung und Retention werden in der gewohnten Duplicati-Weboberfläche eingerichtet.
+- **dbdump** (`postgres:18`): creates a `pg_dump | gzip` dump of the Paperless PostgreSQL database daily at 01:30 (Europe/Berlin) into the app data (`db-export`, 7 daily versions, written atomically). The pg_dump client may be newer than the database server, never older – Renovate can therefore safely bump the tag.
+- **duplicati** (official `duplicati/duplicati` image, digest-pinned like the official Umbrel app): backs up the documents (`/mnt/source/media`) and the DB dumps (`/mnt/source/db-export`) via SFTP (port 22, password authentication – deliberately no SSH keys), e.g. to a Hetzner Storage Box. Backup job, schedule (right after the DB dump, e.g. 02:30), AES-256 encryption and retention are set up in the usual Duplicati web UI.
 
-Die offizielle Paperless-App wird weder geforkt noch modifiziert – `media` wird nur lesend in die Backup-App gemountet. Der Duplicati-Container läuft als root (Image-Default), da Docker fehlende Bind-Mount-Ordner und der dbdump-Container die App-Daten root-owned anlegen; die Backup-Quellen bleiben ausschließlich lesend gemountet. Restore: Dokumente über die Duplicati-Web-UI, DB-Dump per `gunzip -c paperless-YYYY-MM-DD.sql.gz | docker exec -i paperless_db_1 psql -U paperless paperless`, danach den Suchindex in Paperless neu aufbauen.
+The official Paperless app is neither forked nor modified – `media` is only mounted read-only into the backup app. The Duplicati container runs as root (image default) because Docker creates missing bind-mount folders and the dbdump container creates the app data root-owned; the backup sources remain mounted read-only. Restore: documents via the Duplicati web UI, DB dump via `gunzip -c paperless-YYYY-MM-DD.sql.gz | docker exec -i paperless_db_1 psql -U paperless paperless`, then rebuild the search index in Paperless.
 
 ### AIOStreams
 
-Stremio-**Super-Addon**: bündelt mehrere Stremio-Addons und Debrid-/Usenet-Dienste (z. B. Torrentio, Comet, MediaFusion) in einem einzigen, hoch anpassbaren Addon. Ergebnisse aller Quellen werden gefiltert, sortiert, dedupliziert und in einer sauberen Stream-Liste zusammengeführt – inklusive Addon-Marktplatz (80+ Addons), nativer Usenet-Streaming-Engine und Jellyfin-kompatibler Oberfläche zum direkten Ansehen ohne Stremio.
+Stremio **super-addon**: bundles several Stremio addons and debrid/usenet services (e.g. Torrentio, Comet, MediaFusion) into a single, highly customizable addon. Results from all sources are filtered, sorted, deduplicated and merged into a clean stream list – including an addon marketplace (80+ addons), a native usenet streaming engine and a Jellyfin-compatible UI for direct viewing without Stremio.
 
-Erste Schritte: Weboberfläche öffnen, im Dashboard einloggen (Benutzer `admin`, Passwort siehe App-Zugangsdaten), Addons und Debrid-Dienste einrichten und das erzeugte Addon über den Install-Button zu Stremio hinzufügen. Debrid- und Usenet-Dienste werden als **Services** eingebunden (Config → Services); seit v2.37 sind die eigenständigen TorBox-Addons entfernt – der TorBox-API-Key (torbox.app → Settings) gehört unter Config → Services → TorBox. `BASE_URL` steht standardmäßig auf der Umbrel-Launch-URL; für Clients ohne mDNS (z. B. manche Android-TV-Apps) in den App-Einstellungen auf die IP-URL umstellen. Das Addon ist bewusst ohne Umbrel-Login im lokalen Netz erreichbar (Stremio- und Jellyfin-Clients senden keine Umbrel-Cookies und erreichen das Addon über dynamische Config-ID-Pfade); das Dashboard selbst ist über den Operator-Login geschützt. Nur im lokalen Netz betreiben. Renovate aktualisiert Manifest-Version und Image gebündelt.
+Getting started: open the web UI, log into the dashboard (user `admin`, password: see app credentials), set up addons and debrid services and add the generated addon to Stremio via the install button. Debrid and usenet services are configured as **Services** (Config → Services); since v2.37 the standalone TorBox addons are removed – the TorBox API key (torbox.app → Settings) belongs under Config → Services → TorBox. `BASE_URL` defaults to the Umbrel launch URL; for clients without mDNS (e.g. some Android TV apps), switch to the IP URL in the app settings. The addon is deliberately reachable in the local network without Umbrel login (Stremio and Jellyfin clients send no Umbrel cookies and reach the addon via dynamic config-ID paths); the dashboard itself is protected by the operator login. Run only in the local network. Renovate updates the manifest version and image together.
 
 ### Nuvio Backend
 
-Selbst gehostetes Nuvio-Backend für eigene Nuvio-Clients – der API-Stack aus [NuvioMedia/self-host](https://github.com/NuvioMedia/self-host) (PostgreSQL, GoTrue-Auth, PostgREST, Storage, Edge Functions, Kong-Gateway) inklusive Account-Dashboard. Nach der Installation im Account-Dashboard (Port **30122**) zuerst einen Account anlegen; Nuvio-Clients verbinden sich mit der Backend-URL (Port **30123**).
+Self-hosted Nuvio backend for your own Nuvio clients – the API stack from [NuvioMedia/self-host](https://github.com/NuvioMedia/self-host) (PostgreSQL, GoTrue auth, PostgREST, storage, edge functions, Kong gateway) including the account dashboard. After installation, first create an account in the account dashboard (port **30122**); Nuvio clients connect to the backend URL (port **30123**).
 
-Der Upstream wird als Klon an einer gepinnten Commit-Revision in die App-Daten gezogen (`nuvio-fetch`-One-Shot-Service), Secrets werden beim ersten Start automatisch generiert, DB-Migrationen laufen idempotent über `nuvio-migrate`. Die Manifest-Version (0.1.x) ist die eigene Packaging-Version des Stores – Upstream published keine Releases. Die Images des Supabase-Stacks bewegen sich bewusst nur gemeinsam mit dem gepinnten Upstream-Commit (siehe Pflege-Abschnitt).
+Upstream is cloned into the app data at a pinned commit revision (`nuvio-fetch` one-shot service), secrets are generated automatically on first start, and DB migrations run idempotently via `nuvio-migrate`. The manifest version (0.1.x) is the store's own packaging version – upstream publishes no releases. The Supabase stack images deliberately move only together with the pinned upstream commit (see Maintenance).
 
 ### InfiniDysk
 
-Usenet-Streaming über ein virtuelles WebDAV-Laufwerk: InfiniDysk (NzbDAV SuperFork) entpackt NZB-Dateien on-the-fly und stellt sie über WebDAV als Dateien bereit – inklusive SABnzbd-kompatibler API, ohne dass Downloads vollständig abgeschlossen werden müssen. Nach dem Erststart (Admin-Account im Web-UI anlegen) werden Newznab-Indexer und NNTP-Server hinterlegt.
+Usenet streaming via a virtual WebDAV drive: InfiniDysk (NzbDAV SuperFork) unpacks NZB files on the fly and serves them as files over WebDAV – including a SABnzbd-compatible API, without downloads having to complete fully. After first start (create an admin account in the web UI), configure Newznab indexers and NNTP servers.
 
-Anbindung an AIOStreams auf einem von zwei Wegen: als **NzbDAV-Service** (rein Playback – AIOStreams proxied die Streams, braucht für die Suche aber eigene Newznab-Addons) oder als **Custom Addon** über die Addon-Adapter der InfiniDysk-Search-Profiles (Manifest-URL `/adapters/addon/<token>/manifest.json`, Host-Teil in AIOStreams auf `anyumbrelstore-infinidysk_server_1:3000` ändern) – dann liefert InfiniDysk die Newznab-Suche selbst und AIOStreams übernimmt nur das Playback; beide Wege nicht miteinander kombinieren. Indexer-Anfragen (Newznab-Suche, NZB-Grabs) lassen sich über Settings → Indexers per HTTP(S)- oder SOCKS5-Proxy routen (global oder pro Indexer, z. B. durch den Gluetun-Container). Seit v1.7.1-lang4 lassen sich über Settings → General → „Outbound proxy“ (`general.socks5-proxy`, z. B. `socks5://gluetun:1080`, inkl. „Test proxy“-Button) alle ausgehenden Verbindungen inklusive NNTP durch einen globalen SOCKS5-Proxy tunneln (DNS remote, TLS Ende-zu-Ende, Loopback/Docker-Namen bleiben direkt). Bevorzugte Audio-Sprachen pro Search-Profil hinterlegst du unter Settings → Profiles („Preferred audio languages“, geordnete Liste z. B. `de, en`) — sie beeinflussen die Sortierung der Suchergebnisse und die Watchdog-Fallback-Reihenfolge (Bias, kein Filter). Die App ist ohne Umbrel-Login im lokalen Netz erreichbar (WebDAV- und SABnzbd-Clients senden keine Umbrel-Cookies), aber über ihr eigenes Login geschützt. Renovate aktualisiert Manifest-Version und Image-Tag gebündelt.
+Connect to AIOStreams in one of two ways: as an **NzbDAV service** (playback only – AIOStreams proxies the streams but needs its own Newznab addons for search) or as a **custom addon** via the addon adapters of InfiniDysk's search profiles (manifest URL `/adapters/addon/<token>/manifest.json`, change the host part in AIOStreams to `anyumbrelstore-infinidysk_server_1:3000`) – then InfiniDysk provides the Newznab search itself and AIOStreams only handles playback; do not combine both. Indexer requests (Newznab search, NZB grabs) can be routed through an HTTP(S) or SOCKS5 proxy via Settings → Indexers (global or per indexer, e.g. through the Gluetun container). Since v1.7.1-lang4, all outbound connections including NNTP can be tunneled through a global SOCKS5 proxy via Settings → General → "Outbound proxy" (`general.socks5-proxy`, e.g. `socks5://gluetun:1080`, including a "Test proxy" button) (DNS remote, TLS end-to-end, loopback/Docker names stay direct). Set preferred audio languages per search profile under Settings → Profiles ("Preferred audio languages", ordered list e.g. `de, en`) – they influence result sorting and the watchdog fallback order (bias, not a filter). The app is reachable in the local network without Umbrel login (WebDAV and SABnzbd clients send no Umbrel cookies) but is protected by its own login. Renovate updates the manifest version and image tag together.
 
 ### Watchly
 
-Personalisierte Empfehlungen aus deiner Nuvio-Historie: Watchly liest die Watch-Historie direkt aus dem selbst gehosteten Nuvio-Backend und baut daraus Empfehlungs-Reihen („Top Picks for You", „Because you watched …", Genre- und Keyword-Kataloge), die als Katalog-Addon auf dem Nuvio-Homescreen erscheinen – ohne Umweg über Trakt, Simkl oder die Nuvio-Cloud.
+Personalized recommendations from your Nuvio history: Watchly reads the watch history directly from the self-hosted Nuvio backend and builds recommendation rows ("Top Picks for You", "Because you watched …", genre and keyword catalogs) that appear as a catalog addon on the Nuvio home screen – without detours via Trakt, Simkl or the Nuvio cloud.
 
-Das Image wird vom Store selbst gebaut (siehe Pflege-Abschnitt) und per Start-Skript auf das eigene Nuvio-Backend gezeigt; der Publishable-Key wird beim Container-Start automatisch über den Discovery-Endpunkt geholt. **Wichtig:** Watchly benötigt einen TMDB-API-Key als `TMDB_API_KEY`-Env-Variable im `server`-Service – mehrere Watchly-Code-Pfade ignorieren den in der Web-UI hinterlegten Key, ohne die Env-Variable schlägt das Manifest mit Fehler 500 fehl (Details: [`docker/watchly/README.md`](docker/watchly/README.md)).
+The image is built by the store itself (see Maintenance) and pointed at your own Nuvio backend by a startup script; the publishable key is fetched automatically at container start via the discovery endpoint. **Important:** Watchly requires a TMDB API key as a `TMDB_API_KEY` env variable in the `server` service – several Watchly code paths ignore the key stored in the web UI; without the env variable the manifest fails with error 500 (details: [`docker/watchly/README.md`](docker/watchly/README.md)).
 
 ### StremThru
 
-Selbst gehosteter Companion für Stremio und Nuvio: StremThru legt sich als Schicht vor Debrid-Dienste (u. a. TorBox) und stellt eigene Stremio-Addons bereit – darunter **Torz** (Torrent- und Debrid-Suche; ungecachte Treffer stoßen einen Download beim Store an und werden nach kurzer Wartezeit abspielbar), **Store** (Katalog des eigenen Debrid-Kontos), **Wrap** und **Sidekick** – dazu ein Stream-Proxy mit Byte-Serving. Im Nuvio-Stack schließt es die Lücke, dass Nuvio ungecachte Torrentio-/Comet-Treffer nicht abspielen kann, weil Nuvio keine Torrent-Engine hat: StremThru übernimmt den Download-Trigger bei TorBox.
+Self-hosted companion for Stremio and Nuvio: StremThru sits in front of debrid services (incl. TorBox) and provides its own Stremio addons – including **Torz** (torrent and debrid search; uncached hits trigger a download at the store and become playable after a short wait), **Store** (catalog of your own debrid account), **Wrap** and **Sidekick** – plus a stream proxy with byte-serving. In the Nuvio stack it closes the gap that Nuvio cannot play uncached Torrentio/Comet hits because Nuvio has no torrent engine: StremThru takes over the download trigger at TorBox.
 
-Dashboard-Login: `admin` plus App-Passwort (App-Zugangsdaten). Store-Tokens (z. B. der TorBox-API-Key) werden über den Vault im Dashboard hinterlegt und persistiert (Vault-Secret aus `APP_SEED`). Anbindung an AIOStreams über das Marketplace-Addon „StremThru Torz“ (StremThru-URL `http://umbrel.internal:30128`, Credential `admin` + App-Passwort). Die TorBox-API läuft ohne Tunnel direkt von der Heim-IP (`STREMTHRU_STORE_TUNNEL=*:false`); optional über `STREMTHRU_HTTP_PROXY` auf den Gluetun-Container routbar.
+Dashboard login: `admin` plus app password (app credentials). Store tokens (e.g. the TorBox API key) are stored in the dashboard vault and persisted (vault secret from `APP_SEED`). Connect to AIOStreams via the marketplace addon "StremThru Torz" (StremThru URL `http://umbrel.internal:30128`, credentials `admin` + app password). The TorBox API runs without tunnel directly from the home IP (`STREMTHRU_STORE_TUNNEL=*:false`); optionally routable to the Gluetun container via `STREMTHRU_HTTP_PROXY`.
 
-## Struktur
+## Structure
 
-Jede App liegt in einem eigenen Ordner, benannt nach ihrer App-ID (Präfix `anyumbrelstore-`):
+Each app lives in its own folder, named after its app ID (prefix `anyumbrelstore-`):
 
 ```text
 <app-id>/
-  umbrel-app.yml      # Manifest (Metadata, Port, Version)
-  docker-compose.yml  # Docker-Services
-  icon.svg            # App-Icon (optional, Community-Stores)
+  umbrel-app.yml      # manifest (metadata, port, version)
+  docker-compose.yml  # Docker services
+  icon.svg            # app icon (optional, community stores)
 ```
 
-Die Store-Definition steht in [`umbrel-app-store.yml`](umbrel-app-store.yml).
+The store definition is in [`umbrel-app-store.yml`](umbrel-app-store.yml).
 
-## Pflege
+## Maintenance
 
-- Container-Images werden automatisch von [Renovate](https://renovatebot.com) aktuell gehalten (`renovate.json`).
-- **Ausnahme Nuvio Backend:** Die Images des Supabase-Stacks (Kong, GoTrue, PostgREST, Storage-API, Postgres, Edge-Runtime, imgproxy) sind an den gepinnten Upstream-Commit gekoppelt und werden manuell gemeinsam mit dem Pin gebumpt; Renovate aktualisiert sie bewusst nicht (Package-Regel in `renovate.json`). Die One-Shot-Images (`alpine`, `curl`) und das Digest des Account-Dashboards bleiben bei Renovate.
-- **Watchly (eigenes Image):** Das Image `ghcr.io/demianoshb/watchly` baut der Workflow [Watchly Docker Image](.github/workflows/watchly-image.yml) selbst (Multi-Arch, amd64+arm64) aus dem gepinnten Upstream-Tag (`WATCHLY_REF`); beim Container-Start patcht das Entry-Skript die hart codierte Nuvio-Cloud-URL auf das eigene Backend (Details: [`docker/watchly/README.md`](docker/watchly/README.md)). Upstream-Bumps laufen bewusst manuell: `WATCHLY_REF` im Workflow erhöhen → Image-Build abwarten → Renovate zieht die App hoch; dabei prüfen, ob die sed/grep-Muster des Entry-Skripts zum neuen Upstream passen. Der TMDB-API-Key muss als `TMDB_API_KEY`-Env-Variable im `server`-Service gesetzt sein (Umbrel rendert die App-Compose bei Updates neu, siehe Watchly-README).
-- Jeder Pull-Request wird von der [App-Store-Check](.github/workflows/app-store-check.yml)-Action automatisch geprüft: Manifest-Schema, Versionen (kein bare `latest`), Digest-Pinning beweglicher Tags, Port-Konflikte im eigenen Store und gegen den offiziellen Store, `app_proxy`-Wiring, Icon-Existenz und Security-Gates. Bei Tag- oder Digest-Bumps ermittelt sie zusätzlich die Upstream-Änderungen zwischen altem und neuem Tag (Release-Notes inkl. Breaking-Change-Radar), ergänzt die `releaseNotes` (Changelog) in der `umbrel-app.yml` der betroffenen App und gleicht die Versions-Tabelle oben im README ab – nach bestandenem Check werden diese Änderungen automatisch als Commit zum PR-Branch hinzugefügt, und das Ergebnis erscheint als strukturierter Kommentar am PR. Die zugehörigen Check-Skripte (`scripts/check-apps.py`, `scripts/pr-changelog.py`, `scripts/pr-report.js`) lädt der Workflow immer vom Base-Branch, damit der Check auch auf PR-Branches funktioniert, die älter sind als die Skripte selbst (z. B. ältere Renovate-Branches).
-- Wöchentlich (montags, 06:00 UTC) prüft der [Upstream Changelog Watch](.github/workflows/upstream-watch.yml) die Release-Notes der Upstream-Projekte auf neue Versionen und Breaking Changes und veröffentlicht Befunde als Issue – ein bestehendes Watch-Issue wird dabei aktualisiert statt neu angelegt und bei Entwarnung wieder geschlossen.
-- Nach jedem Merge auf `master` räumt der [Branch Cleanup](.github/workflows/branch-cleanup.yml) die Branches gemergter Pull-Requests automatisch ab; offene PR-Branches (z. B. von Renovate) und Fork-Branches bleiben unberührt.
-- Die Pakete folgen den Verpackungs-Konventionen des offiziellen [umbrel-apps](https://github.com/getumbrel/umbrel-apps)-Repos; Host-Ports sind so gewählt, dass sie sich nicht mit dem offiziellen Store überschneiden.
+- Container images are kept up to date automatically by [Renovate](https://renovatebot.com) (`renovate.json`). Updates are batched at fixed times (Mondays before 5am, Europe/Berlin) and only opened once CI is green; pure digest updates (e.g. Gluetun `:latest`) are auto-merged by Renovate as soon as the App Store Check passes.
+- The GitHub Actions in the workflows are pinned to commit SHAs for supply-chain security (`@<sha> # vX.Y.Z`); Renovate updates them bundled in a single "GitHub Actions updates" PR.
+- **Exception – Nuvio Backend:** the Supabase stack images (Kong, GoTrue, PostgREST, Storage-API, Postgres, Edge-Runtime, imgproxy) are tied to the pinned upstream commit and are bumped manually together with the pin; Renovate deliberately does not update them (package rule in `renovate.json`). The one-shot images (`alpine`, `curl`) and the account dashboard digest stay with Renovate.
+- **Watchly (own image):** the image `ghcr.io/demianoshb/watchly` is built by the [Watchly Docker Image](.github/workflows/watchly-image.yml) workflow itself (multi-arch, amd64+arm64, with provenance + SBOM attestations) from the pinned upstream tag (`WATCHLY_REF`); at container start the entry script patches the hard-coded Nuvio cloud URL to your own backend (details: [`docker/watchly/README.md`](docker/watchly/README.md)). Upstream bumps stay manual: Renovate proposes new Watchly releases automatically as a PR (`WATCHLY_REF` in workflow and Dockerfile bundled, no automerge) → merge the PR → wait for the image build → Renovate pulls the app up; check whether the entry script's sed/grep patterns still match the new upstream. The TMDB API key must be set as a `TMDB_API_KEY` env variable in the `server` service (Umbrel re-renders the app compose on updates, see Watchly README).
+- Every pull request is checked automatically by the [App Store Check](.github/workflows/app-store-check.yml) action (additionally weekly on Mondays at 05:00 UTC and after every merge to `master`, so port collisions with the official store are noticed even without an open PR): manifest schema, versions (no bare `latest`), digest pinning of moving tags, port conflicts within this store and against the official store, `app_proxy` wiring, icon existence and security gates. On tag/digest bumps it also determines the upstream changes between the old and new tag (release notes incl. breaking-change radar), updates the `releaseNotes` (changelog) in the affected app's `umbrel-app.yml` and syncs the version table above in this README – after a passing check these changes are automatically committed to the PR branch, and the result appears as a structured comment on the PR. The check scripts (`scripts/check-apps.py`, `scripts/pr-changelog.py`, `scripts/pr-report.js`) are always loaded from the base branch by the workflow, so the check also works on PR branches that are older than the scripts themselves (e.g. older Renovate branches).
+- The check detects **breaking changes** on several levels: keywords + conventional-commit markers (`BREAKING CHANGE:`, `feat!:`) in release notes and commit messages, major version jumps, removed env variables/host ports in the compose file, and (for dev-channel digest updates like Gluetun `:latest`) the newest upstream commits. Findings appear as `::warning::` annotations, as a "⚠️ Breaking Changes" section at the top of the PR comment and as the `breaking-change` label on the PR; machine-readable they are available in a JSON summary. Via the repo variable `FAIL_ON_BREAKING=true` the check can additionally fail on breaking changes (label `breaking-ok` on the PR opts out).
+- Weekly (Mondays, 06:00 UTC) the [Upstream Changelog Watch](.github/workflows/upstream-watch.yml) checks the release notes of the upstream projects for new versions and breaking changes (incl. early warning on prereleases) and publishes findings as an issue – an existing watch issue is updated instead of duplicated and closed again when all is quiet.
+- After every merge to `master`, the [Branch Cleanup](.github/workflows/branch-cleanup.yml) workflow automatically deletes the branches of merged pull requests; open PR branches (e.g. from Renovate) and fork branches are left untouched.
+- The packages follow the packaging conventions of the official [umbrel-apps](https://github.com/getumbrel/umbrel-apps) repo; host ports are chosen so they do not overlap with the official store.
 
-## Hinweis
+## Disclaimer
 
-Community App Stores werden nicht von umbrelOS vorgeprüft. Prüfe Apps wie immer vor der Installation – die Verantwortung liegt beim Nutzer. Dieser Store steht in keiner Verbindung zu Umbrel oder den jeweiligen Upstream-Projekten.
+Community app stores are not reviewed by umbrelOS. As always, check apps before installing – responsibility lies with the user. This store is not affiliated with Umbrel or the respective upstream projects.

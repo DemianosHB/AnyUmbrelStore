@@ -1,0 +1,12 @@
+name: Python setup
+description: Einheitliches Python-Setup für die Check-Workflows - Python 3.15 inklusive pip-Cache. Vorher muss das Repo bereits ausgecheckt sein (actions/checkout), da lokale Composite Actions ein vorhandenes Workspace brauchen.
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      with:
+        python-version: "3.15"
+        cache: "pip"
+        cache-dependency-path: ".github/requirements-ci.txt"
