@@ -41,6 +41,8 @@ repo: https://github.com/passteque/gluetun
 support: https://github.com/passteque/gluetun/issues
 releaseNotes: >-
   Automatische(s) Digest-Update(s) (Renovate): ghcr.io/qdm12/gluetun:latest
+  sha256:78c09588169a → sha256:44a82caf5b86.
+  Automatische(s) Digest-Update(s) (Renovate): ghcr.io/qdm12/gluetun:latest
   sha256:806ce0cc74c9 → sha256:78c09588169a.
   Automatische(s) Digest-Update(s) (Renovate): ghcr.io/qdm12/gluetun:latest
   sha256:4af0c8040034 → sha256:806ce0cc74c9.
