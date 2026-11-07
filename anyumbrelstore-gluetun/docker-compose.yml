@@ -7,7 +7,7 @@ services:
   app:
     # Dev-Kanal (master): SOCKS5 existiert hier, aber noch in keinem
     # Stable-Release. Digest-gepinnt, Renovate aktualisiert den Digest.
-    image: ghcr.io/qdm12/gluetun:latest@sha256:806ce0cc74c9e8919a33ffc3ae1f345a5ff09857801fb791b3f1c96a735e4115
+    image: ghcr.io/qdm12/gluetun:latest@sha256:78c09588169ad05b9f88bc492ac8f80e6167e93da7526171863c0dfb88bf18d6
     cap_add:
       - NET_ADMIN
     devices:
