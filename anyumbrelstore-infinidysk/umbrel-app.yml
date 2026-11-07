@@ -31,6 +31,14 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
+  v1.7.1-lang4 - Fork-Update (Fork-PRs #3/#4): Prozessweiter SOCKS5-Outbound-Proxy
+  (general.socks5-proxy in Settings -> General inkl. "Test proxy"-Button;
+  tunnelt NNTP- und HTTP-Verbindungen, z. B. ueber den Gluetun-SOCKS5-Proxy
+  auf Port 1080; DNS remote, TLS Ende-zu-Ende, Loopback und einzelne
+  Docker-Namen bleiben direkt, per-Indexer-Proxy-Einstellungen haben
+  Vorrang, Standard aus) sowie Settings-UI fuer die bevorzugten
+  Audio-Sprachen (Settings -> Profiles -> "Preferred audio languages",
+  geordnete Liste z. B. de, en; Bias, kein Filter).
   v1.7.1-lang3 - Watchdog-Failover-Sortierung im Fork: Der
   Play-Failover des Watchdogs (ProfilePlayController, Fork-PR #2,
   Commit 0e957d0) folgt nicht mehr blind der von AIOStreams
