@@ -5,7 +5,7 @@ storage:
 category: media
 name: InfiniDysk
 # renovate: datasource=docker depName=ghcr.io/demianoshb/infinidysk extractVersion=^v?(?<version>.*)$ versioning=semver
-version: "1.7.1-lang3"
+version: "1.7.1-lang4"
 tagline: Usenet-Streaming über ein virtuelles WebDAV-Laufwerk
 description: >-
   InfiniDysk (NzbDAV SuperFork) mountet Usenet-Inhalte als virtuelles
