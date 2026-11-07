@@ -28,7 +28,11 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: ./.github/actions/setup
+      # Checkout vor der lokalen Composite Action (braucht ausgechecktes Workspace).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Python setup
+        uses: ./.github/actions/setup
 
       # Kein eigener API-Key nötig: secrets.GITHUB_TOKEN wird pro Lauf
       # automatisch bereitgestellt und über den permissions-Block auf

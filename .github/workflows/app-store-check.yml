@@ -34,13 +34,17 @@ jobs:
     steps:
       # HEAD des PRs statt des Merge-Refs auschecken, damit der Commit-Step
       # auf den PR-Branch pushen kann; fetch-depth 0 für die Base-SHA-Vergleiche.
-      # Gemeinsames Setup (Checkout + Python inkl. pip-Cache) als Composite Action.
-      - name: Checkout & Python setup
-        uses: ./.github/actions/setup
+      # (Checkout muss vor der lokalen Composite Action laufen - die braucht
+      # ein ausgechecktes Workspace.)
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: ${{ github.event_name == 'pull_request' && '0' || '1' }}
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      # Python inkl. pip-Cache als gemeinsame Composite Action.
+      - name: Python setup
+        uses: ./.github/actions/setup
 
       - name: Install dependencies
         run: pip install -r .github/requirements-ci.txt
@@ -84,7 +88,7 @@ jobs:
       # Nur wenn der Base-Branch ein Skript nicht (mehr) enthält, fällt der
       # Job auf die Version im PR-Checkout zurück.
       - name: Fetch CI scripts from the base branch
-        if: github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         run: |
           git fetch origin "${{ github.event.pull_request.base.ref }}"
           mkdir -p /tmp/ci-scripts

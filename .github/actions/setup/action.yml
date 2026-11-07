@@ -1,30 +1,9 @@
-name: CI setup
-description: Einheitliches Setup für die Check-Workflows - Checkout (Repo/Ref/Fetch-Depth als Inputs) und Python inklusive pip-Cache.
-
-inputs:
-  fetch-depth:
-    description: "Git fetch-depth (0 für PR-Base-Vergleiche)"
-    required: false
-    default: "1"
-  repository:
-    description: "Auszucheckendes Repository (leer = github.repository)"
-    required: false
-    default: ""
-  ref:
-    description: "Auszucheckende Ref (leer = github.sha)"
-    required: false
-    default: ""
+name: Python setup
+description: Einheitliches Python-Setup für die Check-Workflows - Python 3.15 inklusive pip-Cache. Vorher muss das Repo bereits ausgecheckt sein (actions/checkout), da lokale Composite Actions ein vorhandenes Workspace brauchen.
 
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        fetch-depth: ${{ inputs.fetch-depth }}
-        repository: ${{ inputs.repository || github.repository }}
-        ref: ${{ inputs.ref || github.sha }}
-
     - name: Set up Python
       uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
       with:
