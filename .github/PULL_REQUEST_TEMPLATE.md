@@ -2,6 +2,7 @@
 
 - [ ] App Store Check ist grün (Manifest, Ports, app_proxy, Security-Gates)
 - [ ] Tag-/Digest-Bumps: `releaseNotes` in der `umbrel-app.yml` gepflegt (Breaking Changes aus den Upstream-Release-Notes übernommen)
+- [ ] Breaking Changes aus dem Changelog-Sync geprüft (PR hat ggf. das Label `breaking-change`; bei bewusster Übernahme `breaking-ok` setzen)
 - [ ] Sicherheits-Warnungen (privileged, cap_add, devices, host networking) sind in der Manifest-Beschreibung begründet
 - [ ] README (Versionstabelle/Beschreibung) ist aktuell
 

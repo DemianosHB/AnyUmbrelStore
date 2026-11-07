@@ -123,7 +123,8 @@ jobs:
           set -o pipefail
           python /tmp/ci-scripts/pr-changelog.py \
             --root "$PWD" \
-            --base-sha "${{ github.event.pull_request.base.sha }}" | tee /tmp/changelog-output.txt
+            --base-sha "${{ github.event.pull_request.base.sha }}" \
+            --summary-file /tmp/changelog-summary.json | tee /tmp/changelog-output.txt
           if [ -n "$(git status --porcelain)" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
@@ -145,6 +146,32 @@ jobs:
           set -e
           cat /tmp/changelog-output.txt >> /tmp/check-output.txt || true
           exit $status
+
+      # Optionaler harter Gate: schlägt fehl, wenn der Changelog-Sync Breaking
+      # Changes erkannt hat und das PR nicht das Label "breaking-ok" trägt.
+      # Aktivierung über die Repo-Variable FAIL_ON_BREAKING=true (Standard:
+      # nur ::warning::-Annotationen + Label breaking-change).
+      - name: Breaking-change gate
+        if: github.event_name == 'pull_request' && vars.FAIL_ON_BREAKING == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUMMARY_FILE: /tmp/changelog-summary.json
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -eu
+          if [ ! -s "$SUMMARY_FILE" ] || \
+             ! python3 -c "import json,sys; sys.exit(0 if json.load(open('$SUMMARY_FILE')).get('breaking') else 1)"; then
+            echo "Keine Breaking Changes erkannt - Gate bestanden."
+            exit 0
+          fi
+          echo "Breaking Changes erkannt:"
+          python3 -c "import json; s=json.load(open('$SUMMARY_FILE')); [print(' -', a + ':', d) for a, i in s['apps'].items() if i.get('breaking') for d in i.get('details', [])]"
+          if gh pr view "$PR_NUMBER" --json labels --jq '.labels[].name' | grep -qx "breaking-ok"; then
+            echo "Label 'breaking-ok' gesetzt - Gate bestanden."
+            exit 0
+          fi
+          echo "::error ::Breaking Changes erkannt und kein Label 'breaking-ok' am PR - Gate fehlgeschlagen."
+          exit 1
 
       # Changelog-/README-Änderungen aus dem Sync-Schritt als Commit auf den
       # PR-Branch bringen - nur wenn alle Checks grün sind. Pushes mit dem
@@ -180,5 +207,6 @@ jobs:
           OUTCOME: ${{ steps.checks.outcome }}
           REPORT_FILE: /tmp/check-output.txt
           REPORT_KIND: app-store-check
+          SUMMARY_FILE: /tmp/changelog-summary.json
         with:
           script: return require('/tmp/ci-scripts/pr-report.js')({ github, context, core });

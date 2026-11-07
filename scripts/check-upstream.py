@@ -307,7 +307,7 @@ def check_release_watch(watch: dict, root: str, token: str | None,
         check_commit_watch(watch, root, token, alerts, infos)
         return
 
-    releases = gh_request(f"{GITHUB_API}/repos/{repo}/releases?per_page=15", token)
+    releases = gh_request(f"{GITHUB_API}/repos/{repo}/releases?per_page=30", token)
     if not isinstance(releases, list) or not releases:
         alerts.append(f"{app}: Keine Releases für {repo} abrufbar.")
         return
@@ -337,9 +337,21 @@ def check_release_watch(watch: dict, root: str, token: str | None,
     feature_kw, feature_msg = watch.get("feature_hint", (None, None))
 
     for rel in releases:
-        if rel.get("prerelease") or rel.get("draft"):
+        if rel.get("draft"):
             continue
-        ver = parse_version(rel.get("tag_name") or "")
+        tag0 = rel.get("tag_name") or ""
+        body0 = rel.get("body") or ""
+        url0 = rel.get("html_url") or f"https://github.com/{repo}/releases/tag/{tag0}"
+        if rel.get("prerelease"):
+            # Prereleases melden wir nicht als "neues stabiles Release", aber
+            # Breaking-Stichworte darin sind ein Frühwarnsignal.
+            hits = scan_for_keywords(body0, BREAKING_KEYWORDS)
+            if hits:
+                alerts.append(
+                    f"{app}: Prerelease **{tag0}** enthält mögliche Breaking "
+                    f"Changes (Stichworte: {', '.join(hits)}). {url0}")
+            continue
+        ver = parse_version(tag0)
         if ver is None or baseline is None or ver <= baseline:
             continue
         tag = rel["tag_name"]
