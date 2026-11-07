@@ -12,20 +12,23 @@ on:
       - ".github/workflows/upstream-watch.yml"
 
 permissions:
+  # Repo-Ebene nur Lesezugriff; Schreibrechte (Issues/Kommentare) nur am Job.
   contents: read
-  issues: write
-  pull-requests: write
+
+# Bei schnellen Push-Folgen nur den neuesten Lauf rechnen.
+concurrency:
+  group: upstream-watch-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   upstream-watch:
     name: Check upstream releases and changelogs
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.15"
+      - uses: ./.github/actions/setup
 
       # Kein eigener API-Key nötig: secrets.GITHUB_TOKEN wird pro Lauf
       # automatisch bereitgestellt und über den permissions-Block auf
@@ -42,7 +45,7 @@ jobs:
       # Aufbereitung wie beim App Store Check in scripts/pr-report.js.
       - name: Report results on the PR
         if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           OUTCOME: ${{ steps.checks.outcome }}
           REPORT_FILE: /tmp/upstream-output.txt

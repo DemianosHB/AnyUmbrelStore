@@ -6,16 +6,20 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  # Repo-Ebene nur Lesezugriff; Branch-Löschung braucht Schreibrechte am Job.
+  contents: read
 
 jobs:
   cleanup:
     name: Delete branches of merged pull requests
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v7
+      # Nur ls-remote/push nötig - shallow checkout reicht (kein fetch-depth 0).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       # Löscht Branches, deren PR gemergt wurde (deckt auch Squash-Merges ab,
       # da via gh pr list --state merged geprüft wird). WICHTIG: Renovate legt

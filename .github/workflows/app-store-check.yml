@@ -3,37 +3,70 @@ name: App Store Check
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches: [master]
+  schedule:
+    # zusätzlicher wöchentlicher Lauf auf master: Port-Kollisionen mit
+    # neuen Apps im offiziellen Store auch ohne offenen PR erkennen
+    - cron: "0 5 * * 1"
   workflow_dispatch:
 
-# contents: write wird für den Commit-Step benötigt, der die Changelog- und
-# README-Aktualisierungen auf den PR-Branch pusht (Fork-PRs scheitern dort
-# harmlos mit einer Warnung - die Änderungen stehen dann nur im PR-Kommentar).
+# Auf Repo-Ebene nur Lesezugriff; Schreibrechte bekommt nur der Job, der
+# Changelog/README auf den PR-Branch pusht (siehe Job-Permissions unten).
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+
+# Bei schnellen Push-Folgen (z. B. Renovate) nur den neuesten Lauf rechnen.
+concurrency:
+  group: app-store-check-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   check-packages:
     name: Validate app packages
     runs-on: ubuntu-latest
+    # contents: write wird für den Commit-Step benötigt, der die Changelog- und
+    # README-Aktualisierungen auf den PR-Branch pusht (Fork-PRs scheitern dort
+    # harmlos mit einer Warnung - die Änderungen stehen dann nur im PR-Kommentar).
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       # HEAD des PRs statt des Merge-Refs auschecken, damit der Commit-Step
       # auf den PR-Branch pushen kann; fetch-depth 0 für die Base-SHA-Vergleiche.
-      - uses: actions/checkout@v7
+      # Gemeinsames Setup (Checkout + Python inkl. pip-Cache) als Composite Action.
+      - name: Checkout & Python setup
+        uses: ./.github/actions/setup
         with:
-          fetch-depth: 0
+          fetch-depth: ${{ github.event_name == 'pull_request' && '0' || '1' }}
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.15"
-
       - name: Install dependencies
-        run: pip install pyyaml
+        run: pip install -r .github/requirements-ci.txt
+
+      # Der Clone des offiziellen Stores ändert sich selten: täglicher
+      # Cache-Key, bei Treffer nur ff-only pull statt frischem Clone.
+      - name: Cache key date
+        id: date
+        run: echo "today=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache official Umbrel App Store clone
+        id: umbrel-apps-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: /tmp/umbrel-apps
+          key: umbrel-apps-${{ steps.date.outputs.today }}
+          restore-keys: umbrel-apps-
 
       - name: Clone official Umbrel App Store (port reference)
-        run: git clone --depth 1 https://github.com/getumbrel/umbrel-apps.git /tmp/umbrel-apps
+        run: |
+          if [ -d /tmp/umbrel-apps/.git ]; then
+            git -C /tmp/umbrel-apps pull --ff-only
+          else
+            rm -rf /tmp/umbrel-apps
+            git clone --depth 1 https://github.com/getumbrel/umbrel-apps.git /tmp/umbrel-apps
+          fi
 
       - name: List changed files in this PR
         if: github.event_name == 'pull_request'
@@ -142,7 +175,7 @@ jobs:
       # scripts/pr-report.js (geladen vom Base-Branch, siehe Fetch-Step).
       - name: Report results on the PR
         if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           OUTCOME: ${{ steps.checks.outcome }}
           REPORT_FILE: /tmp/check-output.txt

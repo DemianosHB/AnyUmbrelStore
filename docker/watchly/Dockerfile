@@ -7,6 +7,7 @@
 #
 # Used by the anyumbrelstore-watchly Umbrel app.
 
+# renovate: datasource=github-releases depName=TimilsinaBimal/Watchly extractVersion=^v?
 ARG WATCHLY_REF=1.17.2
 
 FROM python:3.15-slim AS source
