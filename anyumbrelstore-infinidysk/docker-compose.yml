@@ -11,11 +11,12 @@ services:
   server:
     # Eigener Fork-Build (DemianosHB/infinidysk): Upstream-1.x plus
     # Preferred audio languages (infinidysk/infinidysk#1765) und globaler
-    # SOCKS5-Outbound-Proxy (v1.7.1-lang4). Upstream 1.x ist feature-frozen;
+    # SOCKS5-Outbound-Proxy inkl. Bypass-Ausnahmen (v1.7.1-lang4/lang5).
+    # Upstream 1.x ist feature-frozen;
     # Fork-Releases kommen als vX.Y.Z-langN-Tags.
     # Renovate bumpt Image + Manifest-Version gebündelt (Annotation in
     # umbrel-app.yml, benannte extractVersion-Gruppe).
-    image: ghcr.io/demianoshb/infinidysk:v1.7.1-lang4
+    image: ghcr.io/demianoshb/infinidysk:v1.7.1-lang5
     restart: on-failure
     volumes:
       - ${APP_DATA_DIR}/data:/config

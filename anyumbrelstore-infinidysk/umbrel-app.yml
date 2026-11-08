@@ -5,7 +5,7 @@ storage:
 category: media
 name: InfiniDysk
 # renovate: datasource=docker depName=ghcr.io/demianoshb/infinidysk extractVersion=^v?(?<version>.*)$ versioning=semver
-version: "1.7.1-lang4+pkg1"
+version: "1.7.1-lang5"
 tagline: Usenet-Streaming über ein virtuelles WebDAV-Laufwerk
 description: >-
   InfiniDysk (NzbDAV SuperFork) mountet Usenet-Inhalte als virtuelles
@@ -31,6 +31,13 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
+  v1.7.1-lang5 - Fork-Update (Fork-PR #5): Konfigurierbare Ausnahmen
+  fuer den globalen SOCKS5-Outbound-Proxy - neue Einstellung
+  general.socks5-proxy-bypass (Settings -> General, ENV
+  NZBDAV_CONFIG__GENERAL__SOCKS5_PROXY_BYPASS): Hostnamen, Domain-Suffixe
+  (.lan bzw. *.lan), IPs, CIDR-Bereiche oder * koennen vom Proxy
+  ausgenommen werden. Zusaetzlich enthalten: Upstream-v1-Dependabot-Bumps
+  (#1842-#1846).
   v1.7.1-lang4+pkg1 - Re-Release des Image-Bumps: PR #78 hatte die
   Manifest-Version bereits auf 1.7.1-lang4 angehoben, ohne das Compose-Image
   mitzuziehen; Umbrel erkennt Updates nur an der String-Ungleichheit der
