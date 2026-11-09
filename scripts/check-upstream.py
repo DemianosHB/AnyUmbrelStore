@@ -135,6 +135,17 @@ WATCHES = [
         "kind": "stable",
         "manifest": "anyumbrelstore-stremthru/umbrel-app.yml",
     },
+    {
+        # AIOMetadata: Renovate bumps manifest version and the plain semver
+        # GHCR image tag together (no extractVersion needed, tags have no
+        # v prefix). This watch adds the changelog radar for breaking
+        # changes between stable releases; the frequent beta releases are
+        # prereleases and only warn on breaking keywords.
+        "app": "anyumbrelstore-aiometadata",
+        "repo": "cedya77/aiometadata",
+        "kind": "stable",
+        "manifest": "anyumbrelstore-aiometadata/umbrel-app.yml",
+    },
 ]
 
 ISSUE_MARKER = "[upstream-watch]"
