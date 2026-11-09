@@ -71,5 +71,5 @@ defaultUsername: ""
 defaultPassword: ""
 deterministicPassword: true
 submitter: "anyumbrelstore"
-submission: ""
+submission: https://github.com/DemianosHB/AnyUmbrelStore/pull/90
 icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-aiometadata/icon.svg
