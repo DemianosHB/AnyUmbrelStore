@@ -3,7 +3,7 @@
   "extends": [
     "config:recommended"
   ],
-  "recreateClosed": true,
+  "recreateWhen": "always",
   "docker-compose": {
     "managerFilePatterns": [
       "/(^|/)docker-compose\\.ya?ml$/"
