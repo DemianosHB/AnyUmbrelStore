@@ -1,0 +1,62 @@
+services:
+  app_proxy:
+    environment:
+      APP_HOST: anyumbrelstore-openposterdb_server_1
+      APP_PORT: 3000
+      # OPDBs Bild-Pfade beginnen mit dem (pro Installation zufaelligen)
+      # API-Key als erstem Pfad-Segment (/{api_key}/imdb|tmdb|tvdb/...).
+      # Die Umbrel-Auth-Whitelist unterstuetzt nur Prefix-Regeln (umbreld
+      # app-gateway, pathMatches), variable Schluessel-Segmente lassen sich
+      # nicht freigeben. Da Poster-Clients (Nuvio, AIOMetadata, Watchly)
+      # keine Umbrel-Cookies senden, laeuft die App bewusst ohne Umbrel-Gate
+      # - geschuetzt durch eigene Auth: Admin-UI/-API mit JWT-Login
+      # (Argon2-Hashing), Poster-Endpoints nur mit gueltigem API-Key im
+      # Pfad (gleiches Schutzmodell wie RPDB bzw. Stremio-Addon-UUIDs).
+      # Nur im lokalen Netz bzw. hinter einem VPN betreiben.
+      PROXY_AUTH_ADD: "false"
+
+  server:
+    image: pnrxa/openposterdb:1.3.0
+    restart: on-failure
+    # Der Upstream-Entrypoint chownt /data/cache und /data/db auf den
+    # opdb-User und dropped danach die Privilegien - kein user: erzwingen.
+    init: true
+    volumes:
+      - ${APP_DATA_DIR}/data/cache:/data/cache
+      - ${APP_DATA_DIR}/data/db:/data/db
+    environment:
+      LISTEN_ADDR: 0.0.0.0:3000
+      CACHE_DIR: /data/cache
+      DB_DIR: /data/db
+      # Stabiles JWT-Signing-Secret pro Installation, rotiert nicht bei
+      # App-Updates.
+      JWT_SECRET: ${APP_SEED}
+      # Admin-Konto = App-Passwort (deterministicPassword, in der Umbrel-
+      # App-Ansicht angezeigt); wird beim ersten Start geseedet.
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: ${APP_PASSWORD}
+      # Im LAN ohne HTTPS-Terminierung: sonst verwirft der Browser die
+      # Auth-Cookies und der Login wirkt kaputt (Upstream-Doku).
+      COOKIE_SECURE: "false"
+      # Nutzer-eigene API-Keys (keine Packaging-Secrets) - Werte in den
+      # Umbrel-App-Einstellungen setzen (manifest environment-Eintraege).
+      TMDB_API_KEY: ""
+      MDBLIST_API_KEY: ""
+      OMDB_API_KEY: ""
+      TRAKT_CLIENT_ID: ""
+      FANART_API_KEY: ""
+      # RAM-Budget auf der 16-GB-Box (Vorfall 04.11.2026: Userspace-Livelock
+      # bei RAM-Druck): moka-In-Memory-Cache deutlich unter dem
+      # cgroup-mem_limit halten, damit der Kernel nicht in Memory-Pressure
+      # geht.
+      IMAGE_MEM_CACHE_MB: "256"
+      RUST_LOG: warn
+    # Container stirbt notfalls allein (OOM-Restart ueber restart:
+    # on-failure) und zieht die Box nicht in einen Reclaim-Livelock.
+    mem_limit: 1000m
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:3000/api/auth/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

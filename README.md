@@ -30,6 +30,7 @@ A [community app store](https://github.com/getumbrel/umbrel-community-app-store)
 | [Watchly](https://github.com/TimilsinaBimal/Watchly) | `anyumbrelstore-watchly` | 1.17.2 | Media | 30127 |
 | [StremThru](https://github.com/MunifTanjim/stremthru) | `anyumbrelstore-stremthru` | 0.105.4 | Media | 30128 |
 | [AIOMetadata](https://github.com/cedya77/aiometadata) | `anyumbrelstore-aiometadata` | 3.8.3 | Media | 30129 |
+| [OpenPosterDB](https://github.com/PNRxA/openposterdb) | `anyumbrelstore-openposterdb` | 1.3.0 | Media | 30130 |
 
 ### Gluetun VPN
 
@@ -93,6 +94,14 @@ Poster and metadata service for Stremio and Nuvio: AIOMetadata delivers posters,
 First steps: set the TMDB API key in the app settings (`BUILT_IN_TMDB_API_KEY`, free at themoviedb.org; the optional TVDB, Fanart.tv, RPDB and MDBList keys belong there as well), then open the web UI behind the Umbrel login and configure everything under `/configure`: pick catalogs, providers and artwork, set the language to German, save – note the UUID and password shown, both are needed to edit the configuration later. The install step generates the manifest URL that goes into Nuvio per profile under Settings → Addons; each Nuvio profile can use its own configuration.
 
 The configuration UI is protected by the Umbrel login; only the addon paths Nuvio needs (`/stremio/*`, the signed artwork proxies `/poster`, `/logo`, `/background`, `/landscape` and `/poster-cache/*`) are reachable without Umbrel cookies – protected by the UUID/config token in the path and the HMAC signature. Cache warming is deliberately disabled in the package (RAM budget), Redis runs with a small memory cap as a cache only. Renovate updates the manifest version and image tag together.
+
+### OpenPosterDB
+
+Self-hosted Rating-Poster-Service als Drop-in-Alternative zu RatingPosterDB: OpenPosterDB generiert Poster, Logos, Backdrops und Episode-Stills mit Rating-Badges direkt auf dem Artwork - Bewertungen aus IMDb, Rotten Tomatoes (Critics und Audience), Metacritic, Trakt, Letterboxd, MyAnimeList, Roger Ebert und dem MDBList-Score, Artwork von TMDB (optional Fanart.tv, Sprachwahl inklusive). Im Nuvio-Stack ersetzt OPDB RPDB als Poster-Rating-Layer: AIOMetadata übernimmt die OPDB-URL-Templates (Artwork-/URL-Pattern), Watchly den Custom-Template für Poster-Ratings.
+
+Erste Schritte: TMDB- und MDBList-Key in den App-Einstellungen hinterlegen (beide kostenlos), dann die Weboberfläche (umbrel.internal:30130) mit admin plus App-Passwort öffnen, einen API-Key anlegen und die Poster-Einstellungen setzen (Ratings, Badge-Stil, Sprache de). Danach in AIOMetadata/Watchly die URL-Templates eintragen - Basis-URL http://umbrel.internal:30130, Pfade siehe Upstream-Doku "Connecting a Media Server".
+
+Die App läuft ohne Umbrel-Login-Gate, weil die Bild-Pfade mit dem zufälligen API-Key als erstem Pfad-Segment beginnen und die Umbrel-Whitelist nur Prefix-Regeln kennt - geschützt wird durch die eigene Auth (Admin-Login mit JWT/Argon2, Poster-Endpoints nur mit gültigem API-Key, dasselbe Schutzmodell wie RPDB). Der Bild-Cache ist vom Backup ausgenommen (regenerierbar), die SQLite-Datenbank (API-Keys, Einstellungen) wird gesichert. Renovate updates the manifest version and image tag together.
 
 ## Structure
 
