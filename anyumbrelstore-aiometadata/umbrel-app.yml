@@ -1,0 +1,75 @@
+manifestVersion: "1"
+id: anyumbrelstore-aiometadata
+storage:
+  dataRoot: data
+environment:
+  - name: BUILT_IN_TMDB_API_KEY
+    services:
+      - server
+    note: TMDB API Key v3 (themoviedb.org/settings/api). Deckt alle Konfigurationen ab und wird nie an den Browser veröffentlicht.
+  - name: BUILT_IN_TVDB_API_KEY
+    services:
+      - server
+    note: Optional. TVDB API Key (thetvdb.com) - besseres Serien-Artwork.
+  - name: BUILT_IN_FANART_API_KEY
+    services:
+      - server
+    note: Optional. Fanart.tv-Key für Logos und Hintergründe (fanart.tv).
+  - name: BUILT_IN_RPDB_API_KEY
+    services:
+      - server
+    note: Optional. RatingPosterDB-Key (ratingposterdb.com) - Bewertungen direkt auf den Postern.
+  - name: BUILT_IN_MDBLIST_API_KEY
+    services:
+      - server
+    note: Optional. MDBList-Key (mdblist.com) für MDBList-Kataloge. MDBList berechnet oberhalb 1000 Calls pro Tag.
+category: media
+name: AIOMetadata
+# renovate: datasource=docker depName=ghcr.io/cedya77/aiometadata versioning=semver
+version: "3.8.3"
+tagline: Poster- und Metadaten-Addon für Stremio und Nuvio (Kataloge, Artwork, Ratings)
+description: >-
+  AIOMetadata liefert Poster, Logos, Hintergründe, Beschreibungen, Bewertungen
+  und Episodenlisten aus TMDB, TVDB, IMDb, Fanart.tv, TVmaze u. a. - mit
+  sprachbewusster Artwork-Auswahl (deutsche Poster mit Fallback) und optional
+  Bewertungen direkt auf den Postern (RatingPosterDB). Ein Katalog-Builder
+  stellt eigene Reihen auf (TMDB Trending, Genres, Streaming-Anbieter,
+  MDBList), der Collection-Builder kann Sammlungen sogar nach Nuvio
+  exportieren. Im Nuvio-Stack ergänzt AIOMetadata die Empfehlungs-Kataloge
+  von Watchly als Poster- und Metadaten-Schicht.
+
+
+  Erste Schritte: In den App-Einstellungen zuerst den TMDB-API-Key hinterlegen
+  (BUILT_IN_TMDB_API_KEY, kostenlos auf themoviedb.org); die optionalen Keys
+  für TVDB, Fanart.tv, RPDB und MDBList gehören ebenfalls dorthin. Danach die
+  Weboberfläche (umbrel.internal:30129) hinter dem Umbrel-Login öffnen und
+  unter /configure Kataloge, Provider und Artwork wählen, Sprache auf Deutsch
+  stellen, speichern - UUID und Passwort der Konfiguration notieren (beide
+  werden zum späteren Bearbeiten gebraucht). Der Install-Schritt generiert die
+  Manifest-URL, die je Nuvio-Profil unter Einstellungen -> Addons eingefügt
+  wird; jedes Profil kann eine eigene Konfiguration nutzen.
+
+
+  Hinweis: Dashboard und /configure sind durch den Umbrel-Login geschützt.
+  Für Nuvio sind nur die Addon-Pfade ohne Umbrel-Cookies erreichbar
+  (Manifest/Kataloge/Meta unter /stremio/*, die signierten Artwork-Proxys
+  /poster, /logo, /background und /landscape sowie /poster-cache/*) -
+  geschützt durch UUID/Config-Token im Pfad bzw. HMAC-Signatur.
+  Cache-Warming ist im Paket bewusst deaktiviert, Redis läuft mit kleinem
+  Speicherlimit als reiner Cache. Nur im lokalen Netz bzw. hinter einem VPN
+  betreiben.
+releaseNotes: ""
+developer: cedya77
+website: https://github.com/cedya77/aiometadata
+dependencies: []
+repo: https://github.com/cedya77/aiometadata
+support: https://github.com/cedya77/aiometadata/issues
+port: 30129
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+deterministicPassword: true
+submitter: "anyumbrelstore"
+submission: ""
+icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-aiometadata/icon.svg

@@ -29,6 +29,7 @@ A [community app store](https://github.com/getumbrel/umbrel-community-app-store)
 | [InfiniDysk](https://github.com/infinidysk/infinidysk) | `anyumbrelstore-infinidysk` | 1.7.1-lang5 | Media | 30125 |
 | [Watchly](https://github.com/TimilsinaBimal/Watchly) | `anyumbrelstore-watchly` | 1.17.2 | Media | 30127 |
 | [StremThru](https://github.com/MunifTanjim/stremthru) | `anyumbrelstore-stremthru` | 0.105.4 | Media | 30128 |
+| [AIOMetadata](https://github.com/cedya77/aiometadata) | `anyumbrelstore-aiometadata` | 3.8.3 | Media | 30129 |
 
 ### Gluetun VPN
 
@@ -84,6 +85,14 @@ The image is built by the store itself (see Maintenance) and pointed at your own
 Self-hosted companion for Stremio and Nuvio: StremThru sits in front of debrid services (incl. TorBox) and provides its own Stremio addons – including **Torz** (torrent and debrid search; uncached hits trigger a download at the store and become playable after a short wait), **Store** (catalog of your own debrid account), **Wrap** and **Sidekick** – plus a stream proxy with byte-serving. In the Nuvio stack it closes the gap that Nuvio cannot play uncached Torrentio/Comet hits because Nuvio has no torrent engine: StremThru takes over the download trigger at TorBox.
 
 Dashboard login: `admin` plus app password (app credentials). Store tokens (e.g. the TorBox API key) are stored in the dashboard vault and persisted (vault secret from `APP_SEED`). Connect to AIOStreams via the marketplace addon "StremThru Torz" (StremThru URL `http://umbrel.internal:30128`, credentials `admin` + app password). The TorBox API runs without tunnel directly from the home IP (`STREMTHRU_STORE_TUNNEL=*:false`); optionally routable to the Gluetun container via `STREMTHRU_HTTP_PROXY`.
+
+### AIOMetadata
+
+Poster and metadata service for Stremio and Nuvio: AIOMetadata delivers posters, logos, backgrounds, descriptions, ratings and episode lists from TMDB, TVDB, IMDb, Fanart.tv, TVmaze and more – with language-aware artwork selection (German posters with fallback) and optional ratings directly on the posters (RatingPosterDB). A catalog builder adds own rows (TMDB trending, genres, streaming providers, MDBList), and the collection builder can even export collections to Nuvio. In the Nuvio stack it complements Watchly as the poster/metadata layer next to the per-profile recommendation catalogs.
+
+First steps: set the TMDB API key in the app settings (`BUILT_IN_TMDB_API_KEY`, free at themoviedb.org; the optional TVDB, Fanart.tv, RPDB and MDBList keys belong there as well), then open the web UI behind the Umbrel login and configure everything under `/configure`: pick catalogs, providers and artwork, set the language to German, save – note the UUID and password shown, both are needed to edit the configuration later. The install step generates the manifest URL that goes into Nuvio per profile under Settings → Addons; each Nuvio profile can use its own configuration.
+
+The configuration UI is protected by the Umbrel login; only the addon paths Nuvio needs (`/stremio/*`, the signed artwork proxies `/poster`, `/logo`, `/background`, `/landscape` and `/poster-cache/*`) are reachable without Umbrel cookies – protected by the UUID/config token in the path and the HMAC signature. Cache warming is deliberately disabled in the package (RAM budget), Redis runs with a small memory cap as a cache only. Renovate updates the manifest version and image tag together.
 
 ## Structure
 

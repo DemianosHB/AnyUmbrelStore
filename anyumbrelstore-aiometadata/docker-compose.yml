@@ -1,0 +1,88 @@
+services:
+  app_proxy:
+    environment:
+      APP_HOST: anyumbrelstore-aiometadata_server_1
+      APP_PORT: 3232
+      # Umbrel-Login bleibt aktiv (u. a. für /configure und das Dashboard);
+      # gewhitelisted sind nur die Pfade, die Nuvio als Addon-Client ohne
+      # Umbrel-Cookies abruft: Manifest/Kataloge/Meta (/stremio/*), die
+      # signierten Artwork-Proxys (/poster, /logo, /background, /landscape)
+      # und den Poster-Cache (/poster-cache/*). Diese Pfade sind durch die
+      # UUID/Config-Token im Pfad bzw. die HMAC-Signatur geschützt.
+      PROXY_AUTH_WHITELIST: "/stremio/*,/poster/*,/logo/*,/background/*,/landscape/*,/poster-cache/*"
+
+  server:
+    image: ghcr.io/cedya77/aiometadata:3.8.3
+    restart: on-failure
+    # Nicht-root-Betrieb: Umbrel legt die App-Daten als 1000:1000 an; der
+    # Node-Server braucht nur Schreibzugriff auf /app/addon/data.
+    user: "1000:1000"
+    init: true
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ${APP_DATA_DIR}/data:/app/addon/data
+    environment:
+      PORT: "3232"
+      NODE_ENV: production
+      # Base-URL für Manifest-/Bild-Links: im Heimnetz und via VPN-Pi-hole
+      # aufgelöst (gleiche Zone wie Watchly/InfiniDysk/AIOStreams).
+      HOST_NAME: http://umbrel.internal:30129
+      # SQLite in den App-Daten (Nutzer-Konfigurationen, UUIDs, Passwörter)
+      DATABASE_URI: sqlite://addon/data/db.sqlite
+      # Redis ist reiner Cache (Redis 8 wegen HSETEX/HTTL), Nutzer-Daten
+      # liegen in der SQLite, nicht in Redis.
+      REDIS_URL: redis://redis:6379
+      # Admin-Key für Admin-/Dashboard-API-Endpunkte = App-Passwort
+      # (deterministicPassword, in der Umbrel-App-Ansicht angezeigt).
+      ADMIN_KEY: ${APP_PASSWORD}
+      # HMAC-Signatur der /poster-,/logo-,/background-Proxys; stabil pro
+      # Installation (APP_SEED), rotiert nicht bei App-Updates.
+      IMAGE_PROXY_SIGNING_SECRET: ${APP_SEED}
+      # RAM-Budget auf der 16-GB-Box (Vorfall 04.11.2026: Userspace-Livelock
+      # bei RAM-Druck): V8-Heap deutlich unter dem cgroup-mem_limit halten,
+      # damit der GC läuft, bevor der Kernel in den Memory-Pressure geht.
+      NODE_OPTIONS: "--max-old-space-size=1024"
+      # Cache-Warming bewusst aus (RAM-/API-Budget); Poster-Cache ist
+      # standardmäßig aus und kann im Dashboard aktiviert werden.
+      ENABLE_CACHE_WARMING: "false"
+      TMDB_POPULAR_WARMING_ENABLED: "false"
+      CACHE_WARMUP_ON_STARTUP: "false"
+      MAL_WARMUP_ENABLED: "false"
+      # Deckt Speicher-Spitzen je Katalog-Anfrage (20-50 parallele
+      # Meta-Fetches pro Seite).
+      META_CONCURRENCY: "30"
+      # Server-seitige API-Keys (decken alle Nutzer-Konfigurationen ab und
+      # werden nie an den Browser veröffentlicht) - Werte in den Umbrel-
+      # App-Einstellungen setzen (manifest environment-Einträge).
+      BUILT_IN_TMDB_API_KEY: ""
+      BUILT_IN_TVDB_API_KEY: ""
+      BUILT_IN_FANART_API_KEY: ""
+      BUILT_IN_RPDB_API_KEY: ""
+      BUILT_IN_MDBLIST_API_KEY: ""
+    # Container stirbt notfalls allein (OOM-Restart über restart:
+    # on-failure) und zieht die Box nicht in einen Reclaim-Livelock.
+    mem_limit: 1500m
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3232/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  redis:
+    image: redis:8-alpine
+    restart: on-failure
+    # AIOMetadata braucht Redis 8 (HSETEX/HTTL, per-Feld-TTL); Autotune
+    # (Default) setzt die Eviction-Policy passend, maxmemory bleibt hier
+    # gesetzt - Redis ist reiner Cache, bei Druck wird verdrängt.
+    command: redis-server --appendonly yes --save 3600 1 --maxmemory 256mb
+    volumes:
+      - ${APP_DATA_DIR}/data/redis:/data
+    mem_limit: 384m
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
