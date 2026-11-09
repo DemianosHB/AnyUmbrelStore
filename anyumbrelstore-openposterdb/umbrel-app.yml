@@ -78,4 +78,5 @@ deterministicPassword: true
 backupIgnore:
   - data/cache/*
 submitter: "anyumbrelstore"
+submission: https://github.com/DemianosHB/AnyUmbrelStore/pull/91
 icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-openposterdb/icon.svg
