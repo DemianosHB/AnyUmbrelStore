@@ -52,6 +52,16 @@
       "pinDigests": true
     },
     {
+      "description": "Duplicati: Bewusst kein Digest-Pinning in der umbrel-app.yml - der Regex-Manager kann einen Digest nicht anpinnen, wenn das matchString kein currentDigest erfasst (der pinDigest-Branch schlug bei jedem Lauf mit 'Digest is not updated' fehl). Die Manifest-Version folgt weiterhin der Duplicati-Upstream-Version; Digest-Updates laufen nur über die docker-compose.yml",
+      "matchFileNames": [
+        "**/umbrel-app.yml"
+      ],
+      "matchPackageNames": [
+        "duplicati/duplicati"
+      ],
+      "pinDigests": false
+    },
+    {
       "description": "Verhindert ungewolltes Digest-Pinning für alle anderen Docker-Images",
       "matchDatasources": [
         "docker"
