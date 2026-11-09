@@ -1,0 +1,82 @@
+manifestVersion: "1"
+id: anyumbrelstore-openposterdb
+storage:
+  dataRoot: data
+environment:
+  - name: TMDB_API_KEY
+    services:
+      - server
+    note: TMDB API v3 Key (themoviedb.org/settings/api). Pflicht - Poster, Logos, Backdrops und Episode-Stills kommen aus TMDB.
+  - name: MDBLIST_API_KEY
+    services:
+      - server
+    note: Optional, empfohlen. MDBList-Key (mdblist.com/preferences/) - ein Key deckt alle 9 Rating-Quellen ab (IMDb, RT Critics, RT Audience, Metacritic, Trakt, Letterboxd, MAL, MDBList-Score, Roger Ebert).
+  - name: OMDB_API_KEY
+    services:
+      - server
+    note: Optional. OMDb-Key (omdbapi.com/apikey.aspx) - nötig für IMDb-Ratings auf Episoden-Ebene (MDBList kennt keine Episoden-Ratings).
+  - name: TRAKT_CLIENT_ID
+    services:
+      - server
+    note: Optional. Trakt Client ID (trakt.tv/oauth/applications) - Trakt-Community-Ratings für Filme, Serien und Episoden.
+  - name: FANART_API_KEY
+    services:
+      - server
+    note: Optional. Fanart.tv-Key (fanart.tv/get-an-api-key/) - Fanart als alternative oder bevorzugte Artwork-Quelle (z. B. textlose Poster).
+category: media
+name: OpenPosterDB
+# renovate: datasource=docker depName=pnrxa/openposterdb versioning=semver
+version: "1.3.0"
+tagline: Self-hosted Rating-Poster-Service (Drop-in-Alternative zu RPDB) für Stremio und Nuvio
+description: >-
+  OpenPosterDB generiert Poster, Logos, Backdrops und Episode-Stills mit
+  Rating-Badges direkt auf dem Artwork - als self-hosted Drop-in-Ersatz für
+  RatingPosterDB (RPDB). Bewertungen aus IMDb, Rotten Tomatoes (Critics und
+  Audience), Metacritic, Trakt, Letterboxd, MyAnimeList, Roger Ebert und dem
+  MDBList-Score - ein einziger kostenloser MDBList-Key deckt alle Quellen ab.
+  Artwork kommt von TMDB, optional von Fanart.tv, mit Sprachwahl pro API-Key
+  (deutsche Poster via lang=de). Die Admin-Oberfläche verwaltet API-Keys mit
+  eigenen Einstellungen (Bild-Quelle, Sprache, textlose Poster), Badge-Styles
+  und Cache-Purge. Im Nuvio-Stack ersetzt OpenPosterDB RPDB als
+  Poster-Rating-Layer: AIOMetadata übernimmt die OPDB-URL-Templates, Watchly
+  den Custom-Template für Poster-Ratings.
+
+
+  Erste Schritte: In den App-Einstellungen TMDB_API_KEY und MDBLIST_API_KEY
+  hinterlegen (beide kostenlos), danach die Weboberfläche
+  (umbrel.internal:30130) öffnen - Login admin mit dem App-Passwort (siehe
+  App-Zugangsdaten). Dort einen API-Key anlegen und die Poster-Einstellungen
+  setzen (Ratings, Badge-Stil, Sprache de). In AIOMetadata die URL-Templates
+  unter den Artwork-/URL-Patterns hinterlegen, in Watchly das
+  Poster-Ratings-Custom-Template auf die OPDB-URL setzen (Basis
+  http://umbrel.internal:30130, Pfade siehe Upstream-Doku Connecting a
+  Media Server).
+
+
+  Hinweis: Die Bild-Pfade beginnen mit dem zufälligen API-Key als erstem
+  Pfad-Segment (Beispiel /API-KEY/imdb/poster-default/tt123.jpg) - solche
+  variablen Pfade kann die Umbrel-Login-Whitelist nicht freigeben (nur
+  Prefix-Regeln). Die App läuft deshalb ohne Umbrel-Gate, schützt sich aber
+  selbst: Admin-Oberfläche und Verwaltungs-API verlangen den Admin-Login
+  (JWT, Argon2-Hashing), die Poster-Endpoints sind nur mit gültigem API-Key
+  abrufbar - dasselbe Schutzmodell wie RPDB und die Stremio-Addon-UUIDs. Der
+  Bild-Cache ist vom Backup ausgenommen (regenerierbar), die SQLite-Datenbank
+  (API-Keys, Einstellungen, Admin-Konto) wird gesichert. Nur im lokalen Netz
+  bzw. hinter einem VPN betreiben.
+releaseNotes: ""
+developer: PNRxA
+website: https://openposterdb.com
+dependencies: []
+repo: https://github.com/PNRxA/openposterdb
+support: https://github.com/PNRxA/openposterdb/issues
+port: 30130
+gallery: []
+path: ""
+defaultUsername: "admin"
+defaultPassword: ""
+deterministicPassword: true
+backupIgnore:
+  - data/cache/*
+submitter: "anyumbrelstore"
+submission: https://github.com/DemianosHB/AnyUmbrelStore/pull/91
+icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-openposterdb/icon.svg
