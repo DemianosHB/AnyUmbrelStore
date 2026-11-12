@@ -84,5 +84,5 @@ deterministicPassword: true
 backupIgnore:
   - data/xrdb/cache/*
 submitter: "anyumbrelstore"
-submission: https://github.com/DemianosHB/AnyUmbrelStore/
+submission: https://github.com/DemianosHB/AnyUmbrelStore/pull/93
 icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-xrdb/icon.svg
