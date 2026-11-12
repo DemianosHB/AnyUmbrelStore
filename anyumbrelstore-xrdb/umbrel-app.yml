@@ -1,0 +1,88 @@
+manifestVersion: "1"
+id: anyumbrelstore-xrdb
+storage:
+  dataRoot: data
+environment:
+  - name: XRDB_TMDB_READ_TOKEN
+    services:
+      - server
+    note: TMDB v4 Read Token (themoviedb.org/settings/api). Pflicht - Artwork, Metadaten, Genres, Altersfreigaben und die Titelsuche kommen aus TMDB. Alternativ den TMDB v3-Key ueber XRDB_TMDB_API_KEY setzen - aber niemals beide.
+  - name: XRDB_TMDB_API_KEY
+    services:
+      - server
+    note: Optional. TMDB v3 API-Key als Alternative zum Read Token (entweder XRDB_TMDB_READ_TOKEN oder diesen Key setzen).
+  - name: XRDB_FANART_API_KEY
+    services:
+      - server
+    note: Optional, empfohlen. Fanart.tv-Key (fanart.tv/get-an-api-key/) - HD-Artwork und Logos; mit dem Key laesst sich fanart.tv in der Provider-Reihenfolge an erste Stelle stellen (fanart als Primarquelle, TMDB als Fallback).
+  - name: XRDB_MDBLIST_API_KEY
+    services:
+      - server
+    note: Optional, empfohlen. MDBList-Key (mdblist.com/preferences/) - IMDb, Rotten Tomatoes, Metacritic, Letterboxd und Trakt-Scores in einem einzigen Call.
+  - name: XRDB_OMDB_API_KEY
+    services:
+      - server
+    note: Optional. OMDb-Key (omdbapi.com/apikey.aspx) - ergaenzende Ratings.
+  - name: XRDB_TRAKT_CLIENT_ID
+    services:
+      - server
+    note: Optional. Trakt Client ID (trakt.tv/oauth/applications) - Trakt-Community-Ratings.
+category: media
+name: XRDB
+# renovate: datasource=docker depName=ghcr.io/ibbylabs/xrdb extractVersion=^v?(?<version>.*)$ versioning=semver
+version: "3.143.1"
+tagline: Artwork-Engine mit Rating-Badges fuer Stremio und Nuvio (fanart-faehige Alternative zu RPDB)
+description: >-
+  XRDB rendert Poster, Backdrops, Thumbnails und Logos mit Rating-Badges
+  direkt auf das Artwork - als self-hosted Artwork-Engine fuer Stremio (via
+  AIOMetadata), Nuvio, Plex, Jellyfin, Kodi und jeden Client, der eine
+  Bild-URL versteht. 13 Rating-Quellen (IMDb, TMDB, Rotten Tomatoes,
+  Metacritic, Letterboxd, Trakt, SIMKL, MAL, AniList, Kitsu u. a.),
+  Qualitaets-Badges, Altersfreigaben, Genres und Trending-Tags, Profile
+  mit Alias und ein zweistufiger Render-Cache (RAM + Disk). Die
+  Provider-Reihenfolge fuer das Artwork ist frei waehlbar: Mit einem
+  Fanart.tv-Key rueckt fanart an erste Stelle und TMDB dient als Fallback -
+  die fanart-primaere Alternative zu RatingPosterDB und OpenPosterDB.
+
+
+  Erste Schritte: Weboberflaeche (umbrel.internal:30131) hinter dem
+  Umbrel-Login oeffnen und unter Integrations mindestens den TMDB-Key
+  hinterlegen (am einfachsten als XRDB_TMDB_READ_TOKEN in den
+  App-Einstellungen, Fanart.tv-Key als XRDB_FANART_API_KEY dazu). Im
+  Configurator das Look bauen, in der Artwork-Provider-Reihenfolge fanart.tv
+  vor TMDB setzen und als Profil speichern. Der Export erzeugt fertige
+  URL-Patterns fuer AIOMetadata (Art Providers -> URL Patterns fuer
+  Poster, Backdrop und Logo); alternativ der Ein-Klick-Install in eine
+  AIOMetadata-Instanz auf demselben Umbrel. Nuvio/Stremio braucht nichts
+  weiter - die Poster kommen ueber AIOMetadata.
+
+
+  Hinweis: UI, Configurator und Admin sind hinter dem Umbrel-Login
+  geschuetzt; die Render- und Addon-Pfade (/poster/*, /backdrop/*,
+  /thumbnail/*, /logo/*, /stremio/*, /healthz, /readyz) sind fuer Clients
+  ohne Umbrel-Cookies ueber die Proxy-Whitelist erreichbar (Artwork-URLs
+  sind per XRDB-Design oeffentlich, die Profil-Bearbeitung ist separat
+  passwortgeschuetzt). Die Admin-API verlangt zusaetzlich den Admin-Key
+  (= App-Passwort, siehe App-Zugangsdaten). Die RPDB-Kompatibilitaetsroute
+  /{key}/imdb/... ist nicht freigegeben (variables Key-Segment als erstem
+  Pfad-Teil, gleiche Whitelist-Grenze wie beim OpenPosterDB-Paket) -
+  Clients nutzen die XRDB-URL-Patterns. Der Render-Cache ist vom Backup
+  ausgenommen (regenerierbar), die SQLite-Profile-DB wird gesichert. Nur im
+  lokalen Netz bzw. hinter einem VPN betreiben.
+releaseNotes: ""
+developer: IbbyLabs
+website: https://extendedratings.com
+dependencies: []
+repo: https://github.com/IbbyLabs/XRDB
+support: https://github.com/IbbyLabs/XRDB/issues
+port: 30131
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+deterministicPassword: true
+backupIgnore:
+  - data/xrdb/cache/*
+submitter: "anyumbrelstore"
+submission: https://github.com/DemianosHB/AnyUmbrelStore/pull/93
+icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-xrdb/icon.svg

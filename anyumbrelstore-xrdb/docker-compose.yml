@@ -1,0 +1,64 @@
+services:
+  app_proxy:
+    environment:
+      APP_HOST: anyumbrelstore-xrdb_server_1
+      APP_PORT: 8787
+      # Umbrel-Login bleibt aktiv (UI, Configurator, Admin- und Profil-
+      # API); gewhitelisted sind nur die Pfade, die Poster-Clients (Nuvio,
+      # AIOMetadata, Watchly, Plex/Jellyfin) ohne Umbrel-Cookies abrufen:
+      # Render-Routen (/poster, /backdrop, /thumbnail, /logo), das
+      # Stremio-Addon (/stremio/*) und die Health-Endpunkte. Artwork-URLs
+      # sind per XRDB-Design oeffentlich; die Profil-Bearbeitung ist
+      # separat passwortgeschuetzt, die Admin-API verlangt zusaetzlich den
+      # Bearer-Admin-Key (= App-Passwort). Die RPDB-Kompatibilitaetsroute
+      # /{key}/imdb/... ist NICHT gewhitelisted (variables Key-Segment als
+      # erstem Pfad-Teil, gleiche Whitelist-Grenze wie beim OPDB-Paket) -
+      # Clients nutzen die XRDB-URL-Patterns (/poster/{id}?config=...).
+      PROXY_AUTH_WHITELIST: "/poster/*,/backdrop/*,/thumbnail/*,/logo/*,/stremio/*,/healthz,/readyz"
+
+  server:
+    image: ghcr.io/ibbylabs/xrdb:v3.143.1@sha256:ccfc606e816fda719b860877a90740d3b2923c65bd73984d7bd69de7b8ddbe25
+    restart: on-failure
+    # Upstream-Image laeuft als appuser (Alpine-Build, erste freie UID =
+    # 1000) - passt zu den von Umbrel als 1000:1000 angelegten App-Daten;
+    # kein user: erzwingen. SQLite und Cache liegen unter /data.
+    init: true
+    volumes:
+      - ${APP_DATA_DIR}/data/xrdb:/data
+    environment:
+      XRDB_ADDR: :8787
+      # SQLite-Profile-DB und Render-Cache in den App-Daten
+      # (Upstream-Docker-Default-Pfade).
+      XRDB_DB: /data/xrdb.db
+      XRDB_CACHE_DIR: /data/cache
+      # Admin-/Integrations-Bereich = App-Passwort (deterministicPassword,
+      # in der Umbrel-App-Ansicht angezeigt).
+      XRDB_ADMIN_KEY: ${APP_PASSWORD}
+      # Ein-Klick-Install in eine AIOMetadata-Instanz auf demselben
+      # Umbrel-Netzwerk erlauben (Private-Adressen; reine Admin-Aktion,
+      # nur mit Admin-Key nutzbar).
+      XRDB_AIOM_ALLOW_PRIVATE: "true"
+      # RAM-Budget auf der 16-GB-Box (Vorfall 04.11.2026: Userspace-
+      # Livelock bei RAM-Druck): Soft-Heap-Limit deutlich unter dem
+      # cgroup-mem_limit halten, damit der Go-GC laeuft, bevor der Kernel
+      # in den Memory-Pressure geht.
+      XRDB_MEMORY_LIMIT_MB: "512"
+      # Nutzer-eigene Provider-Keys (keine Packaging-Secrets) - Werte in
+      # den Umbrel-App-Einstellungen setzen (manifest environment);
+      # in der UI unter Integrations ueberschreibbar (dort gespeicherte
+      # Werte gewinnen).
+      XRDB_TMDB_READ_TOKEN: ""
+      XRDB_TMDB_API_KEY: ""
+      XRDB_FANART_API_KEY: ""
+      XRDB_MDBLIST_API_KEY: ""
+      XRDB_OMDB_API_KEY: ""
+      XRDB_TRAKT_CLIENT_ID: ""
+    # Container stirbt notfalls allein (OOM-Restart ueber restart:
+    # on-failure) und zieht die Box nicht in einen Reclaim-Livelock.
+    mem_limit: 768m
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:8787/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
