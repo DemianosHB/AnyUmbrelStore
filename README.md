@@ -31,6 +31,7 @@ A [community app store](https://github.com/getumbrel/umbrel-community-app-store)
 | [StremThru](https://github.com/MunifTanjim/stremthru) | `anyumbrelstore-stremthru` | 0.105.4 | Media | 30128 |
 | [AIOMetadata](https://github.com/cedya77/aiometadata) | `anyumbrelstore-aiometadata` | 3.8.3 | Media | 30129 |
 | [OpenPosterDB](https://github.com/PNRxA/openposterdb) | `anyumbrelstore-openposterdb` | 1.3.0 | Media | 30130 |
+| [XRDB](https://github.com/IbbyLabs/XRDB) | `anyumbrelstore-xrdb` | 3.143.1 | Media | 30131 |
 
 ### Gluetun VPN
 
@@ -102,6 +103,14 @@ Self-hosted Rating-Poster-Service als Drop-in-Alternative zu RatingPosterDB: Ope
 Erste Schritte: TMDB- und MDBList-Key in den App-Einstellungen hinterlegen (beide kostenlos), dann die Weboberfläche (umbrel.internal:30130) mit admin plus App-Passwort öffnen, einen API-Key anlegen und die Poster-Einstellungen setzen (Ratings, Badge-Stil, Sprache de). Danach in AIOMetadata/Watchly die URL-Templates eintragen - Basis-URL http://umbrel.internal:30130, Pfade siehe Upstream-Doku "Connecting a Media Server".
 
 Die App läuft ohne Umbrel-Login-Gate, weil die Bild-Pfade mit dem zufälligen API-Key als erstem Pfad-Segment beginnen und die Umbrel-Whitelist nur Prefix-Regeln kennt - geschützt wird durch die eigene Auth (Admin-Login mit JWT/Argon2, Poster-Endpoints nur mit gültigem API-Key, dasselbe Schutzmodell wie RPDB). Der Bild-Cache ist vom Backup ausgenommen (regenerierbar), die SQLite-Datenbank (API-Keys, Einstellungen) wird gesichert. Renovate updates the manifest version and image tag together.
+
+### XRDB
+
+Self-hosted Artwork-Engine als Drop-in-Alternative zu RatingPosterDB: XRDB generiert Poster, Backdrops, Thumbnails und Logos mit Rating-Badges direkt auf dem Artwork - Bewertungen aus 13 Quellen (IMDb, TMDB, Rotten Tomatoes, Metacritic, Letterboxd, Trakt, SIMKL, MyAnimeList, AniList, Kitsu u. a.). Gegenüber RPDB/OPDB sind die Artwork-Quellen frei wählbar und in ihrer Reihenfolge konfigurierbar, z. B. Fanart.tv als Primärquelle mit TMDB als Fallback. Profile mit eigenem Alias, Stremio-Addon und eine RPDB-Kompatibilitätsroute sind eingebaut.
+
+Erste Schritte: Weboberfläche hinter dem Umbrel-Login (umbrel.internal:30131) öffnen, Fanart.tv-API-Key (kostenlos) hinterlegen und Profile anlegen (Provider-Reihenfolge, Ratings, Badge-Stil, Sprache de). Der Admin-Key entspricht dem App-Passwort; XRDB_AIOM_ALLOW_PRIVATE=true erlaubt den Ein-Klick-Install der Profile in AIOMetadata. Danach AIOMetadata (Art Providers → URL Patterns) und Watchly (Custom-Template) auf die XRDB-URLs umstellen - Basis-URL http://umbrel.internal:30131. XRDB hat keine eigene Landscape-Fläche: Landschaften laufen über das Backdrop-Pattern; ohne IMDb-ID liefert Watchly kein Custom-Poster.
+
+Die App läuft hinter dem Umbrel-Login-Gate; ohne Umbrel-Cookies freigegeben sind nur die Bild- und Addon-Pfade (/poster, /backdrop, /thumbnail, /logo, /stremio, /healthz, /readyz) - die RPDB-Kompatibilitätsroute mit dem Key als erstem Pfad-Segment ist wie bei OpenPosterDB nicht freigebbar (Whitelist kennt nur Prefix-Regeln). Der Image-Cache (Bind-Mount data/xrdb, cache-Unterordner regenerierbar) ist vom Backup ausgenommen, mem_limit 768m mit internem Memory-Limit (XRDB_MEMORY_LIMIT_MB 512). Das Image ist auf Version und Digest gepinnt (Multi-Arch); Renovate updates the manifest version and image tag together.
 
 ## Structure
 
