@@ -14,7 +14,7 @@ environment:
 category: media
 name: AIOStreams
 # renovate: datasource=docker depName=ghcr.io/viren070/aiostreams extractVersion=^v?(?<version>.*)$ versioning=semver
-version: "2.37.0+patch1"
+version: "2.38.0"
 tagline: Stremio-Super-Addon - Addons, Debrid und Usenet in einer Stream-Liste
 description: >-
   AIOStreams bündelt Stremio-Addons und Debrid-/Usenet-Dienste (z. B. TorBox,
