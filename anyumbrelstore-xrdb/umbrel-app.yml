@@ -30,7 +30,7 @@ environment:
 category: media
 name: XRDB
 # renovate: datasource=docker depName=ghcr.io/ibbylabs/xrdb extractVersion=^v?(?<version>.*)$ versioning=semver
-version: "3.143.1"
+version: "3.144.0"
 tagline: Artwork-Engine mit Rating-Badges fuer Stremio und Nuvio (fanart-faehige Alternative zu RPDB)
 description: >-
   XRDB rendert Poster, Backdrops, Thumbnails und Logos mit Rating-Badges
