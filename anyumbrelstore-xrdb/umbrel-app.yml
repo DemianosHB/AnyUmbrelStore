@@ -69,7 +69,7 @@ description: >-
   Clients nutzen die XRDB-URL-Patterns. Der Render-Cache ist vom Backup
   ausgenommen (regenerierbar), die SQLite-Profile-DB wird gesichert. Nur im
   lokalen Netz bzw. hinter einem VPN betreiben.
-releaseNotes: ""
+releaseNotes: "v3.144.0 - (2026-11-14) Added web: configurator in every poster language (FR-244) (427ed66) web: route configurator text through a translation layer (FR-244) (3090974) web: Traditional Chinese for Taiwan and Hong Kong (FR-244) (0476c48)"
 developer: IbbyLabs
 website: https://extendedratings.com
 dependencies: []
