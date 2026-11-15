@@ -39,6 +39,8 @@ description: >-
   App-Einstellungen auf die IP-URL umstellen. Nur im lokalen Netz bzw.
   hinter einem VPN betreiben.
 releaseNotes: >-
+  v2.38.1 - (2026-11-14) Bug Fixes watch-state: keep one row per item in pulled watch
+  state (74eb37d)
   v2.38.0 - (2026-11-14) Features core: add a background lane and an abort signal to
   catalog walks (71603f4) core: add an Xtream builtin (283dc42) core: build Live TV
   channels and programmes from live catalogs (ee60ccd) core: combine back-to-back variant
