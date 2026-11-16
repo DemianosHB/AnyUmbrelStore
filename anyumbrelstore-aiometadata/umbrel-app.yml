@@ -26,7 +26,7 @@ environment:
 category: media
 name: AIOMetadata
 # renovate: datasource=docker depName=ghcr.io/cedya77/aiometadata versioning=semver
-version: "3.8.3"
+version: "3.9.0"
 tagline: Poster- und Metadaten-Addon für Stremio und Nuvio (Kataloge, Artwork, Ratings)
 description: >-
   AIOMetadata liefert Poster, Logos, Hintergründe, Beschreibungen, Bewertungen
