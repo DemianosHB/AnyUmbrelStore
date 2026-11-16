@@ -95,8 +95,8 @@ WATCHES = [
         # not the Duplicati upstream version. "image-tag" therefore reads the
         # pinned Docker tag from docker-compose.yml and compares it with the
         # upstream stable releases (beta/canary releases are skipped, matching
-        # the stable channel of the official Docker image). Renovate bumps
-        # the image tag itself; this watch adds the changelog radar for breaking
+        # the stable channel of the official Docker image). Renovate bumps the
+        # image tag itself; this watch adds the changelog radar for breaking
         # changes such as the 2.4.0.0 data-folder permission lockdown.
         "app": "anyumbrelstore-paperless-backup",
         "repo": "duplicati/duplicati",
@@ -416,7 +416,7 @@ def main() -> int:
         lines.append("")
         lines.append("## ⚠️ Handlungsbedarf")
         lines += [f"- {a}" for a in alerts] or ["- (keine)"]
-        lines.append(["", "## ℹ️ Hinweise"])
+        lines += ["", "## ℹ️ Hinweise"]
         lines += [f"- {i}" for i in infos] or ["- (keine)"]
         with open(args.report_file, "w", encoding="utf-8") as f:
             f.write("\n".join(lines) + "\n")
