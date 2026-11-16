@@ -17,7 +17,7 @@ services:
       PROXY_AUTH_WHITELIST: "/poster/*,/backdrop/*,/thumbnail/*,/logo/*,/stremio/*,/healthz,/readyz"
 
   server:
-    image: ghcr.io/ibbylabs/xrdb:v3.145.0@sha256:c18bb526b9a0e46427e7c1f488ada9ccf0ad9219f4f5283d2decbcd3fd11ba4a
+    image: ghcr.io/ibbylabs/xrdb:v3.145.1@sha256:62d99882e69a69fa06d3556a2b3deae68b9211ca7ee58e8bc2ac619db4d4c9f7
     restart: on-failure
     # Upstream-Image laeuft als appuser (Alpine-Build, erste freie UID =
     # 1000) - passt zu den von Umbrel als 1000:1000 angelegten App-Daten;
