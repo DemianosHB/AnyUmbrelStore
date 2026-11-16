@@ -26,7 +26,7 @@ environment:
 category: media
 name: AIOMetadata
 # renovate: datasource=docker depName=ghcr.io/cedya77/aiometadata versioning=semver
-version: "3.8.3"
+version: "3.9.0"
 tagline: Poster- und Metadaten-Addon für Stremio und Nuvio (Kataloge, Artwork, Ratings)
 description: >-
   AIOMetadata liefert Poster, Logos, Hintergründe, Beschreibungen, Bewertungen
@@ -58,7 +58,7 @@ description: >-
   Cache-Warming ist im Paket bewusst deaktiviert, Redis läuft mit kleinem
   Speicherlimit als reiner Cache. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
-releaseNotes: ""
+releaseNotes: "3.9.0 - (2026-11-13) Features catalogs: place collections anywhere in the catalog list and give catalogs row options (1ec84c5) discover: add rolling Last and Next N days date windows (32efe58), closes #882 jellyfin: filter browse lists by official rating and list the ratings in view (a73da93) jellyfin: keep playlists through Jellyfin's playlists API (d56b78c) jellyfin: let a collection folder combine its catalogs interleaved or alternating, and shuffle each page (4e976a0) jellyfin: let catalog reads name the household user (#864) (bf53c1c) jellyfin: list a collection folder's catalogs on its folder it …"
 developer: cedya77
 website: https://github.com/cedya77/aiometadata
 dependencies: []
