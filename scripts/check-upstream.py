@@ -95,8 +95,8 @@ WATCHES = [
         # not the Duplicati upstream version. "image-tag" therefore reads the
         # pinned Docker tag from docker-compose.yml and compares it with the
         # upstream stable releases (beta/canary releases are skipped, matching
-        # the stable channel of the official Docker image). Renovate bumps the
-        # image tag itself; this watch adds the changelog radar for breaking
+        # the stable channel of the official Docker image). Renovate bumps
+        # the image tag itself; this watch adds the changelog radar for breaking
         # changes such as the 2.4.0.0 data-folder permission lockdown.
         "app": "anyumbrelstore-paperless-backup",
         "repo": "duplicati/duplicati",
@@ -115,11 +115,11 @@ WATCHES = [
         "manifest": "anyumbrelstore-infinidysk/umbrel-app.yml",
     },
     {
-        # Watchly: the store builds its own image from the pinned upstream tag
-        # (docker/watchly, workflow watchly-image.yml, WATCHLY_REF). This watch
-        # reports new upstream releases so the WATCHLY_REF bump - and the
-        # entrypoint's sed/grep patterns, which upstream changes can break -
-        # are always deliberate steps.
+        # Watchly: official upstream image since 1.18.0 (self-hosted Nuvio
+        # backends are now supported natively upstream, NUVIO_BASE_URL/
+        # NUVIO_PUBLISHABLE_KEY). Renovate bumps manifest version and the
+        # plain semver GHCR image tag together; this watch adds the
+        # changelog radar for breaking changes between stable releases.
         "app": "anyumbrelstore-watchly",
         "repo": "TimilsinaBimal/Watchly",
         "kind": "stable",
@@ -416,7 +416,7 @@ def main() -> int:
         lines.append("")
         lines.append("## ⚠️ Handlungsbedarf")
         lines += [f"- {a}" for a in alerts] or ["- (keine)"]
-        lines += ["", "## ℹ️ Hinweise"]
+        lines.append(["", "## ℹ️ Hinweise"])
         lines += [f"- {i}" for i in infos] or ["- (keine)"]
         with open(args.report_file, "w", encoding="utf-8") as f:
             f.write("\n".join(lines) + "\n")

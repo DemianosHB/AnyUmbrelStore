@@ -19,17 +19,6 @@
         "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+packageName=(?<packageName>[^\\s]+))?(?:\\s+extractVersion=(?<extractVersion>[^\\s]+))?(?:\\s+versioning=(?<versioning>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*version:\\s*[\"']?(?<currentValue>(?:v?[0-9]|latest)[^\"'\\s]*)[\"']?",
         "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+currentValue=(?<currentValue>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*version:\\s*[\"']?(?<currentDigest>sha256:[a-f0-9]+)[\"']?"
       ]
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/(^|/)\\.github/workflows/watchly-image\\.yml$/",
-        "/(^|/)docker/watchly/Dockerfile$/"
-      ],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+extractVersion=(?<extractVersion>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*WATCHLY_REF:\\s*\\$\\{\\{\\s*inputs\\.watchly_ref\\s*\\|\\|\\s*[\\\"']?(?<currentValue>[^\\\"'\\s}]+)[\\\"']?",
-        "# renovate: datasource=(?<datasource>[^\\s]+)\\s+depName=(?<depName>[^\\s]+)(?:\\s+extractVersion=(?<extractVersion>[^\\s]+))?[^\\r\\n]*\\r?\\n\\s*ARG\\s+WATCHLY_REF=(?<currentValue>[^\\s]+)"
-      ]
     }
   ],
   "packageRules": [
@@ -115,13 +104,6 @@
         "github-actions"
       ],
       "groupName": "GitHub Actions updates"
-    },
-    {
-      "description": "Bündelt den Watchly-Upstream-Bump (WATCHLY_REF in Workflow und Dockerfile) in einen PR - bewusst ohne Automerge (Entrypoint-Muster manuell prüfen, siehe README)",
-      "matchPackageNames": [
-        "TimilsinaBimal/Watchly"
-      ],
-      "groupName": "watchly upstream bump"
     }
   ],
   "timezone": "Europe/Berlin",

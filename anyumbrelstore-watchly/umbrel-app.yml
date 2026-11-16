@@ -4,8 +4,8 @@ storage:
   dataRoot: data
 category: media
 name: Watchly
-# renovate: datasource=docker depName=ghcr.io/demianoshb/watchly versioning=semver
-version: "1.17.2"
+# renovate: datasource=docker depName=ghcr.io/timilsinabimal/watchly versioning=semver
+version: "1.18.0"
 tagline: Personalisierte Empfehlungen aus deiner selbst gehosteten Nuvio-Historie
 description: >-
   Watchly baut aus deiner Watch-Historie personalisierte Empfehlungs-Reihen
@@ -26,10 +26,14 @@ description: >-
   erscheinen auf dem Nuvio-Homescreen.
 
 
-  Technik: Das Start-Skript des Containers zeigt Watchly auf das eigene
-  Nuvio-Backend (NUVIO_BASE_URL); der Publishable-Key wird automatisch über
-  den Discovery-Endpunkt /.well-known/nuvio geholt. Der Nuvio-Login im
-  Browser läuft direkt gegen das eigene Backend, nicht gegen die Cloud.
+  Technik: Offizielles Upstream-Image. Watchly unterstützt self-hosted
+  Nuvio-Backends seit Upstream 1.18.0 nativ über NUVIO_BASE_URL und
+  NUVIO_PUBLISHABLE_KEY (ohne Set = Nuvio-Cloud); NUVIO_BASE_URL zeigt auf
+  das eigene Backend (Kong-API, Port 30123), der Nuvio-Login im Browser
+  läuft direkt gegen das eigene Backend, nicht gegen die Cloud. Den
+  Publishable-Key des Backends (sichtbar unter /.well-known/nuvio) einmalig
+  als NUVIO_PUBLISHABLE_KEY-Env-Variable in den Umbrel-App-Einstellungen
+  setzen - eine Auto-Discovery gibt es im Upstream nicht.
 
 
   Hinweis: Ohne Umbrel-Login im lokalen Netz erreichbar (Nuvio und Browser
@@ -37,6 +41,17 @@ description: >-
   eigenes Kontosystem geschützt. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
 releaseNotes: >-
+  1.18.0 - Umstellung auf das offizielle Upstream-Image
+  (ghcr.io/timilsinabimal/watchly): Watchly 1.18.0 unterstützt self-hosted
+  Nuvio-Backends nativ über NUVIO_BASE_URL/NUVIO_PUBLISHABLE_KEY
+  (Upstream-PR #206). Eigenes Store-Image samt Image-Build (docker/watchly,
+  Watchly Docker Image Workflow, WATCHLY_REF) eingezogen; Renovate
+  aktualisiert Manifest-Version und Image-Tag jetzt direkt wie bei den
+  anderen Apps. NUVIO_PUBLISHABLE_KEY einmalig als Umbrel-App-Env setzen
+  (keine Auto-Discovery mehr); TMDB_API_KEY weiterhin nach jedem App-Update
+  prüfen (Umbrel rendert die App-Compose neu). Neue Upstream-Features:
+  Combined-Katalog-Reihe für Filme und Serien, italienische Katalog-Namen,
+  KI-Katalogtitel direkt in der Anzeigesprache.
   8-alpine - Update des Docker-Images auf 8-alpine. Keine automatisierten Release-Notes
   abrufbar – Details: https://github.com/docker-library/redis/releases.
   1.17.2 - Erste Packaging-Version: Watchly 1.17.2 als eigenes Multi-Arch-
