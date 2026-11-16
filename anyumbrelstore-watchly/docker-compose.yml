@@ -8,7 +8,7 @@ services:
       PROXY_AUTH_ADD: "false"
 
   server:
-    image: ghcr.io/demianoshb/watchly:1.17.2
+    image: ghcr.io/timilsinabimal/watchly:1.18.0
     restart: on-failure
     depends_on:
       - redis
@@ -20,9 +20,19 @@ services:
       # Addon-Basis-URL, wie Nuvio sie erreicht
       HOST_NAME: http://umbrel.internal:30127
       ALLOW_SIGNUPS: "True"
-      # Selbst gehostetes Nuvio-Backend; Publishable-Key wird beim Start
-      # automatisch ueber /.well-known/nuvio geholt
-      NUVIO_BASE_URL: http://umbrel.internal:30123
+      # Selbst gehostetes Nuvio-Backend, seit Upstream 1.18.0 nativ
+      # unterstuetzt via NUVIO_BASE_URL/NUVIO_PUBLISHABLE_KEY (Unset =
+      # Nuvio-Cloud). Beide Variablen bewusst NICHT im Manifest, sondern
+      # als App-Env-Variablen in den Umbrel-App-Einstellungen gesetzt:
+      # Jeder Betreiber adressiert sein eigenes Backend, und beide muessen
+      # dasselbe adressieren (der Server liest die Historie und installiert
+      # das Addon, der Browser baut die Session beim Connect-Nuvio-Login).
+      # Den Publishable-Key des Backends zeigt
+      # <NUVIO_BASE_URL>/.well-known/nuvio; eine Auto-Discovery gibt es
+      # im Upstream 1.18.0 nicht.
+      # TMDB_API_KEY (Upstream-Bug: Web-UI-Key wird von mehreren Code-Pfaden
+      # ignoriert) weiterhin als App-Env bzw. nach jedem App-Update in der
+      # gerenderten Compose setzen (Umbrel rendert bei Updates neu).
     healthcheck:
       test: ["CMD", "curl", "-fsSL", "http://localhost:8000/"]
       interval: 30s

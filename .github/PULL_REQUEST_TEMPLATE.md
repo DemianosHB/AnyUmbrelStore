@@ -9,5 +9,4 @@
 ## Hinweise
 
 - Reine Digest-Updates (z. B. Gluetun `:latest`) merged Renovate automatisch, sobald der App-Store-Check grün ist.
-- Upstream-Bumps von Watchly (`WATCHLY_REF`) sind bewusst manuell: Entrypoint-Muster prüfen, siehe `docker/watchly/README.md`.
 - GitHub-Actions-Updates kommen als gebündelter Renovate-PR („GitHub Actions updates"), die Actions sind auf Commit-SHAs gepinnt.

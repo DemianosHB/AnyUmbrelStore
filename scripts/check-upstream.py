@@ -115,11 +115,11 @@ WATCHES = [
         "manifest": "anyumbrelstore-infinidysk/umbrel-app.yml",
     },
     {
-        # Watchly: the store builds its own image from the pinned upstream tag
-        # (docker/watchly, workflow watchly-image.yml, WATCHLY_REF). This watch
-        # reports new upstream releases so the WATCHLY_REF bump - and the
-        # entrypoint's sed/grep patterns, which upstream changes can break -
-        # are always deliberate steps.
+        # Watchly: official upstream image since 1.18.0 (self-hosted Nuvio
+        # backends are now supported natively upstream, NUVIO_BASE_URL/
+        # NUVIO_PUBLISHABLE_KEY). Renovate bumps manifest version and the
+        # plain semver GHCR image tag together; this watch adds the
+        # changelog radar for breaking changes between stable releases.
         "app": "anyumbrelstore-watchly",
         "repo": "TimilsinaBimal/Watchly",
         "kind": "stable",
