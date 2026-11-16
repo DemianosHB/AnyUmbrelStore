@@ -10,14 +10,18 @@ tagline: Personalisierte Empfehlungen aus deiner selbst gehosteten Nuvio-Histori
 description: >-
   Watchly baut aus deiner Watch-Historie personalisierte Empfehlungs-Reihen
   ("Top Picks for You", "Because you watched ...", Genre- und Keyword-Kataloge)
-  und blendet sie als Katalog-Addon in Nuvio ein. Diese Instanz ist so gebaut,
-  dass sie die Historie direkt aus dem selbst gehosteten Nuvio-Backend liest,
-  ohne Umweg über Trakt, Simkl oder die Nuvio-Cloud.
+  und blendet sie als Katalog-Addon in Nuvio ein. Mit NUVIO_BASE_URL und
+  NUVIO_PUBLISHABLE_KEY (Umbrel-App-Env) liest sie die Historie direkt aus
+  dem selbst gehosteten Nuvio-Backend, ohne Umweg über Trakt, Simkl oder
+  die Nuvio-Cloud; ohne beide Variablen läuft Watchly gegen die Nuvio-Cloud.
 
 
-  Erste Schritte: Weboberfläche öffnen (umbrel.local:30127), Konto anlegen und
-  TMDB-API-Key als TMDB_API_KEY-Env-Variable im server-Service der App
-  hinterlegen (kostenlos auf themoviedb.org, API Key v3; mehrere Watchly-
+  Erste Schritte: NUVIO_BASE_URL (Kong-API des eigenen Nuvio-Backends) und
+  NUVIO_PUBLISHABLE_KEY (dessen Publishable-Key, sichtbar unter
+  /.well-known/nuvio) als Env-Variablen in den Umbrel-App-Einstellungen
+  setzen, Weboberfläche öffnen (umbrel.local:30127), Konto anlegen und
+  TMDB-API-Key als TMDB_API_KEY-Env-Variable hinterlegen (kostenlos auf
+  themoviedb.org, API Key v3; mehrere Watchly-
   Code-Pfade ignorieren den in der Web-UI gesetzten Key, ohne die Env-
   Variable schlägt das Manifest mit Fehler 500 fehl), unter Accounts Nuvio
   verbinden (Anmeldung direkt am eigenen Backend), gewünschte Kataloge
@@ -28,12 +32,13 @@ description: >-
 
   Technik: Offizielles Upstream-Image. Watchly unterstützt self-hosted
   Nuvio-Backends seit Upstream 1.18.0 nativ über NUVIO_BASE_URL und
-  NUVIO_PUBLISHABLE_KEY (ohne Set = Nuvio-Cloud); NUVIO_BASE_URL zeigt auf
-  das eigene Backend (Kong-API, Port 30123), der Nuvio-Login im Browser
-  läuft direkt gegen das eigene Backend, nicht gegen die Cloud. Den
-  Publishable-Key des Backends (sichtbar unter /.well-known/nuvio) einmalig
-  als NUVIO_PUBLISHABLE_KEY-Env-Variable in den Umbrel-App-Einstellungen
-  setzen - eine Auto-Discovery gibt es im Upstream nicht.
+  NUVIO_PUBLISHABLE_KEY (ohne Set = Nuvio-Cloud); beide Variablen werden
+  bewusst nicht im Manifest vorgegeben, sondern als Env-Variablen in den
+  Umbrel-App-Einstellungen gesetzt: NUVIO_BASE_URL zeigt auf das eigene
+  Backend (Kong-API, Port 30123), NUVIO_PUBLISHABLE_KEY auf dessen
+  Publishable-Key (sichtbar unter /.well-known/nuvio) - eine Auto-Discovery
+  gibt es im Upstream nicht. Der Nuvio-Login im Browser läuft dann direkt
+  gegen das eigene Backend, nicht gegen die Cloud.
 
 
   Hinweis: Ohne Umbrel-Login im lokalen Netz erreichbar (Nuvio und Browser
@@ -47,9 +52,10 @@ releaseNotes: >-
   (Upstream-PR #206). Eigenes Store-Image samt Image-Build (docker/watchly,
   Watchly Docker Image Workflow, WATCHLY_REF) eingezogen; Renovate
   aktualisiert Manifest-Version und Image-Tag jetzt direkt wie bei den
-  anderen Apps. NUVIO_PUBLISHABLE_KEY einmalig als Umbrel-App-Env setzen
-  (keine Auto-Discovery mehr); TMDB_API_KEY weiterhin nach jedem App-Update
-  prüfen (Umbrel rendert die App-Compose neu). Neue Upstream-Features:
+  anderen Apps. NUVIO_BASE_URL und NUVIO_PUBLISHABLE_KEY werden bewusst
+  nicht mehr im Manifest gesetzt, sondern als Umbrel-App-Env durch den
+  Betreiber (keine Auto-Discovery); TMDB_API_KEY weiterhin nach jedem
+  App-Update prüfen (Umbrel rendert die App-Compose neu). Neue Upstream-Features:
   Combined-Katalog-Reihe für Filme und Serien, italienische Katalog-Namen,
   KI-Katalogtitel direkt in der Anzeigesprache.
   8-alpine - Update des Docker-Images auf 8-alpine. Keine automatisierten Release-Notes
