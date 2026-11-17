@@ -113,5 +113,7 @@
   "prCreation": "not-pending",
   "prHourlyLimit": 2,
   "prConcurrentLimit": 3,
-  "dependencyDashboard": true
+  "dependencyDashboard": {
+    "enabled": true
+  }
 }
