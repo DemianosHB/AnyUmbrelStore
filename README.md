@@ -28,7 +28,7 @@ A [community app store](https://github.com/getumbrel/umbrel-community-app-store)
 | [InfiniDysk](https://github.com/infinidysk/infinidysk) | `anyumbrelstore-infinidysk` | 1.7.1-lang5 | Media | 30125 |
 | [Watchly](https://github.com/TimilsinaBimal/Watchly) | `anyumbrelstore-watchly` | 1.18.0 | Media | 30127 |
 | [StremThru](https://github.com/MunifTanjim/stremthru) | `anyumbrelstore-stremthru` | 0.105.4 | Media | 30128 |
-| [AIOMetadata](https://github.com/cedya77/aiometadata) | `anyumbrelstore-aiometadata` | 3.9.0 | Media | 30129 |
+| [AIOMetadata](https://github.com/cedya77/aiometadata) | `anyumbrelstore-aiometadata` | 4.0.0 | Media | 30129 |
 | [OpenPosterDB](https://github.com/PNRxA/openposterdb) | `anyumbrelstore-openposterdb` | 1.3.0 | Media | 30130 |
 | [XRDB](https://github.com/IbbyLabs/XRDB) | `anyumbrelstore-xrdb` | 3.145.1 | Media | 30131 |
 

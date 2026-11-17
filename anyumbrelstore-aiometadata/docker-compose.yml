@@ -12,7 +12,7 @@ services:
       PROXY_AUTH_WHITELIST: "/stremio/*,/poster/*,/logo/*,/background/*,/landscape/*,/poster-cache/*"
 
   server:
-    image: ghcr.io/cedya77/aiometadata:3.9.0
+    image: ghcr.io/cedya77/aiometadata:4.0.0
     restart: on-failure
     # Nicht-root-Betrieb: Umbrel legt die App-Daten als 1000:1000 an; der
     # Node-Server braucht nur Schreibzugriff auf /app/addon/data.
