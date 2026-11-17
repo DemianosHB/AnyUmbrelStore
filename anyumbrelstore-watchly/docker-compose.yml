@@ -10,8 +10,16 @@ services:
   server:
     image: ghcr.io/timilsinabimal/watchly:1.18.0
     restart: on-failure
+    # Start-Race-Fix (Vorfall 12./13.11.2026): Startet der server-Container
+    # gleichzeitig mit oder vor Redis, kann der Uvicorn-Worker Redis
+    # "verlieren". Upstream-Bug: redis_service.get() schluckt JEDE
+    # Redis-Stoerung und gibt None zurueck (nicht vom "Key fehlt"
+    # unterscheidbar) -> /tokens/identity liefert exists=false trotz
+    # intakter Konten, der Login will neue Konten anlegen. Watchly erst
+    # starten, wenn Redis PING beantwortet (compose-v2-Condition).
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     environment:
       REDIS_URL: redis://redis:6379/0
       APP_ENV: production
@@ -42,5 +50,12 @@ services:
   redis:
     image: redis:8-alpine
     restart: on-failure
+    # Start-Race-Fix: Healthcheck als depends_on-Bedingung fuer server
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     volumes:
       - ${APP_DATA_DIR}/data/redis:/data
