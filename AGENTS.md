@@ -18,6 +18,7 @@ umbrel-app-store.yml          # store definition (id: anyumbrelstore)
 scripts/check-apps.py         # local/CI package validation (see Local checks)
 scripts/pr-changelog.py       # changelog + README sync, runs in CI on PRs
 scripts/pr-report.js          # structured PR comment from the check results
+scripts/check-upstream.py     # upstream release/breaking-change watch (weekly issue), see upstream-watch.yml
 .github/workflows/           # app-store-check, upstream-watch, branch-cleanup
 renovate.json                # all automated update rules (see Renovate rules)
 ```
@@ -41,7 +42,7 @@ Exit code 0 = pass (warnings allowed), 1 = errors. The `--official` clone enable
 - **manifest**: required fields present, `id` == folder name, `manifestVersion` numeric (e.g. `1`). Keep manifests consistent with existing apps (see `anyumbrelstore-gluetun/umbrel-app.yml` for a full example).
 - **version**: semver (optionally a 4th numeric component for upstream four-part versions, e.g. Duplicati `2.4.1.0`), or a `sha256:` digest. Never a bare `latest`. A packaging-only suffix `-pkgN` is allowed and is the way to ship packaging changes (e.g. port moves) without an image change – Umbrel detects updates by version string inequality.
 - **Renovate annotation**: to let Renovate manage the manifest version, place a `# renovate: datasource=... depName=...` comment **directly above** `version:` (only whitespace in between – the regex manager in `renovate.json` requires it). The variant that captures `currentValue` updates version tags; the variant with `currentDigest` updates digests.
-- **ports**: host ports must be unique within this store and must not collide with the official Umbrel app store. This store allocates from `30122` upwards (30122–30131 currently in use); pick the next free port for a new app. Headless apps (no `app_proxy`) may use port `0`; web UI apps need a positive port.
+- **ports**: host ports must be unique within this store and must not collide with the official Umbrel app store. CI enforces uniqueness (manifest ports plus raw compose host bindings), not a port range. By convention this store allocates from `30122` upwards (30122-30131 currently in use, including `30123` as the Nuvio Kong backend port in `anyumbrelstore-nuvio-backend/docker-compose.yml`; exceptions outside the range: Profilarr `6868`, Paperless-Backup `39120`). Pick the next free port in the range for a new app (currently `30132`). Headless apps (no `app_proxy`) may use port `0`; web UI apps need a positive port.
 - **app_proxy**: `APP_HOST` must follow the container-name pattern and `APP_PORT` must match the container port.
 - **data**: `storage.dataRoot` must be exactly `data`. Apps should persist to `$APP_DATA_DIR` (the checker warns if no volume uses it).
 - **images**: moving tags (`latest`, `main`) must be digest-pinned.
@@ -81,7 +82,7 @@ Bump the `-pkgN` suffix on the manifest version (see `anyumbrelstore-gluetun/umb
 ### Add a new app
 
 1. Create `anyumbrelstore-<name>/` with `umbrel-app.yml`, `docker-compose.yml`, and ideally an in-repo `icon.svg`.
-2. Pick the next free host port (next after 30131); check against the official store clone.
+2. Pick the next free host port in the 30122+ range (currently `30132`); check against the official store clone.
 3. Add a Renovate annotation above `version:` so the app stays updated.
 4. Add the app to the version table and add a description section in `README.md` (CI syncs the table on tag bumps, but the initial row/description is manual).
 5. Run the local checks with `--official`, then open a PR.
