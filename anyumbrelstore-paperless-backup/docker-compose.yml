@@ -14,7 +14,7 @@ services:
   #    waere es unzulaessig; Tag daher auf 18 angehoben (Renovate-PRs
   #    #21/#24 erledigt damit auch).
   dbdump:
-    image: docker.io/library/postgres:18
+    image: docker.io/library/postgres:19
     restart: unless-stopped
     environment:
       TZ: Europe/Berlin
