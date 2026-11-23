@@ -31,7 +31,7 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
-    v1.7.1-Demianos6 - Fork-Update (Fork-PRs #6/#7): Opt-in Stall Negative
+  v1.7.1-Demianos6 - Fork-Update (Fork-PRs #6/#7): Opt-in Stall Negative
   Marking gegen Serving-Stall-Loops des Watchdogs - neue Einstellungen
   play.stall-negative-marking-enabled und play.stall-negative-marking-minutes
   (TTL, Default 15 min, Feature Default aus): Kandidaten, die im Serving
@@ -48,7 +48,7 @@ releaseNotes: >-
   SabBaseResponse zieht in den NzbWebDAV.Api-Root-Namespace (loest die
   Architektur-Regel NonApiCodeDoesNotDependOnControllers), Wire-Format
   unveraendert.
-v1.7.1-lang5 - Fork-Update (Fork-PR #5): Konfigurierbare Ausnahmen
+  v1.7.1-lang5 - Fork-Update (Fork-PR #5): Konfigurierbare Ausnahmen
   fuer den globalen SOCKS5-Outbound-Proxy - neue Einstellung
   general.socks5-proxy-bypass (Settings -> General, ENV
   NZBDAV_CONFIG__GENERAL__SOCKS5_PROXY_BYPASS): Hostnamen, Domain-Suffixe
