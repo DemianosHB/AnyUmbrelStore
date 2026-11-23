@@ -38,6 +38,16 @@
       "allowedVersions": "/-Demianos[0-9]+$/"
     },
     {
+      "description": "InfiniDysk (Fork): Compose-Tag mit Semver vergleichen statt Docker-Versioning - Default-Docker-Versioning parst v1.7.1-DemianosN als Kern [1,7,1] + Suffix und stuft einen reinen Suffix-Wechsel (DemianosN) nie als Update ein (invertierter Suffix-Vergleich bei gleichem Kern); dadurch wurde die docker-compose.yml bei Tag-Bumps nie mitgezogen",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/demianoshb/infinidysk"
+      ],
+      "versioning": "semver"
+    },
+    {
       "description": "Aktiviert Digest-Pinning und Digest-Updates für Gluetun (latest), gluetun-webui (main) und Duplicati (bewusst digest-gepinnt, identischer Stand wie die offizielle Umbrel-App)",
       "matchPackageNames": [
         "qmcgaw/gluetun",
