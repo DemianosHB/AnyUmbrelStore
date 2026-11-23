@@ -5,7 +5,7 @@ storage:
 category: media
 name: InfiniDysk
 # renovate: datasource=docker depName=ghcr.io/demianoshb/infinidysk extractVersion=^v?(?<version>.*)$ versioning=semver
-version: "1.7.1-lang5"
+version: "1.7.1-Demianos6"
 tagline: Usenet-Streaming über ein virtuelles WebDAV-Laufwerk
 description: >-
   InfiniDysk (NzbDAV SuperFork) mountet Usenet-Inhalte als virtuelles
@@ -31,6 +31,23 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
+  v1.7.1-Demianos6 - Fork-Update (Fork-PRs #6/#7): Opt-in Stall Negative
+  Marking gegen Serving-Stall-Loops des Watchdogs - neue Einstellungen
+  play.stall-negative-marking-enabled und play.stall-negative-marking-minutes
+  (TTL, Default 15 min, Feature Default aus): Kandidaten, die im Serving
+  abbrechen (streaming-write-timeout), werden advisory negativ markiert
+  (eigener Cache, getrennt vom Queue-Failure-Negative-Cache) und im
+  Watchdog-Failover uebersprungen, solange die Markierung warm ist - die
+  Skips bleiben Watchdog-sichtbar. Fail-open: Sind ALLE nicht permanent
+  ausgeschlossenen Kandidaten stall-markiert, ignoriert der Walk die Marks
+  komplett, die Kandidatenliste kann dadurch nie leeren; transiente Stalls
+  heilen ueber den TTL (Default 15 min). Hintergrund (Vorfall 22.11.2026,
+  HMT/Silo): Der Player-Retry-Loop loeste bei jedem Retry denselben
+  gestallten Winner erneut auf und stallte erneut im Serving (5x dieselbe
+  Watchdog-Gruppe). Zusaetzlich interne API-Bereinigung (Fork-PR #7):
+  SabBaseResponse zieht in den NzbWebDAV.Api-Root-Namespace (loest die
+  Architektur-Regel NonApiCodeDoesNotDependOnControllers), Wire-Format
+  unveraendert.
   v1.7.1-lang5 - Fork-Update (Fork-PR #5): Konfigurierbare Ausnahmen
   fuer den globalen SOCKS5-Outbound-Proxy - neue Einstellung
   general.socks5-proxy-bypass (Settings -> General, ENV
