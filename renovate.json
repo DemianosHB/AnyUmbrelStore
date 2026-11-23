@@ -31,6 +31,13 @@
       "groupName": "{{parentDir}} app updates"
     },
     {
+      "description": "InfiniDysk (Fork): Nur DemianosN-Tags als Update-Kandidaten - Semver sortiert Prerelease-Identifier ASCII-lexikalisch (D=68 < l=108), d.h. die alten v1.7.1-langN-Tags liegen UEBER jedem DemianosN-Tag und Renovate wuerde sonst Downgrades auf lang5 vorschlagen",
+      "matchPackageNames": [
+        "ghcr.io/demianoshb/infinidysk"
+      ],
+      "allowedVersions": "/-Demianos[0-9]+$/"
+    },
+    {
       "description": "Aktiviert Digest-Pinning und Digest-Updates für Gluetun (latest), gluetun-webui (main) und Duplicati (bewusst digest-gepinnt, identischer Stand wie die offizielle Umbrel-App)",
       "matchPackageNames": [
         "qmcgaw/gluetun",
