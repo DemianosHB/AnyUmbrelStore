@@ -31,6 +31,11 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
+  v1.7.1-Demianos6 - Commits: chore(api): move SabBaseResponse to the NzbWebDAV.Api root
+  namespace; Merge pull request #7 from DemianosHB/chore/api-decouple-sab-base-response;
+  feat(play): opt-in stall negative marking for serving-stall retries; fix(play): pass
+  stall negative marking flag into RunBatchAsync; Merge pull request #6 from
+  DemianosHB/feat/stall-candidate-marking
   v1.7.1-lang5 - Fork-Update (Fork-PR #5): Konfigurierbare Ausnahmen
   fuer den globalen SOCKS5-Outbound-Proxy - neue Einstellung
   general.socks5-proxy-bypass (Settings -> General, ENV
