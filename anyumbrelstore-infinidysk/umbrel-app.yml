@@ -31,6 +31,8 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
+  v1.7.1-Demianos7 - Commits: feat(ui): expose play stall negative marking settings in the
+  watchdog tab; Merge pull request #8 from DemianosHB/feat/ui-stall-marking-settings
   v1.7.1-Demianos6 - Fork-Update (Fork-PRs #6/#7): Opt-in Stall Negative
   Marking gegen Serving-Stall-Loops des Watchdogs - neue Einstellungen
   play.stall-negative-marking-enabled und play.stall-negative-marking-minutes
