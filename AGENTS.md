@@ -91,6 +91,7 @@ Bump the `-pkgN` suffix on the manifest version (see `anyumbrelstore-gluetun/umb
 
 - Keep changes minimal and focused on one app per PR.
 - Follow the existing bilingual style: manifests and config comments in this repo are largely English with some German explanations – keep the surrounding file's language and tone.
+- **Hostnames between containers**: pin Redis/DB hostnames to the app's own container name (e.g. `anyumbrelstore-watchly_redis_1`), never to a bare compose service name like `redis`. All store apps share one Docker network, and Docker DNS resolves a bare service name to any container exposing that name – including other apps' containers (incident 2026-11-24: Watchly and AIOMetadata both ran a `redis` service; their reads/writes interleaved across both Redis instances until both manifests pinned the hostname; same convention as `APP_HOST`).
 - Do not modify files CI owns on PR branches after the check ran (the changelog-sync commit may conflict); rebase instead of amending CI-pushed commits.
 - Never add secrets or credentials to manifests or compose files.
 - `master` is the published store – only merge with a green App Store Check.

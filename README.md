@@ -26,9 +26,9 @@ A [community app store](https://github.com/getumbrel/umbrel-community-app-store)
 | [AIOStreams](https://github.com/Viren070/AIOStreams) | `anyumbrelstore-aiostreams` | 2.38.1 | Media | 30124 |
 | [Nuvio Backend](https://github.com/NuvioMedia/self-host) | `anyumbrelstore-nuvio-backend` | 0.1.5 | Media | 30122 |
 | [InfiniDysk](https://github.com/infinidysk/infinidysk) | `anyumbrelstore-infinidysk` | 1.7.2-Demianos10 | Media | 30125 |
-| [Watchly](https://github.com/TimilsinaBimal/Watchly) | `anyumbrelstore-watchly` | 1.18.0+pkg1 | Media | 30127 |
+| [Watchly](https://github.com/TimilsinaBimal/Watchly) | `anyumbrelstore-watchly` | 1.18.0+pkg2 | Media | 30127 |
 | [StremThru](https://github.com/MunifTanjim/stremthru) | `anyumbrelstore-stremthru` | 0.105.4 | Media | 30128 |
-| [AIOMetadata](https://github.com/cedya77/aiometadata) | `anyumbrelstore-aiometadata` | 4.1.0 | Media | 30129 |
+| [AIOMetadata](https://github.com/cedya77/aiometadata) | `anyumbrelstore-aiometadata` | 4.1.0+pkg1 | Media | 30129 |
 | [OpenPosterDB](https://github.com/PNRxA/openposterdb) | `anyumbrelstore-openposterdb` | 1.3.0 | Media | 30130 |
 | [XRDB](https://github.com/IbbyLabs/XRDB) | `anyumbrelstore-xrdb` | 3.146.1 | Media | 30131 |
 
@@ -79,7 +79,7 @@ Connect to AIOStreams in one of two ways: as an **NzbDAV service** (playback onl
 
 Personalized recommendations from your Nuvio history: Watchly reads the watch history directly from the self-hosted Nuvio backend and builds recommendation rows ("Top Picks for You", "Because you watched …", genre and keyword catalogs) that appear as a catalog addon on the Nuvio home screen – without detours via Trakt, Simkl or the Nuvio cloud.
 
-Since version 1.18.0 the app uses the official upstream image: self-hosted Nuvio backends are now supported natively upstream (`NUVIO_BASE_URL`/`NUVIO_PUBLISHABLE_KEY`, unset = Nuvio cloud). Both variables are deliberately not preset in the manifest – each operator sets them as environment variables in the Umbrel app settings: `NUVIO_BASE_URL` points at your own backend (Kong API, port 30123) and `NUVIO_PUBLISHABLE_KEY` at its publishable key (visible at `/.well-known/nuvio`); upstream has no auto-discovery. **Important:** Watchly requires a TMDB API key as a `TMDB_API_KEY` env variable in the `server` service – several Watchly code paths ignore the key stored in the web UI; without the env variable the manifest fails with error 500. Umbrel re-renders the app compose on every update, so re-check the env variables after each app update. Renovate updates the manifest version and image tag together.
+Since version 1.18.0 the app uses the official upstream image: self-hosted Nuvio backends are now supported natively upstream (`NUVIO_BASE_URL`/`NUVIO_PUBLISHABLE_KEY`, unset = Nuvio cloud). Both variables are deliberately not preset in the manifest – each operator sets them as environment variables in the Umbrel app settings: `NUVIO_BASE_URL` points at your own backend (Kong API, port 30123) and `NUVIO_PUBLISHABLE_KEY` at its publishable key (visible at `/.well-known/nuvio`); upstream has no auto-discovery. **Important:** Watchly requires a TMDB API key as a `TMDB_API_KEY` env variable in the `server` service – several Watchly code paths ignore the key stored in the web UI; without the env variable the manifest fails with error 500. Umbrel re-renders the app compose on every update, so re-check the env variables after each app update. Since packaging version 1.18.0+pkg2, Redis is addressed via the app’s own container name (`anyumbrelstore-watchly_redis_1`) instead of the bare `redis` service name – Docker DNS resolves bare service names across all apps in the shared Umbrel network (split-brain incident with AIOMetadata, 2026-11-24, see AGENTS.md). Renovate updates the manifest version and image tag together.
 
 ### StremThru
 
@@ -93,7 +93,7 @@ Poster and metadata service for Stremio and Nuvio: AIOMetadata delivers posters,
 
 First steps: set the TMDB API key in the app settings (`BUILT_IN_TMDB_API_KEY`, free at themoviedb.org; the optional TVDB, Fanart.tv, RPDB and MDBList keys belong there as well), then open the web UI behind the Umbrel login and configure everything under `/configure`: pick catalogs, providers and artwork, set the language to German, save – note the UUID and password shown, both are needed to edit the configuration later. The install step generates the manifest URL that goes into Nuvio per profile under Settings → Addons; each Nuvio profile can use its own configuration.
 
-The configuration UI is protected by the Umbrel login; only the addon paths Nuvio needs (`/stremio/*`, the signed artwork proxies `/poster`, `/logo`, `/background`, `/landscape` and `/poster-cache/*`) are reachable without Umbrel cookies – protected by the UUID/config token in the path and the HMAC signature. Cache warming is deliberately disabled in the package (RAM budget), Redis runs with a small memory cap as a cache only. Renovate updates the manifest version and image tag together.
+The configuration UI is protected by the Umbrel login; only the addon paths Nuvio needs (`/stremio/*`, the signed artwork proxies `/poster`, `/logo`, `/background`, `/landscape` and `/poster-cache/*`) are reachable without Umbrel cookies – protected by the UUID/config token in the path and the HMAC signature. Cache warming is deliberately disabled in the package (RAM budget), Redis runs with a small memory cap as a cache only. Since packaging version 4.1.0+pkg1, Redis is likewise addressed via the app’s own container name – see the Watchly section for the background. Renovate updates the manifest version and image tag together.
 
 ### OpenPosterDB
 

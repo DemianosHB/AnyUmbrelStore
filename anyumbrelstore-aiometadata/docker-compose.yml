@@ -33,7 +33,12 @@ services:
       DATABASE_URI: sqlite://addon/data/db.sqlite
       # Redis ist reiner Cache (Redis 8 wegen HSETEX/HTTL), Nutzer-Daten
       # liegen in der SQLite, nicht in Redis.
-      REDIS_URL: redis://redis:6379
+      # Redis-DNS-Split-Brain-Fix (Vorfall 24.11.2026): der bare
+      # Service-Name redis kann im gemeinsamen Umbrel-Netz je Worker auf
+      # die Redis-Instanz einer anderen App aufgeloest werden - Redis
+      # deshalb immer ueber den eigenen Container-Namen adressieren
+      # (gleiche Konvention wie APP_HOST).
+      REDIS_URL: redis://anyumbrelstore-aiometadata_redis_1:6379
       # Admin-Key für Admin-/Dashboard-API-Endpunkte = App-Passwort
       # (deterministicPassword, in der Umbrel-App-Ansicht angezeigt).
       ADMIN_KEY: ${APP_PASSWORD}
