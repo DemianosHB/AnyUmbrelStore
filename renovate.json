@@ -31,11 +31,9 @@
       "groupName": "{{parentDir}} app updates"
     },
     {
-      "description": "InfiniDysk (Fork): DemianosN-Tags als Update-Kandidaten; ignoreUnstable=false hebt die Prerelease-Sperre auf, damit Patch-Wechsel (1.7.1 -> 1.7.2) als Update erkannt werden",
+      "description": "InfiniDysk (Fork): Renovate deaktiviert - Semver vergleicht Prerelease-Identifier ASCII-lexikalisch, Demianos10 sortiert damit UNTER Demianos9: Updates wuerden nie vorgeschlagen, nach einem manuellen Bump kaeme stattdessen ein Downgrade-PR zurueck. Fork-Releases werden am Release-Tag manuell gebumpt (Store-PR mit Image, Manifest-Version, releaseNotes und README in einem Commit).",
       "matchPackageNames": ["ghcr.io/demianoshb/infinidysk"],
-      "versioning": "semver",
-      "ignoreUnstable": false,
-      "allowedVersions": "/-Demianos[0-9]+$/"
+      "enabled": false
     },
     {
       "description": "Aktiviert Digest-Pinning und Digest-Updates für Gluetun (latest), gluetun-webui (main) und Duplicati (bewusst digest-gepinnt, identischer Stand wie die offizielle Umbrel-App)",
