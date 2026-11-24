@@ -16,7 +16,7 @@ services:
     # Fork-Releases kommen als vX.Y.Z-DemianosN-Tags.
     # Renovate ist für dieses Image deaktiviert (semver-Falle beim DemianosN-
     # Suffix, siehe renovate.json); Fork-Releases werden manuell gebumpt.
-    image: ghcr.io/demianoshb/infinidysk:v1.7.2-Demianos10
+    image: ghcr.io/demianoshb/infinidysk:v1.7.2-Demianos11
     restart: on-failure
     volumes:
       - ${APP_DATA_DIR}/data:/config
