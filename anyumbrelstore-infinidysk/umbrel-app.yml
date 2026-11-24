@@ -4,8 +4,7 @@ storage:
   dataRoot: data
 category: media
 name: InfiniDysk
-# renovate: datasource=docker depName=ghcr.io/demianoshb/infinidysk extractVersion=^v?(?<version>.*)$ versioning=semver
-version: "1.7.2-Demianos9"
+version: "1.7.2-Demianos10"
 tagline: Usenet-Streaming über ein virtuelles WebDAV-Laufwerk
 description: >-
   InfiniDysk (NzbDAV SuperFork) mountet Usenet-Inhalte als virtuelles
@@ -31,6 +30,16 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
+  v1.7.2-Demianos10 - Read-ahead repair now covers the play path too (fork
+  PR #13): the /view GET endpoint (GetWebdavItemController) additionally
+  publishes the read-ahead options, so the actual player stream of the Watchdog
+  play flow widens its prefetch just like the WebDAV mount once
+  repair.readahead.enabled is on. Watchdog-safe: candidate downloads and
+  pre-verify structurally never see the request-scoped options; two new guard
+  tests pin the invariant. No config delta vs Demianos9: read-ahead stays
+  opt-in (default off), all defaults unchanged. Fork release on v1 @ a92c780,
+  image ghcr.io/demianoshb/infinidysk:v1.7.2-Demianos10 (multi-arch amd64/arm64,
+  also pushed as :latest).
   v1.7.2-Demianos9 - v1.7.2-Demianos9: — fork release on v1 @ 2ff6cf36 Image:
   ghcr.io/demianoshb/infinidysk:v1.7.2-Demianos9 (also pushed as :latest, multi-arch
   amd64/arm64) Highlights Read-ahead PAR2 repair (opt-in) — PR #10. New settings
