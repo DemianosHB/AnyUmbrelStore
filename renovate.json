@@ -31,10 +31,11 @@
       "groupName": "{{parentDir}} app updates"
     },
     {
-      "description": "InfiniDysk (Fork): vX.Y.Z-DemianosN per Regex numerisch vergleichen - Patch-Wechsel (1.7.1->1.7.2) und DemianosN >= 10 werden erkannt; langN/latest matchen das Template nicht",
+      "description": "InfiniDysk (Fork): DemianosN-Tags als Update-Kandidaten; ignoreUnstable=false hebt die Prerelease-Sperre auf, damit Patch-Wechsel (1.7.1 -> 1.7.2) als Update erkannt werden",
       "matchPackageNames": ["ghcr.io/demianoshb/infinidysk"],
-      "versioning": "regex",
-      "versioningTemplate": "^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-Demianos(?<build>\\d+)$"
+      "versioning": "semver",
+      "ignoreUnstable": false,
+      "allowedVersions": "/-Demianos[0-9]+$/"
     },
     {
       "description": "Aktiviert Digest-Pinning und Digest-Updates für Gluetun (latest), gluetun-webui (main) und Duplicati (bewusst digest-gepinnt, identischer Stand wie die offizielle Umbrel-App)",
