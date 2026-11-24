@@ -31,6 +31,12 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
+  v1.7.2-Demianos9 - v1.7.2-Demianos9: — fork release on v1 @ 2ff6cf36 Image:
+  ghcr.io/demianoshb/infinidysk:v1.7.2-Demianos9 (also pushed as :latest, multi-arch
+  amd64/arm64) Highlights Read-ahead PAR2 repair (opt-in) — PR #10. New settings
+  repair.readahead.enabled (default off) and repair.readahead.window-seconds (default 45,
+  range 5–600) in Settings → Repairs → "PAR2 gap repair" (ENV overlay NZBDAV_CONFIG REPAIR
+  READAHEAD ). Requires PAR2 gap repair (repair.par2-enabled). …
   v1.7.1-Demianos7 - Commits: feat(ui): expose play stall negative marking settings in the
   watchdog tab; Merge pull request #8 from DemianosHB/feat/ui-stall-marking-settings
   v1.7.1-Demianos6 - Fork-Update (Fork-PRs #6/#7): Opt-in Stall Negative
