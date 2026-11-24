@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: media
 name: InfiniDysk
-version: "1.7.2-Demianos10"
+version: "1.7.2-Demianos11"
 tagline: Usenet-Streaming über ein virtuelles WebDAV-Laufwerk
 description: >-
   InfiniDysk (NzbDAV SuperFork) mountet Usenet-Inhalte als virtuelles
@@ -30,6 +30,19 @@ description: >-
   und SABnzbd-Clients senden keine Umbrel-Cookies); InfiniDysk ist über sein
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN betreiben.
 releaseNotes: >-
+  v1.7.2-Demianos11 - Watchtower identity guard fix (fork PR #14): '&' and the localized
+  conjunction ("und") now fold onto a shared "and" token on both the canonical and the release
+  side, and a release head that is the leading run of canonical title tokens matches (marketing
+  subtitles the scene drops, e.g. "Feuer & Flamme - Mit Feuerwehrmaennern im Einsatz" vs
+  "Feuer.und.Flamme.S10E07"); the prefix rule is one-directional (spin-offs like
+  "Law.and.Order.SVU" stay rejected) and single-token heads are excluded. The watchtower identity
+  guard is skipped for tvdbid-anchored queries: the indexer already scopes those by ID, and the
+  name re-check rejected valid releases wholesale (series:tt7995922 was stuck on "No releases
+  found" while the same profile search returned four candidates without the guard; localised
+  release names like "Der.Fall.Karen.Read" for "The Trials of Karen Read" pass again too).
+  No config delta, all defaults unchanged. Fork release on v1 @ e739af3, image
+  ghcr.io/demianoshb/infinidysk:v1.7.2-Demianos11 (multi-arch amd64/arm64, also pushed as
+  :latest).
   v1.7.2-Demianos10 - Read-ahead repair now covers the play path too (fork
   PR #13): the /view GET endpoint (GetWebdavItemController) additionally
   publishes the read-ahead options, so the actual player stream of the Watchdog
@@ -38,7 +51,8 @@ releaseNotes: >-
   pre-verify structurally never see the request-scoped options; two new guard
   tests pin the invariant. No config delta vs Demianos9: read-ahead stays
   opt-in (default off), all defaults unchanged. Fork release on v1 @ a92c780,
-  image ghcr.io/demianoshb/infinidysk:v1.7.2-Demianos10 (multi-arch amd64/arm64,
+  image ghcr.io/demianoshb/
+infinidysk:v1.7.2-Demianos10 (multi-arch amd64/arm64,
   also pushed as :latest).
   v1.7.2-Demianos9 - v1.7.2-Demianos9: — fork release on v1 @ 2ff6cf36 Image:
   ghcr.io/demianoshb/infinidysk:v1.7.2-Demianos9 (also pushed as :latest, multi-arch
@@ -66,7 +80,8 @@ releaseNotes: >-
   Architektur-Regel NonApiCodeDoesNotDependOnControllers), Wire-Format
   unveraendert.
   v1.7.1-lang5 - Fork-Update (Fork-PR #5): Konfigurierbare Ausnahmen
-  fuer den globalen SOCKS5-Outbound-Proxy - neue Einstellung
+  fuer den
+ globalen SOCKS5-Outbound-Proxy - neue Einstellung
   general.socks5-proxy-bypass (Settings -> General, ENV
   NZBDAV_CONFIG__GENERAL__SOCKS5_PROXY_BYPASS): Hostnamen, Domain-Suffixe
   (.lan bzw. *.lan), IPs, CIDR-Bereiche oder * koennen vom Proxy
@@ -97,7 +112,8 @@ releaseNotes: >-
   Client-Reihenfolge. Das angeklickte Release bleibt Position 1,
   fremdsprachige Releases werden nie entfernt, nur herabgestuft
   (fail-open); ohne Profil-Einstellungen bleibt das Verhalten
-  exakt wie vorher. Fork: github.com/DemianosHB/infinidysk
+  exakt wie vorher. Fork: github.com/Demiano
+sHB/infinidysk
   (Branch v1), Release v1.7.1-lang3. Zukünftige Fork-Updates
   erscheinen als vX.Y.Z-langN-Tags; Renovate bumpt Image und
   Manifest-Version gebündelt (Annotation mit benannter
