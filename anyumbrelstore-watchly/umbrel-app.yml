@@ -5,7 +5,7 @@ storage:
 category: media
 name: Watchly
 # renovate: datasource=docker depName=ghcr.io/timilsinabimal/watchly versioning=semver
-version: "1.18.0+pkg1"
+version: "1.18.0+pkg2"
 tagline: Personalisierte Empfehlungen aus deiner selbst gehosteten Nuvio-Historie
 description: >-
   Watchly baut aus deiner Watch-Historie personalisierte Empfehlungs-Reihen
@@ -46,6 +46,17 @@ description: >-
   eigenes Kontosystem geschützt. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
 releaseNotes: >-
+  1.18.0+pkg2 - Packaging-Fix fuer den Redis-DNS-Split-Brain: REDIS_URL
+  adressiert Redis jetzt ueber den eigenen Container-Namen
+  (anyumbrelstore-watchly_redis_1) statt des bare Service-Namens redis.
+  Docker-DNS kann bare Namen im gemeinsamen Umbrel-Netz je Worker auf
+  die Redis-Instanz einer anderen App aufloesen (hier: AIOMetadata),
+  Reads/Writes verteilen sich auf beide Instanzen und Token/Identity
+  landen scheinbar verloren in der falschen Redis. Ergaenzt den
+  Start-Race-Fix aus +pkg1 - der Boot-Race war nur eine Teil-Ursache,
+  das Symptom trat auch zur Laufzeit ohne Restart auf. Keine Aenderung
+  am Watchly-Image, Upstream bleibt 1.18.0.
+
   1.18.0+pkg1 - Packaging-Fix fuer den Redis-Start-Race: Der
   server-Container startet erst, wenn Redis PING beantwortet (depends_on
   mit service_healthy-Bedingung plus neuer redis-cli-Healthcheck). Behebt

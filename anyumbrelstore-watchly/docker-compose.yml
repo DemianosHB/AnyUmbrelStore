@@ -21,7 +21,16 @@ services:
       redis:
         condition: service_healthy
     environment:
-      REDIS_URL: redis://redis:6379/0
+      # Redis-DNS-Split-Brain-Fix (Vorfall 24.11.2026): Umbrel betreibt
+      # alle Apps im selben Docker-Netz; Docker-DNS kann den bare
+      # Service-Namen redis je Worker auf die Redis-Instanz einer ANDEREN
+      # App aufloesen (getent hosts redis lieferte hier zwei IPs:
+      # watchly_redis_1 und aiometadata_redis_1). Reads/Writes verteilen
+      # sich dann auf beide Instanzen, Token/Identity landen scheinbar
+      # verloren in der falschen Redis. Redis deshalb immer ueber den
+      # eigenen Container-Namen adressieren (gleiche Konvention wie
+      # APP_HOST), nie als bare Service-Name.
+      REDIS_URL: redis://anyumbrelstore-watchly_redis_1:6379/0
       APP_ENV: production
       # Salt fuer Addon-Token, instance-spezifisch generiert
       TOKEN_SALT: "173fe049837c618f5b26f8c9fd98e9fc7230929b421a8405f2dcd0c8cee73e07"
