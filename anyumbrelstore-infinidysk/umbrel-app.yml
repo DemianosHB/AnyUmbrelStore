@@ -51,8 +51,7 @@ releaseNotes: >-
   pre-verify structurally never see the request-scoped options; two new guard
   tests pin the invariant. No config delta vs Demianos9: read-ahead stays
   opt-in (default off), all defaults unchanged. Fork release on v1 @ a92c780,
-  image ghcr.io/demianoshb/
-infinidysk:v1.7.2-Demianos10 (multi-arch amd64/arm64,
+  image ghcr.io/demianoshb/infinidysk:v1.7.2-Demianos10 (multi-arch amd64/arm64,
   also pushed as :latest).
   v1.7.2-Demianos9 - v1.7.2-Demianos9: — fork release on v1 @ 2ff6cf36 Image:
   ghcr.io/demianoshb/infinidysk:v1.7.2-Demianos9 (also pushed as :latest, multi-arch
@@ -80,8 +79,7 @@ infinidysk:v1.7.2-Demianos10 (multi-arch amd64/arm64,
   Architektur-Regel NonApiCodeDoesNotDependOnControllers), Wire-Format
   unveraendert.
   v1.7.1-lang5 - Fork-Update (Fork-PR #5): Konfigurierbare Ausnahmen
-  fuer den
- globalen SOCKS5-Outbound-Proxy - neue Einstellung
+  fuer den globalen SOCKS5-Outbound-Proxy - neue Einstellung
   general.socks5-proxy-bypass (Settings -> General, ENV
   NZBDAV_CONFIG__GENERAL__SOCKS5_PROXY_BYPASS): Hostnamen, Domain-Suffixe
   (.lan bzw. *.lan), IPs, CIDR-Bereiche oder * koennen vom Proxy
@@ -112,8 +110,7 @@ infinidysk:v1.7.2-Demianos10 (multi-arch amd64/arm64,
   Client-Reihenfolge. Das angeklickte Release bleibt Position 1,
   fremdsprachige Releases werden nie entfernt, nur herabgestuft
   (fail-open); ohne Profil-Einstellungen bleibt das Verhalten
-  exakt wie vorher. Fork: github.com/Demiano
-sHB/infinidysk
+  exakt wie vorher. Fork: github.com/DemianosHB/infinidysk
   (Branch v1), Release v1.7.1-lang3. Zukünftige Fork-Updates
   erscheinen als vX.Y.Z-langN-Tags; Renovate bumpt Image und
   Manifest-Version gebündelt (Annotation mit benannter
@@ -129,5 +126,5 @@ path: ""
 defaultUsername: ""
 defaultPassword: ""
 submitter: "anyumbrelstore"
-submission: "https://github.com/DemianosHB/AnyUmbrelStore/pull/52"
+submission: "https://github.com/DemianosLB/AnyUmbrelStore/pull/52"
 icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-infinidysk/icon.svg
