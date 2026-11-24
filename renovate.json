@@ -31,21 +31,10 @@
       "groupName": "{{parentDir}} app updates"
     },
     {
-      "description": "InfiniDysk (Fork): Nur DemianosN-Tags als Update-Kandidaten - Semver sortiert Prerelease-Identifier ASCII-lexikalisch (D=68 < l=108), d.h. die alten v1.7.1-langN-Tags liegen UEBER jedem DemianosN-Tag und Renovate wuerde sonst Downgrades auf lang5 vorschlagen",
-      "matchPackageNames": [
-        "ghcr.io/demianoshb/infinidysk"
-      ],
-      "allowedVersions": "/-Demianos[0-9]+$/"
-    },
-    {
-      "description": "InfiniDysk (Fork): Compose-Tag mit Semver vergleichen statt Docker-Versioning - Default-Docker-Versioning parst v1.7.1-DemianosN als Kern [1,7,1] + Suffix und stuft einen reinen Suffix-Wechsel (DemianosN) nie als Update ein (invertierter Suffix-Vergleich bei gleichem Kern); dadurch wurde die docker-compose.yml bei Tag-Bumps nie mitgezogen",
-      "matchManagers": [
-        "docker-compose"
-      ],
-      "matchPackageNames": [
-        "ghcr.io/demianoshb/infinidysk"
-      ],
-      "versioning": "semver"
+      "description": "InfiniDysk (Fork): vX.Y.Z-DemianosN per Regex numerisch vergleichen - Patch-Wechsel (1.7.1->1.7.2) und DemianosN >= 10 werden erkannt; langN/latest matchen das Template nicht",
+      "matchPackageNames": ["ghcr.io/demianoshb/infinidysk"],
+      "versioning": "regex",
+      "versioningTemplate": "^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-Demianos(?<build>\\d+)$"
     },
     {
       "description": "Aktiviert Digest-Pinning und Digest-Updates für Gluetun (latest), gluetun-webui (main) und Duplicati (bewusst digest-gepinnt, identischer Stand wie die offizielle Umbrel-App)",
