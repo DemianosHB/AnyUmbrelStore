@@ -4,8 +4,10 @@ storage:
   dataRoot: data
 category: media
 name: Watchly
-# renovate: datasource=docker depName=ghcr.io/timilsinabimal/watchly versioning=semver
-version: "1.18.0+pkg2"
+# Fork-Release: Version und Image werden manuell gebumpt (Renovate ist
+# fuer das Fork-Image deaktiviert); Rueckkehr zum Upstream-Image, sobald
+# die Fork-PRs (u. a. #225) gemergt sind.
+version: "1.18.1-Demianos1"
 tagline: Personalisierte Empfehlungen aus deiner selbst gehosteten Nuvio-Historie
 description: >-
   Watchly baut aus deiner Watch-Historie personalisierte Empfehlungs-Reihen
@@ -30,7 +32,10 @@ description: >-
   erscheinen auf dem Nuvio-Homescreen.
 
 
-  Technik: Offizielles Upstream-Image. Watchly unterstützt self-hosted
+  Technik: Fork-Image (ghcr.io/demianoshb/watchly, gebaut aus
+  DemianosHB/Watchly Branch release/all-features) mit den noch nicht
+  gemergten Fork-Features; nach Upstream-Merge Rueckkehr zum offiziellen
+  Upstream-Image moeglich. Watchly unterstützt self-hosted
   Nuvio-Backends seit Upstream 1.18.0 nativ über NUVIO_BASE_URL und
   NUVIO_PUBLISHABLE_KEY (ohne Set = Nuvio-Cloud); beide Variablen werden
   bewusst nicht im Manifest vorgegeben, sondern als Env-Variablen in den
@@ -46,6 +51,23 @@ description: >-
   eigenes Kontosystem geschützt. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
 releaseNotes: >-
+  1.18.1-Demianos1 - Fork-Release: Eigenes Watchly-Image
+  (ghcr.io/demianoshb/watchly) aus DemianosHB/Watchly, Branch
+  release/all-features, statt des offiziellen Upstream-Images, damit
+  die noch nicht gemergten Fork-Features sofort nutzbar sind. Enthaelt:
+  Self-hosted Scrob als zusaetzliche Watch-History-Quelle
+  (vibe/scrob-history-source), Digital-Release-Filter fuer Film-Reihen
+  (feat/digital-release-filter, Upstream-Issue #80 / PR #225),
+  LLM-gestuetzte Titel-Auswahl pro Katalog-Reihe (poc/llm-row-selection,
+  Opt-in, nur mit eigenem LLM-Key), Surface Redis-Write-Failures
+  (fix/surface-redis-write-failures) und Nuvio-Daily-Library-Refetch
+  (fix/nuvio-daily-library-refetch). Merge-Konfliktloesungen im
+  _build_catalog: beide Overfetch-Faktoren stapeln, Home-Release-Filter
+  vor der LLM-Auswahl; die Auswahl ist fail-open, Reihen werden durch
+  LLM-Fehler nie kuerzer oder leer.
+  Renovate ist fuer das Fork-Image deaktiviert, Fork-Releases werden
+  manuell gebumpt. Sobald die PRs upstream gemergt sind, kann der
+  Store zurueck auf das Upstream-Image wechseln.
   1.18.0+pkg2 - Packaging-Fix fuer den Redis-DNS-Split-Brain: REDIS_URL
   adressiert Redis jetzt ueber den eigenen Container-Namen
   (anyumbrelstore-watchly_redis_1) statt des bare Service-Namens redis.

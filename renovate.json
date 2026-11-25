@@ -36,6 +36,11 @@
       "enabled": false
     },
     {
+      "description": "Watchly (Fork): Renovate deaktiviert - Upstream-Tags des offiziellen Images wuerden als 'Updates' zurueck auf das Stock-Image (ghcr.io/timilsinabimal/watchly) vorschlagen und den Fork-Stand wieder entfernen. Fork-Releases werden am Release-Tag manuell gebumpt (Store-PR mit Image, Manifest-Version, releaseNotes und Compose-Image in einem Commit), Spiegel des InfiniDysk-Musters.",
+      "matchPackageNames": ["ghcr.io/demianoshb/watchly"],
+      "enabled": false
+    },
+    {
       "description": "Aktiviert Digest-Pinning und Digest-Updates für Gluetun (latest), gluetun-webui (main) und Duplicati (bewusst digest-gepinnt, identischer Stand wie die offizielle Umbrel-App)",
       "matchPackageNames": [
         "qmcgaw/gluetun",

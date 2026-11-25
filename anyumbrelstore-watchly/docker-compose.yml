@@ -8,7 +8,9 @@ services:
       PROXY_AUTH_ADD: "false"
 
   server:
-    image: ghcr.io/timilsinabimal/watchly:1.18.0
+    # Fork-Release 1.18.1-Demianos1: gebaut aus DemianosHB/Watchly,
+    # Branch release/all-features (Workflow: Watchly Fork Image)
+    image: ghcr.io/demianoshb/watchly:1.18.1-Demianos1
     restart: on-failure
     # Start-Race-Fix (Vorfall 12./13.11.2026): Startet der server-Container
     # gleichzeitig mit oder vor Redis, kann der Uvicorn-Worker Redis
