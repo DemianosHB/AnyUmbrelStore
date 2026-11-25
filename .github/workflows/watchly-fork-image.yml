@@ -10,7 +10,7 @@ on:
       image_tag:
         description: "Docker-Tag fuer ghcr.io/demianoshb/watchly"
         required: true
-        default: "1.18.1-Demianos1"
+        default: "1.18.1-Demianos2"
 
 concurrency:
   group: watchly-fork-image

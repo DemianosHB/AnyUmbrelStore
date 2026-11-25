@@ -7,7 +7,7 @@ name: Watchly
 # Fork-Release: Version und Image werden manuell gebumpt (Renovate ist
 # fuer das Fork-Image deaktiviert); Rueckkehr zum Upstream-Image, sobald
 # die Fork-PRs (u. a. #225) gemergt sind.
-version: "1.18.1-Demianos1"
+version: "1.18.1-Demianos2"
 tagline: Personalisierte Empfehlungen aus deiner selbst gehosteten Nuvio-Historie
 description: >-
   Watchly baut aus deiner Watch-Historie personalisierte Empfehlungs-Reihen
@@ -51,6 +51,16 @@ description: >-
   eigenes Kontosystem geschützt. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
 releaseNotes: >-
+  1.18.1-Demianos2 - Scrob-Fix: Watchly ruft die Scrob-API jetzt
+  ueber den dokumentierten /api/proxy-Pfad des Scrob-Web-Frontends
+  auf (der FastAPI-Backend-Port ist localhost-only). Vorher
+  landeten die Abrufe auf der Login-HTML-Seite (Status 200), die
+  Scrob-Historie blieb leer und die Reihen fielen auf Trending
+  zurueck. Der Verbindungs-Test beim Speichern validiert zudem,
+  dass wirklich JSON zurueckkommt - falsche Base-URLs fallen jetzt
+  beim Speichern auf, statt die Library stumm leer zu lassen.
+  Nach dem App-Update in Watchly /configure einmal neu speichern,
+  damit der Resync mit korrekten Pfaden laeuft.
   1.18.1-Demianos1 - Fork-Release: Eigenes Watchly-Image
   (ghcr.io/demianoshb/watchly) aus DemianosHB/Watchly, Branch
   release/all-features, statt des offiziellen Upstream-Images, damit
