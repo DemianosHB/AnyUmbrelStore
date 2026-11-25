@@ -4,13 +4,15 @@ storage:
   dataRoot: data
 category: networking
 name: Gluetun VPN
-# Packaging-Suffix -pkg1: liefert die Port-Aenderung ohne Image-Aenderung aus
+# Packaging-Suffix -pkgN: liefert Packaging-Aenderungen ohne Image-Aenderung
+# aus (-pkg1: WebUI-Port 8010->30126; -pkg2: WebUI-Hostname auf den eigenen
+# Container-Namen gepinnt).
 # (Umbrel erkennt Updates ueber String-Ungleichheit der Version).
 # Wichtig: Die renovate-Annotation muss DIREKT ueber version: stehen
 # (Regex erlaubt nur Whitespace dazwischen); erfasst nur den Digest
 # und laesst den -pkgN-Suffix unberuehrt.
 # renovate: datasource=docker depName=ghcr.io/qdm12/gluetun currentValue=latest
-version: "sha256:3c43ec327d7ab2b5f1dc798b92a7640de9a1e1b74a81c9a5143adb383c03d28b-pkg1"
+version: "sha256:3c43ec327d7ab2b5f1dc798b92a7640de9a1e1b74a81c9a5143adb383c03d28b-pkg2"
 tagline: VPN-Client-Container mit eingebautem Web-Interface
 description: >-
   Leichter VPN-Client-Container mit Unterstützung für viele Anbieter,
@@ -40,6 +42,16 @@ dependencies: []
 repo: https://github.com/passteque/gluetun
 support: https://github.com/passteque/gluetun/issues
 releaseNotes: >-
+  Packaging-Update -pkg2 (Split-Brain-Sweep): Die WebUI erreicht den
+  Gluetun-Container jetzt ueber den eindeutigen Container-Namen
+  (anyumbrelstore-gluetun_app_1) statt des bare Service-Namens app -
+  Docker DNS lost bare Namen im gemeinsamen Umbrel-Netz je Lookup auch
+  auf Container ANDERER Apps auf (hier: AirTrail aus dem offiziellen
+  Store mit Service-Namen app auf Port 3000), sodass die WebUI den
+  Gluetun-Control-Port 8000 zeitweise nicht erreichte. Gleiches Muster
+  wie der Redis-Split-Brain-Fix vom 24.11.2026 (siehe PR #121). Image
+  unveraendert (gleicher Digest).
+
   Automatische(s) Digest-Update(s) (Renovate): ghcr.io/qdm12/gluetun:latest
   sha256:b68e26d63c1c → sha256:3c43ec327d7a.
   Automatische(s) Digest-Update(s) (Renovate): ghcr.io/qdm12/gluetun:latest

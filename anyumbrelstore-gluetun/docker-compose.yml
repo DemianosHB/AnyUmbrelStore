@@ -39,7 +39,12 @@ services:
     restart: on-failure
     environment:
       - GLUETUN_1_NAME=Gluetun
-      - GLUETUN_1_URL=http://app:8000
+      # Split-Brain-Fix (Sweep 25.11.2026): Docker-DNS lost bare Service-
+      # Namen im gemeinsamen Umbrel-Netz je Lookup auch auf Container
+      # ANDERER Apps auf (AirTrail aus dem offiziellen Store nutzt
+      # ebenfalls den Service-Namen app) - WebUI deshalb ueber den
+      # eigenen Container-Namen adressieren (Konvention wie APP_HOST).
+      - GLUETUN_1_URL=http://anyumbrelstore-gluetun_app_1:8000
       - GLUETUN_1_API_KEY=${APP_PASSWORD}
     depends_on:
       - app

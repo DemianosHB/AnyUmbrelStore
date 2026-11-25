@@ -21,10 +21,10 @@ A [community app store](https://github.com/getumbrel/umbrel-community-app-store)
 | App | ID | Version | Category | Port |
 |---|---|---|---|---|
 | [Gluetun VPN](https://github.com/passteque/gluetun) | `anyumbrelstore-gluetun` | latest (Dev) | Networking | 30126 |
-| [Profilarr](https://github.com/Dictionarry-Hub/profilarr) | `anyumbrelstore-profilearr` | 2.3.1 | Media | 6868 |
+| [Profilarr](https://github.com/Dictionarry-Hub/profilarr) | `anyumbrelstore-profilearr` | 2.3.1+pkg1 | Media | 6868 |
 | [Paperless Backup](https://github.com/DemianosHB/AnyUmbrelStore/tree/master/anyumbrelstore-paperless-backup) | `anyumbrelstore-paperless-backup` | 2.4.1.0 | Files | 39120 |
 | [AIOStreams](https://github.com/Viren070/AIOStreams) | `anyumbrelstore-aiostreams` | 2.38.1 | Media | 30124 |
-| [Nuvio Backend](https://github.com/NuvioMedia/self-host) | `anyumbrelstore-nuvio-backend` | 0.1.5 | Media | 30122 |
+| [Nuvio Backend](https://github.com/NuvioMedia/self-host) | `anyumbrelstore-nuvio-backend` | 0.1.5+pkg1 | Media | 30122 |
 | [InfiniDysk](https://github.com/infinidysk/infinidysk) | `anyumbrelstore-infinidysk` | 1.7.2-Demianos10 | Media | 30125 |
 | [Watchly](https://github.com/TimilsinaBimal/Watchly) | `anyumbrelstore-watchly` | 1.18.0+pkg2 | Media | 30127 |
 | [StremThru](https://github.com/MunifTanjim/stremthru) | `anyumbrelstore-stremthru` | 0.105.4 | Media | 30128 |
@@ -42,11 +42,11 @@ Lightweight VPN client container (WireGuard & OpenVPN, many providers). The web 
 
 On install, VPN provider, VPN type and WireGuard private key must be provided (`VPN_SERVICE_PROVIDER`, `VPN_TYPE`, `WIREGUARD_PRIVATE_KEY`, `SERVER_COUNTRIES`).
 
-Gluetun follows the **dev channel** (`latest`, digest-pinned) because the built-in SOCKS5 proxy server is so far only included there and in no stable release. Renovate updates the digest automatically. The web UI runs on port 30126 (packaging change: the original port 8010 collides with the Ryot package from another community store); HTTP proxy (8009), SOCKS5 (1080) and Shadowsocks (8388) remain unchanged – AIOStreams and InfiniDysk reach Gluetun via the container name.
+Gluetun follows the **dev channel** (`latest`, digest-pinned) because the built-in SOCKS5 proxy server is so far only included there and in no stable release. Renovate updates the digest automatically. The web UI runs on port 30126 (packaging change: the original port 8010 collides with the Ryot package from another community store); HTTP proxy (8009), SOCKS5 (1080) and Shadowsocks (8388) remain unchanged – AIOStreams and InfiniDysk reach Gluetun via the container name. Since packaging version -pkg2, the web UI also addresses the Gluetun API through the app’s own container name (`anyumbrelstore-gluetun_app_1`) instead of the bare `app` service name, which collided with the official AirTrail package (Docker DNS resolves bare service names across all apps in the shared Umbrel network, see AGENTS.md).
 
 ### Profilarr
 
-Create, test and sync quality profiles and custom formats for Radarr and Sonarr – including an integrated parser for testing profiles.
+Create, test and sync quality profiles and custom formats for Radarr and Sonarr – including an integrated parser for testing profiles. Since packaging version 2.3.1+pkg1, the parser service is likewise addressed via its unique container name (see the Watchly section for the background).
 
 ### Paperless Backup
 
@@ -67,7 +67,7 @@ Getting started: open the web UI, log into the dashboard (user `admin`, password
 
 Self-hosted Nuvio backend for your own Nuvio clients – the API stack from [NuvioMedia/self-host](https://github.com/NuvioMedia/self-host) (PostgreSQL, GoTrue auth, PostgREST, storage, edge functions, Kong gateway) including the account dashboard. After installation, first create an account in the account dashboard (port **30122**); Nuvio clients connect to the backend URL (port **30123**).
 
-Upstream is cloned into the app data at a pinned commit revision (`nuvio-fetch` one-shot service), secrets are generated automatically on first start, and DB migrations run idempotently via `nuvio-migrate`. The manifest version (0.1.x) is the store's own packaging version – upstream publishes no releases. The Supabase stack images deliberately move only together with the pinned upstream commit (see Maintenance).
+Upstream is cloned into the app data at a pinned commit revision (`nuvio-fetch` one-shot service), secrets are generated automatically on first start, and DB migrations run idempotently via `nuvio-migrate`. The manifest version (0.1.x) is the store's own packaging version – upstream publishes no releases. The Supabase stack images deliberately move only together with the pinned upstream commit (see Maintenance). All internal connections use the app’s unique container names, never bare service names (Docker-DNS split-brain protection, see AGENTS.md).
 
 ### InfiniDysk
 

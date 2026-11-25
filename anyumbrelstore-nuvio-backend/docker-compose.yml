@@ -246,7 +246,7 @@ services:
           "--no-verbose",
           "--tries=1",
           "--spider",
-          "http://storage:5000/status"
+          "http://anyumbrelstore-nuvio-backend_storage_1:5000/status"
         ]
       timeout: 5s
       interval: 5s
