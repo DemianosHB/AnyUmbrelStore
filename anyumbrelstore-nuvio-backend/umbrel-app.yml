@@ -6,7 +6,7 @@ category: media
 name: Nuvio Backend
 # Packaging-Version dieser App. Upstream (NuvioMedia/self-host) published keine
 # Releases; der gepinnte Upstream-Commit steht in docker-compose.yml (nuvio-fetch).
-version: "0.1.5"
+version: "0.1.5+pkg1"
 tagline: Selbst gehostetes Nuvio-Backend mit Account-Dashboard
 description: >-
   Nuvio als eigenständiges Backend für eigene Nuvio-Clients. Nach der
@@ -23,6 +23,16 @@ dependencies: []
 repo: https://github.com/NuvioMedia/self-host
 support: https://github.com/NuvioMedia/self-host/issues
 releaseNotes: >-
+  0.1.5+pkg1 - Packaging-Fix Split-Brain-Sweep: der storage-Healthcheck
+  prueft die Storage-API jetzt ueber den eindeutigen Container-Namen
+  (anyumbrelstore-nuvio-backend_storage_1) statt des bare Service-Namens
+  storage. Alle uebrigen internen Verbindungen (nuvio.env-Mappings,
+  kong.yml-Routen, nuvio-migrate, nuvio-seed) waren bereits seit 0.1.3
+  auf Container-Namen gepinnt; Sweep nach dem Watchly-Vorfall vom
+  24.11.2026 (siehe PR #121). Kein Image-Change, der gepinnte
+  NuvioMedia/self-host-Commit bleibt unveraendert. Keine
+  Neu-Installation erforderlich, ein App-Update genuegt.
+
   0.1.5 - Dependency-Updates der One-Shot-Services (Renovate): curlimages/curl
   8.11.1 -> 8.23.0 und alpine 3.22 -> 3.24. Keine funktionalen Änderungen am
   Supabase-Stack (bleibt versionengekoppelt an den gepinnten

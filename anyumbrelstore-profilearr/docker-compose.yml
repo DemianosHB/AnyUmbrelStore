@@ -13,7 +13,11 @@ services:
       PUID: "1000"
       PGID: "1000"
       TZ: Europe/Berlin
-      PARSER_HOST: parser
+      # Split-Brain-Fix (Sweep 25.11.2026): bare Service-Namen koennen im
+      # gemeinsamen Umbrel-Netz auf Container anderer Apps aufgeloest werden
+      # - Parser ueber den eigenen Container-Namen adressieren (gleiche
+      # Konvention wie APP_HOST).
+      PARSER_HOST: anyumbrelstore-profilearr_parser_1
       PARSER_PORT: "5000"
     depends_on:
       parser:
