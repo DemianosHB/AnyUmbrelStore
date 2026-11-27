@@ -30,7 +30,7 @@ A [community app store](https://github.com/getumbrel/umbrel-community-app-store)
 | [StremThru](https://github.com/MunifTanjim/stremthru) | `anyumbrelstore-stremthru` | 0.105.4 | Media | 30128 |
 | [AIOMetadata](https://github.com/cedya77/aiometadata) | `anyumbrelstore-aiometadata` | 4.1.0+pkg1 | Media | 30129 |
 | [OpenPosterDB](https://github.com/PNRxA/openposterdb) | `anyumbrelstore-openposterdb` | 1.3.0 | Media | 30130 |
-| [XRDB](https://github.com/IbbyLabs/XRDB) | `anyumbrelstore-xrdb` | 3.146.1 | Media | 30131 |
+| [XRDB](https://github.com/IbbyLabs/XRDB) | `anyumbrelstore-xrdb` | 3.146.2 | Media | 30131 |
 
 ### Gluetun VPN
 
