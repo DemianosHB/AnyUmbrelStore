@@ -38,6 +38,13 @@ description: >-
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
 releaseNotes: >-
+  v2.0.0-beta.11-Demianos2 - Commits: chore(ci): add rust dependency audit workflow;
+  fix(deps): update webpki-root-certs 1.0.9 -> 1.0.12 for RUSTSEC-2026-0383; ci(docker):
+  build arm64 natively on an ARM runner, share the build cache across refs; Merge pull
+  request #28 from DemianosHB/vibe/rust-deps-audit-d80f40; Merge pull request #29 from
+  DemianosHB/vibe/rust-docker-native-arm-96d353; chore(ci): auto-delete PR head branches
+  after merge into rust; chore(ci): build the rust docker image only on v2* tags; Merge
+  pull request #30 from DemianosHB/vibe/rust-auto-delete-d80f40 …
   2.0.0-beta.11-Demianos2 - Fork-Release (rust @ 4124c95): Rebranding zu NeoDysk
   abgeschlossen - Repo heisst jetzt DemianosHB/neodysk, neues N-Mark-Logo, UI-Strings,
   und das Image liegt ab sofort unter ghcr.io/demianoshb/neodysk-rust (Demianos1
