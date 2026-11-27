@@ -4,10 +4,10 @@ storage:
   dataRoot: data
 category: media
 name: NeoDysk
-version: "2.0.0-beta.11-Demianos1"
+version: "2.0.0-beta.11-Demianos2"
 tagline: Usenet-Streaming über WebDAV/FUSE (Rust-V2-Fork), parallel zur V1-App installierbar
 description: >-
-  NeoDysk (Rust-Neubau aus DemianosHB/infinidysk, Branch rust) mountet
+  NeoDysk (Rust-Neubau aus DemianosHB/neodysk, vormals infinidysk, Branch rust) mountet
   Usenet-Inhalte als virtuelles Dateisystem (WebDAV und FUSE) und streamt
   sie direkt, ohne sie komplett herunterladen zu müssen. Enthält eine
   SABnzbd-kompatible API, Indexer-Search inkl. Prowlarr-Sync, Suchprofile
@@ -26,7 +26,7 @@ description: >-
   anlegen. Usenet-Provider (Newznab-Indexer, NNTP-Server) und WebDAV-Zugangsdaten
   in den Einstellungen hinterlegen. INFINIDYSK__*-Umgebungsvariablen können
   Einstellungen vorab provisionieren (ENV-Präfix bleibt technisch bedingt
-  beim alten Namen, siehe Rebranding-PR DemianosHB/infinidysk#32).
+  beim alten Namen, siehe Rebranding-PR DemianosHB/neodysk#32).
 
   Anbindung an AIOStreams (optional): NeoDysk im AIOStreams-Dashboard als
   NzbDAV-Service hinzufügen - URL http://anyumbrelstore-neodysk_server_1:3000,
@@ -38,21 +38,33 @@ description: >-
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
 releaseNotes: >-
+  2.0.0-beta.11-Demianos2 - Fork-Release (rust @ 4124c95): Rebranding zu NeoDysk
+  abgeschlossen - Repo heisst jetzt DemianosHB/neodysk, neues N-Mark-Logo, UI-Strings,
+  und das Image liegt ab sofort unter ghcr.io/demianoshb/neodysk-rust (Demianos1
+  hiess es noch infinidysk-rust). Settings: SOCKS5-Outbound-Proxy jetzt per UI in
+  Settings -> Network konfigurierbar (proxy.socks5, proxy.socks5_bypass, PR #34),
+  vorher nur per INFINIDYSK__*-ENV-Provisioning. Neue Settings-Kategorien unter
+  "v1 fork": Repairs (Read-Ahead-PAR2-Fenster), Search, Preflight, Playback (play.*),
+  Stall-Failover (grab.*) - PR #38. Fix: Profil-Anlegen schickt wieder die
+  PascalCase-Enum-Werte des Backends (422 Unprocessable Entity beim Profil
+  hinzufuegen behoben, PR #37). Deps: webpki-root-certs 1.0.12
+  (RUSTSEC-2026-0383). Image: ghcr.io/demianoshb/neodysk-rust:v2.0.0-beta.11-Demianos2
+  (multi-arch amd64/arm64, auch latest). Pre-Release, nicht fuer Produktion.
   2.0.0-beta.11-Demianos1 - Erste Pre-Release des Forks (Rust 2.x, Branch rust,
   Commit ae4d4cd, Upstream-Vendoring 89db517 inkl. beta.12-Fixes). Portierte
   v1-Features: Indexer-Search + Prowlarr-Sync, Suchprofile, Stremio-Addon-Routen,
   Watchtower/Watchdog/Preflight/Warden, Read-ahead-Repair, INFINIDYSK__*-Env-
   Provisioning, Watchtower-Identity-Guard-Fix (PR #14). Plus STRM-Handoff-umask-Fix
   (fork PR #27, upstream infinidysk#1969). Rebranding des Forks zu NeoDysk läuft
-  (PR DemianosHB/infinidysk#32); Repo- und Image-Name bleiben infinidysk, das
+  (PR DemianosHB/neodysk#32); Repo- und Image-Name bleiben infinidysk, das
   ENV-Präfix INFINIDYSK__ bleibt aus Kompatibilitätsgründen. Image:
   ghcr.io/demianoshb/infinidysk-rust:v2.0.0-beta.11-Demianos1 (multi-arch
   amd64/arm64). Pre-Release, nicht für Produktion.
 developer: DemianosHB
-website: https://github.com/DemianosHB/infinidysk
+website: https://github.com/DemianosHB/neodysk
 dependencies: []
-repo: https://github.com/DemianosHB/infinidysk
-support: https://github.com/DemianosHB/infinidysk/issues
+repo: https://github.com/DemianosHB/neodysk
+support: https://github.com/DemianosHB/neodysk/issues
 port: 30132
 gallery: []
 path: ""
