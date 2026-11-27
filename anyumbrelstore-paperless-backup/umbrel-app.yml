@@ -5,7 +5,7 @@ storage:
 category: files
 name: Paperless Backup
 # renovate: datasource=docker depName=duplicati/duplicati
-version: "2.4.1.0"
+version: "2.4.1.1"
 tagline: Duplicati-Backup der Paperless-Daten inkl. DB-Dump auf die Hetzner Storage Box
 description: >-
   Eine App, zwei Container: dbdump sichert die
