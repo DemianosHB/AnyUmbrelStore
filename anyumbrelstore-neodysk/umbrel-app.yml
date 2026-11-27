@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: media
 name: NeoDysk
-version: "2.0.0-beta.11-Demianos2"
+version: "2-beta.03"
 tagline: Usenet-Streaming über WebDAV/FUSE (Rust-V2-Fork), parallel zur V1-App installierbar
 description: >-
   NeoDysk (Rust-Neubau aus DemianosHB/neodysk, vormals infinidysk, Branch rust) mountet
@@ -38,6 +38,21 @@ description: >-
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
 releaseNotes: >-
+  2-beta.03 - Fork-Release (rust @ 48aa287a, Tag v2-beta.03; neues v2-beta.NN-Schema laut
+  rust/README.md): Fork-Seiten laden im Local-Mode ohne Login - watchtower, watchdog, search,
+  warden und prowlarr-status gaten jetzt wie die Admin-Routen ueber Auth::exempt;
+  LAN-Clients ohne Session-Cookie sehen die Seiten statt 401 (neodysk#42). Suchprofile
+  nach dem Anlegen editierbar: Edit-Sheet mit Name, Indexer-Auswahl, Quality-Sort,
+  bevorzugten Audiosprachen (geordneter Sprach-Bias) und Movie/TV-Query-Fallback (neodysk#40).
+  Watchtower-URL-Listen: JSON-Antworten mit list-Envelope werden geparsed, Accept-Header
+  wird gesendet, und HTTP-Fehler (z. B. 415) erscheinen mit Status in der Meldung
+  (neodysk#44). Indexer-Suchfehler erscheinen mit Klartext im Log - invalides XML meldet
+  HTTP-Status, Content-Type, Groesse und Byte-Offset, ohne URLs oder API-Keys zu leaken
+  (neodysk#45). AioStreams laedt das Stremio-Addon-Manifest wieder - die /adapters-Routen
+  lieferten durch die SPA-Fallback-Middleware HTML statt JSON (neodysk#46). Wordmark zeigt
+  neodysk statt infinidysk (neodysk#41). Docs: Release-Schema v2-beta.NN dokumentiert
+  (neodysk#39). Image: ghcr.io/demianoshb/neodysk-rust:v2-beta.03 (multi-arch amd64/arm64,
+  auch latest). Pre-Release, nicht fuer Produktion.
   v2.0.0-beta.11-Demianos2 - Commits: chore(ci): add rust dependency audit workflow;
   fix(deps): update webpki-root-certs 1.0.9 -> 1.0.12 for RUSTSEC-2026-0383; ci(docker):
   build arm64 natively on an ARM runner, share the build cache across refs; Merge pull
