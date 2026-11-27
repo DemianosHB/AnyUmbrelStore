@@ -87,9 +87,20 @@ REPO_LINE_RE = re.compile(r"^repo:\s*(\S+)\s*$")
 # --------------------------------------------------------------------- utils
 
 def parse_version(text):
-    """'v2.2.1' -> (2, 2, 1); optional 4th component (Duplicati-style tags)."""
-    m = re.match(r"^v?(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?", str(text).strip())
-    return tuple(int(x) for x in m.groups() if x is not None) if m else None
+    """'v2.2.1' -> (2, 2, 1); optional 4th component (Duplicati-style tags).
+
+    Fork pre-release schema vMAJOR-beta.NN (neodysk, see its rust/README.md)
+    maps to (major, -1, counter): it sorts below every MAJOR.x.y of the same
+    line, and major jumps (v2-beta.NN -> v3-beta.NN) are still detected.
+    """
+    s = str(text).strip()
+    m = re.match(r"^v?(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?", s)
+    if m:
+        return tuple(int(x) for x in m.groups() if x is not None)
+    m = re.match(r"^v?(\d+)-beta\.(\d+)$", s)
+    if m:
+        return (int(m.group(1)), -1, int(m.group(2)))
+    return None
 
 
 def strip_packaging_suffix(version):
@@ -328,7 +339,12 @@ def prepend_release_notes(lines, entry_text, marker):
     found = find_release_notes(lines)
     if found:
         idx, end, is_block, old_text, block_lines = found
-        if marker in old_text:
+        # Manifest versions drop the tag's "v" prefix, so hand-written
+        # releaseNotes entries can start with "2-beta.03 - ..." while the
+        # sync marker carries the tag verbatim ("v2-beta.03 - "). Accept
+        # both spellings so an existing entry is not duplicated.
+        bare = marker[1:] if marker.startswith("v") else marker
+        if marker in old_text or bare in old_text:
             return None
         old_text = (old_text or "").strip()
     else:
