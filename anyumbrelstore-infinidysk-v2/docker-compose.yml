@@ -1,0 +1,24 @@
+services:
+  app_proxy:
+    environment:
+      APP_HOST: anyumbrelstore-infinidysk-v2_server_1
+      APP_PORT: 3000
+      # WebDAV- und SABnzbd-Clients (z. B. AIOStreams als NzbDAV-Service)
+      # senden keine Umbrel-Login-Cookies; InfiniDysk bringt ein eigenes
+      # Login mit (Admin-Account wird beim Erststart im Web-UI angelegt).
+      PROXY_AUTH_ADD: "false"
+
+  server:
+    # V2-Fork-Build (Rust, Branch rust): ghcr.io/demianoshb/infinidysk-rust.
+    # Pre-Release-Testing parallel zur V1-App (anyumbrelstore-infinidysk);
+    # eigenes APP_DATA_DIR => getrenntes /config, kein Zugriff auf V1-Daten.
+    # PUID/PGID wie in V1 bewusst weggelassen: der Rust-Binary läuft ohne
+    # LinuxServer-Basis; TZ und INFINIDYSK__*-Vars werden unterstützt.
+    # Der Healthcheck steckt im Image selbst (infinidysk healthcheck:
+    # DB, FUSE-Mount, Import-Worker; start-period 10m deckt 1.x-Import ab).
+    image: ghcr.io/demianoshb/infinidysk-rust:v2.0.0-beta.11-Demianos1
+    restart: on-failure
+    volumes:
+      - ${APP_DATA_DIR}/data:/config
+    environment:
+      TZ: Europe/Berlin
