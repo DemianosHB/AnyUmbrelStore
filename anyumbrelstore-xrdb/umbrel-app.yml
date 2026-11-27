@@ -30,7 +30,7 @@ environment:
 category: media
 name: XRDB
 # renovate: datasource=docker depName=ghcr.io/ibbylabs/xrdb extractVersion=^v?(?<version>.*)$ versioning=semver
-version: "3.146.2"
+version: "3.147.0"
 tagline: Artwork-Engine mit Rating-Badges fuer Stremio und Nuvio (fanart-faehige Alternative zu RPDB)
 description: >-
   XRDB rendert Poster, Backdrops, Thumbnails und Logos mit Rating-Badges
@@ -69,7 +69,7 @@ description: >-
   Clients nutzen die XRDB-URL-Patterns. Der Render-Cache ist vom Backup
   ausgenommen (regenerierbar), die SQLite-Profile-DB wird gesichert. Nur im
   lokalen Netz bzw. hinter einem VPN betreiben.
-releaseNotes: "v3.146.2 - (2026-11-27) Fixed ratings: the failure breaker needs a streak lasting 10s to trip (8fe5ec8) v3.146.1 - v3.146.0: (2026-11-24) Added profiles: new profiles and imports need a password (8475078) v3.146.1: (2026-11-24) Fixed profiles: a profile without a type is a bad request (34f6b28) v3.145.1 - (2026-11-15) Fixed render: logo surface never returns the poster (BUG-304) (31386f8) render: transparent placeholder for a missing logo (BUG-304) (ed80377) v3.145.0 - (2026-11-14) Added render: stack the Where to watch chips in a column (FR-245) (6a09cdd) v3.144.0 - (2026-11-14) Added web: configurator in every poster language (FR-244) (427ed66) web: route configurator text through a translation layer (FR-244) (3090974) web: Traditional Chinese for Taiwan and Hong Kong (FR-244) (0476c48)"
+releaseNotes: "v3.147.0 - (2026-11-27) Added admin: reset a profile's password and provider keys (de1f761) Fixed admin: set the new password in the same write as the reset (231bceb) aiom: limit installs per /64 and refuse https-to-http redirects (8f613e2) logging: redact the preview token from access logs (04f5cf2) profiles: charge imports per profile and validate before hashing (a90c7e6) server: believe CF-Connecting-IP only from a Cloudflare hop (6067947) v3.146.2 - (2026-11-27) Fixed ratings: the failure breaker needs a streak lasting 10s to trip (8fe5ec8) v3.146.1 - v3.146.0: (2026-11-24) Added profiles: new profiles and imports need a password (8475078) v3.146.1: (2026-11-24) Fixed profiles: a profile without a type is a bad request (34f6b28) v3.145.1 - (2026-11-15) Fixed render: logo surface never returns the poster (BUG-304) (31386f8) render: transparent placeholder for a missing logo (BUG-304) (ed80377) v3.145.0 - (2026-11-14) Added render: stack the Where to watch chips in a column (FR-245) (6a09cdd) v3.144.0 - (2026-11-14) Added web: configurator in every poster language (FR-244) (427ed66) web: route configurator text through a translation layer (FR-244) (3090974) web: Traditional Chinese for Taiwan and Hong Kong (FR-244) (0476c48)"
 developer: IbbyLabs
 website: https://extendedratings.com
 dependencies: []
