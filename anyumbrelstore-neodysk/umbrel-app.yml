@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: media
 name: NeoDysk
-version: "2-beta.03"
+version: "2-beta.04"
 tagline: Usenet-Streaming über WebDAV/FUSE (Rust-V2-Fork), parallel zur V1-App installierbar
 description: >-
   NeoDysk (Rust-Neubau aus DemianosHB/neodysk, vormals infinidysk, Branch rust) mountet
@@ -38,6 +38,14 @@ description: >-
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
 releaseNotes: >-
+  2-beta.04 - Fork-Release (rust @ 8a82682, Tag v2-beta.04): UI: fetch setzt den
+  Form-Content-Type fuer URLSearchParams-Bodies selbst, statt ihn manuell mit zu
+  setzen (#47). Search: Newznab-Protokollfehler und Indexer-Config-Fehler werden
+  jetzt auch auf der Search-Page geloggt - jede bekannte per-Indexer-Fehlmeldung von
+  /api/search-indexers ist dort sichtbar (#48). Indexer: XML-Entity- und
+  Zeichenreferenzen werden aufgeloest, Prowlarr-Feeds parsen damit wieder (#49).
+  Image: ghcr.io/demianoshb/neodysk-rust:v2-beta.04 (multi-arch amd64/arm64, auch
+  latest). Pre-Release, nicht fuer Produktion.
   2-beta.03 - Fork-Release (rust @ 48aa287a, Tag v2-beta.03; neues v2-beta.NN-Schema laut
   rust/README.md): Fork-Seiten laden im Local-Mode ohne Login - watchtower, watchdog, search,
   warden und prowlarr-status gaten jetzt wie die Admin-Routen ueber Auth::exempt;

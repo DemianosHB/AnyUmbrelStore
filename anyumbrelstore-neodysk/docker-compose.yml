@@ -18,7 +18,7 @@ services:
     # LinuxServer-Basis; TZ und INFINIDYSK__*-Vars werden unterstützt.
     # Der Healthcheck steckt im Image selbst (eigener Healthcheck-Binary:
     # DB, FUSE-Mount, Import-Worker; start-period 10m deckt 1.x-Import ab).
-    image: ghcr.io/demianoshb/neodysk-rust:v2-beta.03
+    image: ghcr.io/demianoshb/neodysk-rust:v2-beta.04
     restart: on-failure
     volumes:
       - ${APP_DATA_DIR}/data:/config
