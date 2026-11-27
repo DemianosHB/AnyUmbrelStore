@@ -42,6 +42,8 @@ dependencies: []
 repo: https://github.com/passteque/gluetun
 support: https://github.com/passteque/gluetun/issues
 releaseNotes: >-
+  Automatische(s) Digest-Update(s) (Renovate): ghcr.io/qdm12/gluetun:latest
+  sha256:3c43ec327d7a → sha256:6d21823e204e.
   Packaging-Update -pkg2 (Split-Brain-Sweep): Die WebUI erreicht den
   Gluetun-Container jetzt ueber den eindeutigen Container-Namen
   (anyumbrelstore-gluetun_app_1) statt des bare Service-Namens app -
