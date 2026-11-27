@@ -31,7 +31,7 @@ A [community app store](https://github.com/getumbrel/umbrel-community-app-store)
 | [AIOMetadata](https://github.com/cedya77/aiometadata) | `anyumbrelstore-aiometadata` | 4.1.0+pkg1 | Media | 30129 |
 | [OpenPosterDB](https://github.com/PNRxA/openposterdb) | `anyumbrelstore-openposterdb` | 1.3.0 | Media | 30130 |
 | [XRDB](https://github.com/IbbyLabs/XRDB) | `anyumbrelstore-xrdb` | 3.146.2 | Media | 30131 |
-| [NeoDysk](https://github.com/DemianosHB/neodysk) | `anyumbrelstore-neodysk` | 2.0.0-beta.11-Demianos2 | Media | 30132 |
+| [NeoDysk](https://github.com/DemianosHB/neodysk) | `anyumbrelstore-neodysk` | 2-beta.03 | Media | 30132 |
 
 ### Gluetun VPN
 
