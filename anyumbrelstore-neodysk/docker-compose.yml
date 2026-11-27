@@ -9,9 +9,9 @@ services:
       PROXY_AUTH_ADD: "false"
 
   server:
-    # NeoDysk (Rust-V2-Fork, Branch rust): ghcr.io/demianoshb/infinidysk-rust.
-    # Repo- und Image-Name bleiben infinidysk, nur das Produkt heißt NeoDysk
-    # (Rebranding PR DemianosHB/infinidysk#32).
+    # NeoDysk (Rust-V2-Fork, Branch rust). Image-Name bleibt
+    # ghcr.io/demianoshb/infinidysk-rust (vom Repo-Namen abgeleitet,
+    # siehe Rebranding-PR DemianosHB/infinidysk#32).
     # Pre-Release-Testing parallel zur V1-App (anyumbrelstore-infinidysk);
     # eigenes APP_DATA_DIR => getrenntes /config, kein Zugriff auf V1-Daten.
     # PUID/PGID wie in V1 bewusst weggelassen: der Rust-Binary läuft ohne

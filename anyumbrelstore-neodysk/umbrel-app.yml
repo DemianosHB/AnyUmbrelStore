@@ -5,16 +5,17 @@ storage:
 category: media
 name: NeoDysk
 version: "2.0.0-beta.11-Demianos1"
-tagline: Usenet-Streaming über WebDAV/FUSE - NeoDysk (Rust-V2-Fork), parallel zu InfiniDysk V1
+tagline: Usenet-Streaming über WebDAV/FUSE (Rust-V2-Fork), parallel zur V1-App installierbar
 description: >-
-  NeoDysk (vormals InfiniDysk V2, Rust-Neubau des DemianosHB-Forks auf Branch
-  rust) mountet Usenet-Inhalte als virtuelles Dateisystem (WebDAV und FUSE)
-  und streamt sie direkt, ohne sie komplett herunterladen zu müssen. Enthält
-  eine SABnzbd-kompatible API, Indexer-Search inkl. Prowlarr-Sync, Suchprofile
+  NeoDysk (Rust-Neubau aus DemianosHB/infinidysk, Branch rust) mountet
+  Usenet-Inhalte als virtuelles Dateisystem (WebDAV und FUSE) und streamt
+  sie direkt, ohne sie komplett herunterladen zu müssen. Enthält eine
+  SABnzbd-kompatible API, Indexer-Search inkl. Prowlarr-Sync, Suchprofile
   und Stremio-Addon-Routen.
 
   Diese App installiert NeoDysk MIT EIGENEM, LEEREM Datenverzeichnis parallel
-  zur bestehenden InfiniDysk-V1-App. Beide Apps laufen unabhängig nebeneinander.
+  zur bestehenden V1-App (InfiniDysk, Port 30125). Beide Apps laufen
+  unabhängig nebeneinander.
 
   Pre-Release zum Testen: Der Container kann beim Erststart optional eine
   1.x-Installation aus /config importieren - für einen sauberen Test zunächst
@@ -24,29 +25,39 @@ description: >-
   Erste Schritte: Weboberfläche öffnen und beim Erststart einen Admin-Account
   anlegen. Usenet-Provider (Newznab-Indexer, NNTP-Server) und WebDAV-Zugangsdaten
   in den Einstellungen hinterlegen. INFINIDYSK__*-Umgebungsvariablen können
-  Einstellungen vorab provisionieren.
+  Einstellungen vorab provisionieren (ENV-Präfix bleibt technisch bedingt
+  beim alten Namen, siehe Rebranding-PR DemianosHB/infinidysk#32).
+
+  Anbindung an AIOStreams (optional): NeoDysk im AIOStreams-Dashboard als
+  NzbDAV-Service hinzufügen - URL http://anyumbrelstore-neodysk_server_1:3000,
+  API-Key und WebDAV-Credentials aus den NeoDysk-Einstellungen, Public URL
+  leer lassen und den AIOStreams-Auth-Token setzen.
 
   Hinweis: Ohne Umbrel-Login im lokalen Netz erreichbar (WebDAV- und
-  SABnzbd-Clients senden keine Umbrel-Cookies); nur im lokalen Netz bzw.
-  hinter einem VPN betreiben.
+  SABnzbd-Clients senden keine Umbrel-Cookies); NeoDysk ist über sein
+  eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN
+  betreiben.
 releaseNotes: >-
   2.0.0-beta.11-Demianos1 - Erste Pre-Release des Forks (Rust 2.x, Branch rust,
   Commit ae4d4cd, Upstream-Vendoring 89db517 inkl. beta.12-Fixes). Portierte
   v1-Features: Indexer-Search + Prowlarr-Sync, Suchprofile, Stremio-Addon-Routen,
   Watchtower/Watchdog/Preflight/Warden, Read-ahead-Repair, INFINIDYSK__*-Env-
   Provisioning, Watchtower-Identity-Guard-Fix (PR #14). Plus STRM-Handoff-umask-Fix
-  (fork PR #27, upstream infinidysk#1969). Rebranding zu NeoDysk läuft
-  (PR DemianosHB/infinidysk#32); Repo- und Image-Name bleiben infinidysk.
-  Image: ghcr.io/demianoshb/infinidysk-rust:v2.0.0-beta.11-Demianos1
-  (multi-arch amd64/arm64). Pre-Release, nicht für Produktion.
-developer: NeoDysk (DemianosHB Fork)
-website: https://www.infinidysk.com
+  (fork PR #27, upstream infinidysk#1969). Rebranding des Forks zu NeoDysk läuft
+  (PR DemianosHB/infinidysk#32); Repo- und Image-Name bleiben infinidysk, das
+  ENV-Präfix INFINIDYSK__ bleibt aus Kompatibilitätsgründen. Image:
+  ghcr.io/demianoshb/infinidysk-rust:v2.0.0-beta.11-Demianos1 (multi-arch
+  amd64/arm64). Pre-Release, nicht für Produktion.
+developer: DemianosHB
+website: https://github.com/DemianosHB/infinidysk
 dependencies: []
 repo: https://github.com/DemianosHB/infinidysk
 support: https://github.com/DemianosHB/infinidysk/issues
-port: 30126
+port: 30132
 gallery: []
 path: ""
 defaultUsername: ""
 defaultPassword: ""
-icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-infinidysk/icon.svg
+submitter: "anyumbrelstore"
+submission: https://github.com/DemianosHB/AnyUmbrelStore/pull/123
+icon: https://raw.githubusercontent.com/DemianosHB/AnyUmbrelStore/master/anyumbrelstore-neodysk/icon.svg
