@@ -31,6 +31,7 @@ A [community app store](https://github.com/getumbrel/umbrel-community-app-store)
 | [AIOMetadata](https://github.com/cedya77/aiometadata) | `anyumbrelstore-aiometadata` | 4.1.0+pkg1 | Media | 30129 |
 | [OpenPosterDB](https://github.com/PNRxA/openposterdb) | `anyumbrelstore-openposterdb` | 1.3.0 | Media | 30130 |
 | [XRDB](https://github.com/IbbyLabs/XRDB) | `anyumbrelstore-xrdb` | 3.146.2 | Media | 30131 |
+| [NeoDysk](https://github.com/DemianosHB/neodysk) | `anyumbrelstore-neodysk` | 2.0.0-beta.11-Demianos2 | Media | 30132 |
 
 ### Gluetun VPN
 
@@ -138,3 +139,6 @@ The store definition is in [`umbrel-app-store.yml`](umbrel-app-store.yml).
 ## Disclaimer
 
 Community app stores are not reviewed by umbrelOS. As always, check apps before installing – responsibility lies with the user. This store is not affiliated with Umbrel or the respective upstream projects.
+### NeoDysk
+
+Rust-V2-Fork (vormals InfiniDysk V2) als Parallel-App zur InfiniDysk-V1-App: Usenet-Streaming ueber WebDAV mit SABnzbd-kompatibler API, Indexer-Search inkl. Prowlarr-Sync, Suchprofilen und Stremio-Addon-Routen. Eigene App-ID, eigener Port (30132) und eigenes Datenverzeichnis - beide Apps laufen unabhaengig nebeneinander. Pre-Release zum Testen; kann beim Erststart optional eine Kopie einer 1.x-Installation aus /config importieren. Anbindung an AIOStreams als NzbDAV-Service ueber http://anyumbrelstore-neodysk_server_1:3000.

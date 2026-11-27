@@ -36,6 +36,11 @@
       "enabled": false
     },
     {
+      "description": "NeoDysk (Fork): Renovate deaktiviert - gleiche Semver-Falle wie beim V1-Image (Prerelease-Identifier werden ASCII-lexikalisch verglichen, das DemianosN-Suffix und beta.N machen Up-/Downgrades unvorhersehbar, dazu die Suffix-Inversion des docker-compose-Managers). Fork-Releases werden am Release-Tag manuell gebumpt (Store-PR mit Image, Manifest-Version, releaseNotes und README in einem Commit).",
+      "matchPackageNames": ["ghcr.io/demianoshb/neodysk-rust"],
+      "enabled": false
+    },
+    {
       "description": "Watchly (Fork): Renovate deaktiviert - Upstream-Tags des offiziellen Images wuerden als 'Updates' zurueck auf das Stock-Image (ghcr.io/timilsinabimal/watchly) vorschlagen und den Fork-Stand wieder entfernen. Fork-Releases werden am Release-Tag manuell gebumpt (Store-PR mit Image, Manifest-Version, releaseNotes und Compose-Image in einem Commit), Spiegel des InfiniDysk-Musters.",
       "matchPackageNames": ["ghcr.io/demianoshb/watchly"],
       "enabled": false
