@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: media
 name: NeoDysk
-version: "2-beta.04"
+version: "2-beta.05"
 tagline: Usenet-Streaming über WebDAV/FUSE (Rust-V2-Fork), parallel zur V1-App installierbar
 description: >-
   NeoDysk (Rust-Neubau aus DemianosHB/neodysk, vormals infinidysk, Branch rust) mountet
@@ -38,6 +38,15 @@ description: >-
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
 releaseNotes: >-
+  2-beta.05 - Fork-Release (rust @ dfec593, Tag v2-beta.05): API: der Release-Build
+  meldet und zeigt seinen eigenen Tag - Version und Release-Notes werden von CI
+  gestempelt (#50). WebDAV: Streams, deren Player nach einem konfigurierbaren
+  Idle-Timeout aufhoert zu lesen, werden geschlossen (webdav.idle_timeout_seconds,
+  Settings -> WebDAV -> Playback) (#56). Watchtower: zeigt aufgeloeste Titel statt
+  roher IDs in der Watchtower-Liste (#53). Stream: Play-URLs nutzen den erreichbaren
+  Request-Host statt http://localhost, wenn keine Public URL gesetzt ist (#55).
+  Image: ghcr.io/demianoshb/neodysk-rust:v2-beta.05 (multi-arch amd64/arm64, auch
+  latest). Pre-Release, nicht fuer Produktion.
   2-beta.04 - Fork-Release (rust @ 8a82682, Tag v2-beta.04): UI: fetch setzt den
   Form-Content-Type fuer URLSearchParams-Bodies selbst, statt ihn manuell mit zu
   setzen (#47). Search: Newznab-Protokollfehler und Indexer-Config-Fehler werden
