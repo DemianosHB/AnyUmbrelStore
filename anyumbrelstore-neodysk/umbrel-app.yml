@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: media
 name: NeoDysk
-version: "2-beta.05"
+version: "2-beta.06"
 tagline: Usenet-Streaming über WebDAV/FUSE (Rust-V2-Fork), parallel zur V1-App installierbar
 description: >-
   NeoDysk (Rust-Neubau aus DemianosHB/neodysk, vormals infinidysk, Branch rust) mountet
@@ -38,6 +38,15 @@ description: >-
   eigenes Login geschützt. Nur im lokalen Netz bzw. hinter einem VPN
   betreiben.
 releaseNotes: >-
+  2-beta.06 - Fork-Release (rust @ 070fc16, Tag v2-beta.06): Search: Watchtower-
+  verifizierte Releases werden wieder als solche in den Suchergebnissen markiert
+  und nach oben gewichtet - Kandidaten-Warming aus der Watchtower-Shortlist, wenn
+  Watchtower aktiviert ist (#57). API: neuer Maintenance-Job remove-unread -
+  loescht abgeschlossene Downloads in Kategorien ohne Arr-Owner, die N Tage
+  niemand gelesen hat (maintenance.unread.enabled/days, Default 30, Minimum 7;
+  laeuft nur, wenn der Job in maintenance.scheduled eingetragen ist) (#58).
+  Image: ghcr.io/demianoshb/neodysk-rust:v2-beta.06 (multi-arch amd64/arm64, auch
+  latest). Pre-Release, nicht fuer Produktion.
   2-beta.05 - Fork-Release (rust @ dfec593, Tag v2-beta.05): API: der Release-Build
   meldet und zeigt seinen eigenen Tag - Version und Release-Notes werden von CI
   gestempelt (#50). WebDAV: Streams, deren Player nach einem konfigurierbaren
